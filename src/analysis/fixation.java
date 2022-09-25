@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import com.opencsv.CSVWriter;
+
 
 public class fixation {
 	
@@ -49,8 +51,8 @@ public class fixation {
         List<Point> allPoints = new ArrayList<Point>();
         ArrayList<Object> saccadeDetails = new ArrayList<Object>();
         
-        FileWriter fileWriter = new FileWriter(outputFile);
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        FileWriter outputFileWriter = new FileWriter(new File (outputFile));
+        CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
 
         try {
             FileReader fileReader = new FileReader(inputFile);
@@ -92,129 +94,126 @@ public class fixation {
                
             }	
             
-            bufferedWriter.write("total number of fixations: " + getFixationCount(inputFile));
-            bufferedWriter.newLine();
+            ArrayList<String>headers = new ArrayList<String>();
+            ArrayList<String>data = new ArrayList<String>();
             
-            bufferedWriter.write("sum of all fixation duration: " + descriptiveStats.getSumOfIntegers(allFixationDurations));
-            bufferedWriter.newLine();
+            headers.add("total number of fixations");
+            data.add(String.valueOf(getFixationCount(inputFile)));
             
-            bufferedWriter.write("mean duration: " + descriptiveStats.getMeanOfIntegers(allFixationDurations));
-            bufferedWriter.newLine();
+            headers.add("sum of all fixation duration");
+            data.add(String.valueOf(descriptiveStats.getSumOfIntegers(allFixationDurations)));
             
-            bufferedWriter.write("median duration: " + descriptiveStats.getMedianOfIntegers(allFixationDurations));
-            bufferedWriter.newLine();
+            headers.add("mean duration");
+            data.add(String.valueOf(descriptiveStats.getMeanOfIntegers(allFixationDurations)));
             
-            bufferedWriter.write("StDev of durations: " + descriptiveStats.getStDevOfIntegers(allFixationDurations));
-            bufferedWriter.newLine();
+            headers.add("median duration");
+            data.add(String.valueOf(descriptiveStats.getMedianOfIntegers(allFixationDurations)));
             
-            bufferedWriter.write("Min. duration: " + descriptiveStats.getMinOfIntegers(allFixationDurations));
-            bufferedWriter.newLine();
+            headers.add("StDev of durations");
+            data.add(String.valueOf(descriptiveStats.getStDevOfIntegers(allFixationDurations)));
+
+            headers.add("Min. duration");
+            data.add(String.valueOf(descriptiveStats.getMinOfIntegers(allFixationDurations)));
             
-            bufferedWriter.write("Max. duration: " + descriptiveStats.getMaxOfIntegers(allFixationDurations));
-            bufferedWriter.newLine();
-            
-            bufferedWriter.newLine();
+            headers.add("Max. duration");
+            data.add(String.valueOf(descriptiveStats.getMaxOfIntegers(allFixationDurations)));
             
             Double[] allSaccadeLengths = saccade.getAllSaccadeLength(allCoordinates);
             
-            bufferedWriter.write("total number of saccades: " + allSaccadeLengths.length);
-            bufferedWriter.newLine();
+            headers.add("total number of saccades");
+            data.add(String.valueOf(allSaccadeLengths.length));
             
-            bufferedWriter.write("sum of all saccade length: " + descriptiveStats.getSum(allSaccadeLengths));
-            bufferedWriter.newLine();
+            headers.add("sum of all saccade length");
+            data.add(String.valueOf(descriptiveStats.getSum(allSaccadeLengths)));
             
-            bufferedWriter.write("mean saccade length: " + descriptiveStats.getMean(allSaccadeLengths));
-            bufferedWriter.newLine();
+            headers.add("mean saccade length");
+            data.add(String.valueOf(descriptiveStats.getMean(allSaccadeLengths)));
+
             
-            bufferedWriter.write("median saccade length: " + descriptiveStats.getMedian(allSaccadeLengths));
-            bufferedWriter.newLine();
+            headers.add("median saccade length"); 
+            data.add(String.valueOf(descriptiveStats.getMedian(allSaccadeLengths)));
             
-            bufferedWriter.write("StDev of saccade lengths: " + descriptiveStats.getStDev(allSaccadeLengths));
-            bufferedWriter.newLine();
+            headers.add("StDev of saccade lengths"); 
+            data.add(String.valueOf(descriptiveStats.getStDev(allSaccadeLengths)));
             
-            bufferedWriter.write("min saccade length: " + descriptiveStats.getMin(allSaccadeLengths));
-            bufferedWriter.newLine();
+            headers.add("min saccade length"); 
+            data.add(String.valueOf(descriptiveStats.getMin(allSaccadeLengths)));
+
             
-            bufferedWriter.write("max saccade length: " + descriptiveStats.getMax(allSaccadeLengths));
-            bufferedWriter.newLine();
-            
-            bufferedWriter.newLine();
-            
+            headers.add("max saccade length"); 
+            data.add(String.valueOf(descriptiveStats.getMax(allSaccadeLengths)));
+
             ArrayList<Integer> allSaccadeDurations = saccade.getAllSaccadeDurations(saccadeDetails);
             
-            bufferedWriter.write("sum of all saccade durations: " + descriptiveStats.getSumOfIntegers(allSaccadeDurations));
-            bufferedWriter.newLine();
+            headers.add("sum of all saccade durations"); 
+            data.add(String.valueOf(descriptiveStats.getSumOfIntegers(allSaccadeDurations)));
             
-            bufferedWriter.write("mean saccade duration: " + descriptiveStats.getMeanOfIntegers(allSaccadeDurations));
-            bufferedWriter.newLine();
+            headers.add("mean saccade duration"); 
+            data.add(String.valueOf(descriptiveStats.getMeanOfIntegers(allSaccadeDurations)));
             
-            bufferedWriter.write("median saccade duration: " + descriptiveStats.getMedianOfIntegers(allSaccadeDurations));
-            bufferedWriter.newLine();
+            headers.add("median saccade duration"); 
+            data.add(String.valueOf(descriptiveStats.getMedianOfIntegers(allSaccadeDurations)));
+ 
             
-            bufferedWriter.write("StDev of saccade durations: " + descriptiveStats.getStDevOfIntegers(allSaccadeDurations));
-            bufferedWriter.newLine();
+            headers.add("StDev of saccade durations"); 
+            data.add(String.valueOf(descriptiveStats.getStDevOfIntegers(allSaccadeDurations)));
             
-            bufferedWriter.write("Min. saccade duration: " + descriptiveStats.getMinOfIntegers(allSaccadeDurations));
-            bufferedWriter.newLine();
+            headers.add("Min. saccade duration"); 
+            data.add(String.valueOf(descriptiveStats.getMinOfIntegers(allSaccadeDurations)));
             
-            bufferedWriter.write("Max. saccade duration: " + descriptiveStats.getMaxOfIntegers(allSaccadeDurations));
-            bufferedWriter.newLine();
+            headers.add("Max. saccade duration"); 
+            data.add(String.valueOf(descriptiveStats.getMaxOfIntegers(allSaccadeDurations)));
             
-            bufferedWriter.newLine();
+            headers.add("scanpath duration");
+            data.add(String.valueOf(getScanpathDuration(allFixationDurations, allSaccadeDurations)));
+
             
-            bufferedWriter.write("scanpath duration: " + getScanpathDuration(allFixationDurations, allSaccadeDurations));
-            bufferedWriter.newLine();
-            
-            bufferedWriter.newLine();
-            
-            bufferedWriter.write("fixation to saccade ratio: " + getFixationToSaccadeRatio(allFixationDurations, allSaccadeDurations));
-            bufferedWriter.newLine();
-            
-            bufferedWriter.newLine();
+            headers.add("fixation to saccade ratio");
+            data.add(String.valueOf(getFixationToSaccadeRatio(allFixationDurations, allSaccadeDurations)));
             
             ArrayList<Double> allAbsoluteDegrees = angle.getAllAbsoluteAngles(allCoordinates);
             
-            bufferedWriter.write("sum of all absolute degrees: " + descriptiveStats.getSumOfDoubles(allAbsoluteDegrees));
-            bufferedWriter.newLine();
+            headers.add("sum of all absolute degrees"); 
+            data.add(String.valueOf(descriptiveStats.getSumOfDoubles(allAbsoluteDegrees)));
             
-            bufferedWriter.write("mean absolute degree: " + descriptiveStats.getMeanOfDoubles(allAbsoluteDegrees));
-            bufferedWriter.newLine();
+            headers.add("mean absolute degree"); 
+            data.add(String.valueOf(descriptiveStats.getMeanOfDoubles(allAbsoluteDegrees)));
             
-            bufferedWriter.write("median absolute degree: " + descriptiveStats.getMedianOfDoubles(allAbsoluteDegrees));
-            bufferedWriter.newLine();
+            headers.add("median absolute degree"); 
+            data.add(String.valueOf(descriptiveStats.getMedianOfDoubles(allAbsoluteDegrees)));
             
-            bufferedWriter.write("StDev of absolute degrees: " + descriptiveStats.getStDevOfDoubles(allAbsoluteDegrees));
-            bufferedWriter.newLine();
+            headers.add("StDev of absolute degrees"); 
+            data.add(String.valueOf(descriptiveStats.getStDevOfDoubles(allAbsoluteDegrees)));
+
             
-            bufferedWriter.write("min absolute degree: " + descriptiveStats.getMinOfDoubles(allAbsoluteDegrees));
-            bufferedWriter.newLine();
+            headers.add("min absolute degree"); 
+            data.add(String.valueOf(descriptiveStats.getMinOfDoubles(allAbsoluteDegrees)));
+
             
-            bufferedWriter.write("max absolute degree: " + descriptiveStats.getMaxOfDoubles(allAbsoluteDegrees));
-            bufferedWriter.newLine();
-            
-            bufferedWriter.newLine();
+            headers.add("max absolute degree"); 
+            data.add(String.valueOf(descriptiveStats.getMaxOfDoubles(allAbsoluteDegrees)));
+
             
             ArrayList<Double> allRelativeDegrees = angle.getAllRelativeAngles(allCoordinates);
            
-            bufferedWriter.write("sum of all relative degrees: " + descriptiveStats.getSumOfDoubles(allRelativeDegrees));
-            bufferedWriter.newLine();
+            headers.add("sum of all relative degrees"); 
+            data.add(String.valueOf(descriptiveStats.getSumOfDoubles(allRelativeDegrees)));
             
-            bufferedWriter.write("mean relative degree: " + descriptiveStats.getMeanOfDoubles(allRelativeDegrees));
-            bufferedWriter.newLine();
+            headers.add("mean relative degree"); 
+            data.add(String.valueOf(descriptiveStats.getMeanOfDoubles(allRelativeDegrees)));
             
-            bufferedWriter.write("median relative degree: " + descriptiveStats.getMedianOfDoubles(allRelativeDegrees));
-            bufferedWriter.newLine();
+            headers.add("median relative degree"); 
+            data.add(String.valueOf(descriptiveStats.getMedianOfDoubles(allRelativeDegrees)));
             
-            bufferedWriter.write("StDev of relative degrees: " + descriptiveStats.getStDevOfDoubles(allRelativeDegrees));
-            bufferedWriter.newLine();
+            headers.add("StDev of relative degrees"); 
+            data.add(String.valueOf(descriptiveStats.getStDevOfDoubles(allRelativeDegrees)));
             
-            bufferedWriter.write("min relative degree: " + descriptiveStats.getMinOfDoubles(allRelativeDegrees));
-            bufferedWriter.newLine();
+            headers.add("min relative degree"); 
+            data.add(String.valueOf(descriptiveStats.getMinOfDoubles(allRelativeDegrees)));
+
             
-            bufferedWriter.write("max relative degree: " + descriptiveStats.getMaxOfDoubles(allRelativeDegrees));
-            bufferedWriter.newLine();
-            
-            bufferedWriter.newLine();
+            headers.add("max relative degree"); 
+            data.add(String.valueOf(descriptiveStats.getMaxOfDoubles(allRelativeDegrees)));
            
             //getting the convex hull using Graham Scan
             //i.e. Choose point p with smallest y-coordinate.
@@ -223,13 +222,14 @@ public class fixation {
             List<Point> boundingPoints = convexHull.getConvexHull(allPoints);
             Point2D[] points = listToArray(boundingPoints);
             
-            bufferedWriter.write("convex hull area: " + convexHull.getPolygonArea(points));
-            bufferedWriter.newLine();
-            
-            
-            bufferedWriter.close();
+            headers.add("convex hull area");
+            data.add(String.valueOf(convexHull.getPolygonArea(points)));
+
+            outputCSVWriter.writeNext(headers.toArray(new String[headers.size()]));
+            outputCSVWriter.writeNext(data.toArray(new String[data.size()]));
+            outputCSVWriter.close();
             bufferedReader.close();	
-            System.out.println("done writing fixation data to: " + outputFile);
+            System.out.println("done writing fixation data to" + outputFile);
             
         }catch(FileNotFoundException ex) {
             System.out.println("Unable to open file '" + inputFile + "'");				

@@ -26,11 +26,14 @@ package analysis;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import com.opencsv.CSVWriter;
 
 
 public class event {
@@ -40,8 +43,8 @@ public class event {
 		String line = null;
         ArrayList<Object> allMouseLeft = new ArrayList<Object>();
         
-        FileWriter fileWriter = new FileWriter(outputFile);
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        FileWriter outputFileWriter = new FileWriter(new File (outputFile));
+        CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
 
         try {
             FileReader fileReader = new FileReader(inputFile);
@@ -55,11 +58,9 @@ public class event {
                 }
               
             }	
-            
-            bufferedWriter.write("total number of L mouse clicks: " + allMouseLeft.size());
-            bufferedWriter.newLine();
-            
-            bufferedWriter.close();
+            outputCSVWriter.writeNext(new String[]{"total number of L mouse clicks"});
+            outputCSVWriter.writeNext(new String[] {String.valueOf(allMouseLeft.size())});
+            outputCSVWriter.close();
             bufferedReader.close();	
             
             System.out.println("done writing event data to: " + outputFile);

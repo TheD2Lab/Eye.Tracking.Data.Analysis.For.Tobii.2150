@@ -1,11 +1,14 @@
 package analysis;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import com.opencsv.CSVWriter;
+
 
 /*
  * Copyright (c) 2013, Bo Fu 
@@ -38,9 +41,10 @@ public class gaze {
 		String line = null;
         ArrayList<Object> allValidData = new ArrayList<Object>();
         
-        FileWriter fileWriter = new FileWriter(outputFile);
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
+        //FileWriter fileWriter = new FileWriter(outputFile);
+        //BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        FileWriter outputFileWriter = new FileWriter(new File (outputFile));
+        CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
         try {
             FileReader fileReader = new FileReader(inputFile);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -48,35 +52,34 @@ public class gaze {
                 
                 String[] lineArray = fixation.lineToArray(line);
                 
-                //checking the validity of the recording
+              //checking the validity of the recording
                 //a code with 0 indicates the eye tracker was confident with this data
                 //note that only instances where BOTH pupil sizes are valid will be used in the analysis
-                if(lineArray[8].equals("0") && lineArray[15].equals("0")){
+                //if pupilLeft and pupilRight is missing coordinates than the entry is skipped
+                if(lineArray[8].equals("0") && lineArray[15].equals("0") && lineArray[7]!=null && lineArray[14] != null){
                 	double pupilLeft = Double.parseDouble(lineArray[7]);
                 	double pupilRight = Double.parseDouble(lineArray[14]);
                 	double[] pupilSizes = new double[2];
                 	pupilSizes[0] = pupilLeft;
                 	pupilSizes[1] = pupilRight;
-                	allValidData.add(pupilSizes);
+                	//checks if pupil sizes are possible (between 2mm to 8mm)
+                	if(pupilLeft >=2 && pupilLeft <=8 && pupilRight >=2 && pupilRight <=8)
+                	{
+                		//checks if the difference in size between the left and right is 1mm or less
+                		if(Math.abs(pupilRight - pupilLeft) <= 1)
+                		{
+                			allValidData.add(pupilSizes);
+                		}
+                	}
+                	
                 }
-              
-            }	
-            
-            bufferedWriter.write("total number of valid recordings: " + allValidData.size());
-            bufferedWriter.newLine();
-            
-            bufferedWriter.write("average pupil size of left eye: " + getAverageOfLeft(allValidData));
-            bufferedWriter.newLine();
-            
-            bufferedWriter.write("average pupil size of right eye: " + getAverageOfRight(allValidData));
-            bufferedWriter.newLine();
-            
-            bufferedWriter.write("average pupil size of both eyes: " + getAverageOfBoth(allValidData));
-            bufferedWriter.newLine();
-            
-            bufferedWriter.close();
-            bufferedReader.close();	
-            
+            }
+            String[]headers = {"total number of valid recordings", "average pupil size of left eye", "average pupil size of right eye", "average pupil size of both eyes"};
+            String[]data = {String.valueOf(allValidData.size()),String.valueOf(getAverageOfLeft(allValidData)),String.valueOf(getAverageOfRight(allValidData)),String.valueOf(getAverageOfBoth(allValidData))};
+
+            outputCSVWriter.writeNext(headers);
+            outputCSVWriter.writeNext(data);
+            outputCSVWriter.close();
             System.out.println("done writing gaze data to: " + outputFile);
 		
 		}catch(FileNotFoundException ex) {
@@ -84,6 +87,10 @@ public class gaze {
 	    }catch(IOException ex) {
 	        System.out.println("Error reading file '" + inputFile + "'");			
 	    }
+        catch(Error e)
+        {
+        	System.out.println("Error with csv file");
+        }
 	}
 	
 	//calculate the average pupil size of the left eye

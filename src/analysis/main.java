@@ -32,11 +32,11 @@ public class main {
 	public static void main(String args[]) throws IOException{
 		
 		//specify the location of the raw data files
-		String inputURL = "/Users/.../";
+		String inputURL = "/Users/kayla/OneDrive/Desktop/Fall 2022/Direct Studies/sample/";
 		//specify the location of the analyzed results 
-		String outputURL = "/Users/.../";
+		String outputURL = "/Users/kayla/OneDrive/Desktop/Fall 2022/Direct Studies/temp/";
 		//specify the subject, e.g. p1, as analysis is generated per-participant
-		String participant = "...";
+		String participant = "p1";
 		
 		String inputLocation = inputURL + participant + "/";
 		String outputLocation = outputURL + participant + "/";
@@ -45,40 +45,40 @@ public class main {
 		//testing cases where X axis values are the same
 		//String fixationData = "fxdSameXValues.txt";
 		String treeFixation = participant + ".treeFXD.txt";
-		String treeFixationResults = "treeFXDResults.txt";
+		String treeFixationResults = "treeFXDResults.csv";
 		String treeFixationInput = inputLocation + treeFixation;
         String treeFixationOutput = outputLocation + treeFixationResults; 
         
         String graphFixation = participant + ".graphFXD.txt";
-        String graphFixationResults = "graphFXDResults.txt";
+        String graphFixationResults = "graphFXDResults.csv";
         String graphFixationInput = inputLocation + graphFixation;
         String graphFixationOutput = outputLocation + graphFixationResults;
 		
 		//EVD data
 		String treeEvent = participant + ".treeEVD.txt";
-		String treeEventResults = "treeEVDResults.txt";
+		String treeEventResults = "treeEVDResults.csv";
 		String treeEventInput = inputLocation + treeEvent;
         String treeEventOutput = outputLocation + treeEventResults;
         
         String graphEvent = participant + ".graphEVD.txt";
-        String graphEventResults = "graphEVDResults.txt";
+        String graphEventResults = "graphEVDResults.csv";
         String graphEventInput = inputLocation + graphEvent;
         String graphEventOutput = outputLocation + graphEventResults;
 ;
         
         //GZD data
-        String gazeBaseline = participant + "GZD.txt";
-        String baselineResults = "baselineResults.txt";
+        String gazeBaseline = participant + "GZD.txt";//input
+        String baselineResults = "baselineResults.csv";//output
         String baselineInput = inputLocation + gazeBaseline;
         String baselineOutput = outputLocation + baselineResults;
         
         String treeGaze = participant + ".treeGZD.txt";
-        String treeGazeResults = "treeGZDResults.txt";
+        String treeGazeResults = "treeGZDResults.csv";
         String treeGazeInput = inputLocation + treeGaze;
         String treeGazeOutput = outputLocation + treeGazeResults;
         
         String graphGaze = participant + ".graphGZD.txt";
-        String graphGazeResults = "graphGZDResults.txt";
+        String graphGazeResults = "graphGZDResults.csv";
         String graphGazeInput = inputLocation + graphGaze;
         String graphGazeOutput = outputLocation + graphGazeResults;
         
@@ -86,6 +86,7 @@ public class main {
         gaze.processGaze(baselineInput, baselineOutput);
         
         //analyze tree related data
+        
         fixation.processFixation(treeFixationInput, treeFixationOutput);
         event.processEvent(treeEventInput, treeEventOutput);
         gaze.processGaze(treeGazeInput, treeGazeOutput);
@@ -94,6 +95,7 @@ public class main {
         fixation.processFixation(graphFixationInput, graphFixationOutput);
         event.processEvent(graphEventInput, graphEventOutput);
         gaze.processGaze(graphGazeInput, graphGazeOutput);
+        
 	}
 
 }
