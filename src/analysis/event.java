@@ -25,6 +25,7 @@ package analysis;
  */
 
 import java.io.BufferedReader;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -53,7 +54,7 @@ public class event {
              CSVReader csvReader = new CSVReader(fileReader);
              String[]nextLine = csvReader.readNext();
              
-             int leftMouseButtonIndex = -1;
+            int leftMouseButtonIndex = -1;
          	for(int i = 0; i < nextLine.length; i++)
          	{
          		String header = nextLine[i];

@@ -51,24 +51,24 @@ public class main {
 		String treeFixationResults = "treeFXDResults.csv";
 		String treeFixationInput = inputLocation + treeFixation;
         String treeFixationOutput = outputLocation + treeFixationResults; 
-        
-        String graphFixation = participant + ".graphFXD.txt";
+        */
+        String graphFixation = participant + ".GZD.csv";
         String graphFixationResults = "graphFXDResults.csv";
         String graphFixationInput = inputLocation + graphFixation;
         String graphFixationOutput = outputLocation + graphFixationResults;
-		
+		/*
 		//EVD data
 		String treeEvent = participant + ".treeEVD.txt";
 		String treeEventResults = "treeEVDResults.csv";
 		String treeEventInput = inputLocation + treeEvent;
         String treeEventOutput = outputLocation + treeEventResults;
-        
-        String graphEvent = participant + ".graphEVD.txt";
+        */
+        String graphEvent = participant + ".GZD.csv";
         String graphEventResults = "graphEVDResults.csv";
         String graphEventInput = inputLocation + graphEvent;
         String graphEventOutput = outputLocation + graphEventResults;
 ;
-        
+        /*
         //GZD data
         String gazeBaseline = participant + "GZD.txt";//input
         String baselineResults = "baselineResults.csv";//output
@@ -93,11 +93,12 @@ public class main {
         fixation.processFixation(treeFixationInput, treeFixationOutput);
         event.processEvent(treeEventInput, treeEventOutput);
         gaze.processGaze(treeGazeInput, treeGazeOutput);
-        
+        */
         //analyze graph related data
         fixation.processFixation(graphFixationInput, graphFixationOutput);
+        
         event.processEvent(graphEventInput, graphEventOutput);
-        */
+ 
         gaze.processGaze(graphGazeInput, graphGazeOutput);
         
 	}
