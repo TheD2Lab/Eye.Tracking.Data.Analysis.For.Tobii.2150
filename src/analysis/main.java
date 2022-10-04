@@ -26,21 +26,24 @@ package analysis;
 
 import java.io.IOException;
 
+import com.opencsv.exceptions.CsvValidationException;
+
 
 public class main {
 	
-	public static void main(String args[]) throws IOException{
+	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException{
 		
 		//specify the location of the raw data files
 		String inputURL = "/Users/kayla/OneDrive/Desktop/Fall 2022/Direct Studies/sample/";
 		//specify the location of the analyzed results 
 		String outputURL = "/Users/kayla/OneDrive/Desktop/Fall 2022/Direct Studies/temp/";
 		//specify the subject, e.g. p1, as analysis is generated per-participant
-		String participant = "p1";
+		String participant = "gazepoint";
 		
 		String inputLocation = inputURL + participant + "/";
 		String outputLocation = outputURL + participant + "/";
 		
+		/*
 		//FXD data
 		//testing cases where X axis values are the same
 		//String fixationData = "fxdSameXValues.txt";
@@ -76,12 +79,12 @@ public class main {
         String treeGazeResults = "treeGZDResults.csv";
         String treeGazeInput = inputLocation + treeGaze;
         String treeGazeOutput = outputLocation + treeGazeResults;
-        
-        String graphGaze = participant + ".graphGZD.txt";
+        */
+        String graphGaze = participant + ".GZD.csv";
         String graphGazeResults = "graphGZDResults.csv";
         String graphGazeInput = inputLocation + graphGaze;
         String graphGazeOutput = outputLocation + graphGazeResults;
-        
+        /*
         //analyze gaze baseline
         gaze.processGaze(baselineInput, baselineOutput);
         
@@ -94,6 +97,7 @@ public class main {
         //analyze graph related data
         fixation.processFixation(graphFixationInput, graphFixationOutput);
         event.processEvent(graphEventInput, graphEventOutput);
+        */
         gaze.processGaze(graphGazeInput, graphGazeOutput);
         
 	}

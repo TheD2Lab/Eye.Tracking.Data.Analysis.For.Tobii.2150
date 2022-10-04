@@ -7,7 +7,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvValidationException;
 
 
 /*
@@ -37,34 +40,63 @@ import com.opencsv.CSVWriter;
 
 public class gaze {
 	
-	public static void processGaze(String inputFile, String outputFile) throws IOException{
-		String line = null;
+	public static void processGaze(String inputFile, String outputFile) throws IOException, CsvValidationException, NumberFormatException{
         ArrayList<Object> allValidData = new ArrayList<Object>();
         
-        //FileWriter fileWriter = new FileWriter(outputFile);
-        //BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
         FileWriter outputFileWriter = new FileWriter(new File (outputFile));
         CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
         try {
             FileReader fileReader = new FileReader(inputFile);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            while((line = bufferedReader.readLine()) != null) {
-                
-                String[] lineArray = fixation.lineToArray(line);
-                
-              //checking the validity of the recording
+            CSVReader csvReader = new CSVReader(fileReader);
+            String[]nextLine = csvReader.readNext();
+            
+            //finds the index where the left and right validity code is at
+            //finds the index where the left and right diameter in millimeters is at
+            int pupilLeftValidityIndex = -1; 
+            int pupilRightValidityIndex = -1; 
+            int pupilLeftDiameterIndex = -1; 
+            int pupilRightDiameterIndex = -1; 
+        	for(int i = 0; i < nextLine.length; i++)
+        	{
+        		String header = nextLine[i];
+        		
+        		switch(header)
+        		{
+        		case "LPMMV": 
+        			pupilLeftValidityIndex = i;
+        			break;
+        		case "RPMMV": 
+        			pupilRightValidityIndex = i; 
+        			break;
+        		case "LPMM": 
+        			pupilLeftDiameterIndex = i; 
+        			break;
+        		case "RPMM": 
+        			pupilRightDiameterIndex = i;
+        			break;
+        		default: 
+        			break;
+        		}
+        	}
+            
+        	//starts to look at the data
+            while((nextLine = csvReader.readNext()) != null) {	
+            	
+            	//checking the validity of the recording
                 //a code with 0 indicates the eye tracker was confident with this data
                 //note that only instances where BOTH pupil sizes are valid will be used in the analysis
                 //if pupilLeft and pupilRight is missing coordinates than the entry is skipped
-                if(lineArray[8].equals("0") && lineArray[15].equals("0") && lineArray[7]!=null && lineArray[14] != null){
-                	double pupilLeft = Double.parseDouble(lineArray[7]);
-                	double pupilRight = Double.parseDouble(lineArray[14]);
+                if(nextLine[pupilLeftValidityIndex].equals("1") && nextLine[pupilRightValidityIndex].equals("1") && nextLine[pupilLeftDiameterIndex]!=null && nextLine[pupilRightDiameterIndex] != null){
+                	double pupilLeft = Double.parseDouble(nextLine[pupilLeftDiameterIndex]);
+                	double pupilRight = Double.parseDouble(nextLine[pupilRightDiameterIndex]);
                 	double[] pupilSizes = new double[2];
                 	pupilSizes[0] = pupilLeft;
                 	pupilSizes[1] = pupilRight;
+                	
                 	//checks if pupil sizes are possible (between 2mm to 8mm)
                 	if(pupilLeft >=2 && pupilLeft <=8 && pupilRight >=2 && pupilRight <=8)
                 	{
+                		
                 		//checks if the difference in size between the left and right is 1mm or less
                 		if(Math.abs(pupilRight - pupilLeft) <= 1)
                 		{
@@ -74,6 +106,7 @@ public class gaze {
                 	
                 }
             }
+            
             String[]headers = {"total number of valid recordings", "average pupil size of left eye", "average pupil size of right eye", "average pupil size of both eyes"};
             String[]data = {String.valueOf(allValidData.size()),String.valueOf(getAverageOfLeft(allValidData)),String.valueOf(getAverageOfRight(allValidData)),String.valueOf(getAverageOfBoth(allValidData))};
 
