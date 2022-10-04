@@ -38,12 +38,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvValidationException;
 
 
 public class fixation {
 	
-	public static void processFixation(String inputFile, String outputFile) throws IOException{
+	public static void processFixation(String inputFile, String outputFile) throws IOException, CsvValidationException{
 
         String line = null;
         ArrayList<Integer> allFixationDurations = new ArrayList<Integer>();
@@ -53,23 +55,66 @@ public class fixation {
         
         FileWriter outputFileWriter = new FileWriter(new File (outputFile));
         CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
-
         try {
-            FileReader fileReader = new FileReader(inputFile);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            while((line = bufferedReader.readLine()) != null) {
+        	
+        	 FileReader fileReader = new FileReader(inputFile);
+             CSVReader csvReader = new CSVReader(fileReader);
+             String[]nextLine = csvReader.readNext();
+             int fixationValidityIndex = -1; 
+             int fixationDurationIndex = -1;
+             int fixationXIndex = -1; 
+             int fixationYIndex = -1; 
+             int timestampIndex = -1; 
+         	for(int i = 0; i < nextLine.length; i++)	
+         	{
+         		String header = nextLine[i];
+         		
+         		switch(header)
+         		{
+         		case "FPOGV":
+         			fixationValidityIndex = i;
+         			break;
+         		case "FPOGD": 
+         			fixationDurationIndex = i;
+         			break;
+         		case "FPOGX": 
+         			fixationXIndex = i; 
+         			break;
+         		case "FPOGY": 
+         			fixationYIndex = i; 
+         			break;
+         		default: 	
+         			break;
+         		}
+         		if(nextLine[i].contains("TIME"))
+         		{
+         			timestampIndex = i;
+         		}         		
+         	}
+            
+           
+            
+            while((nextLine = csvReader.readNext()) != null) {
                 
-                String[] lineArray = lineToArray(line);
-                
+            	if(!nextLine[fixationValidityIndex].equals("1"))
+            	{
+            		continue;
+            	}
                 //get each fixation's duration
-                String eachFixationDuration = lineArray[2];
-                int eachDuration = Integer.parseInt(eachFixationDuration);
+                String fixationDurationSeconds = nextLine[fixationDurationIndex];
+                int eachDuration = (int) (Double.valueOf(fixationDurationSeconds) * 1000);
+                
+                
+                String [] lineArray = new String[10];
+                //1024 * 768
+                int screenPixelSizeWidth = 1024;
+                int screenPixelSizeHeight = 768;
                 
                 //get each fixation's (x,y) coordinates
-                String eachFixationX = lineArray[3];
-                String eachFixationY = lineArray[4];
-                int x = Integer.parseInt(eachFixationX);
-                int y = Integer.parseInt(eachFixationY);
+                String eachFixationX = nextLine[fixationXIndex];
+                String eachFixationY = nextLine[fixationYIndex];
+                int x = (int)(Double.valueOf(eachFixationX) * screenPixelSizeHeight);
+                int y = (int)(Double.valueOf(eachFixationY) * screenPixelSizeWidth);
                 
                 Point eachPoint = new Point(x,y);
                 
@@ -78,7 +123,7 @@ public class fixation {
                 eachCoordinate[1] = y;
                 
                 //get timestamp of each fixation
-                int timestamp = Integer.parseInt(lineArray[1]);
+                int timestamp = (int)(Double.valueOf(nextLine[timestampIndex])* 1000);
                 Integer[] eachSaccadeDetail = new Integer[2];
                 eachSaccadeDetail[0] = timestamp;
                 eachSaccadeDetail[1] = eachDuration;
@@ -228,7 +273,7 @@ public class fixation {
             outputCSVWriter.writeNext(headers.toArray(new String[headers.size()]));
             outputCSVWriter.writeNext(data.toArray(new String[data.size()]));
             outputCSVWriter.close();
-            bufferedReader.close();	
+            csvReader.close();	
             System.out.println("done writing fixation data to" + outputFile);
             
         }catch(FileNotFoundException ex) {
