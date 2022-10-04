@@ -113,6 +113,7 @@ public class gaze {
             outputCSVWriter.writeNext(headers);
             outputCSVWriter.writeNext(data);
             outputCSVWriter.close();
+            csvReader.close();
             System.out.println("done writing gaze data to: " + outputFile);
 		
 		}catch(FileNotFoundException ex) {
