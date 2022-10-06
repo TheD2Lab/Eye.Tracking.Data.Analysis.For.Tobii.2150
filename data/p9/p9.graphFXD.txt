@@ -1,0 +1,39 @@
+Data properties:
+ 
+Recording date: 1/10/2013
+Recording time : 10:54:16:281 (corresponds to time 0)
+Study: Bo.Dec.2012
+Subject: p9
+Recording: p9.graph
+Screen resolution: 1280 x 1024
+Coordinate unit: Pixels
+ 
+ 
+Filter settings:
+ 
+Eye: Average
+Validity level: Normal
+Fixation radius: 30
+Min duration: 100
+ 
+Fix number	Timestamp	Duration	GazepointX	GazepointY
+ 
+1	3531	140	280	139
+2	3710	180	520	24
+3	5305	100	337	570
+4	8894	339	221	634
+5	11605	100	222	717
+6	11765	179	176	673
+7	13420	120	96	571
+8	29011	120	111	227
+9	35889	100	358	504
+10	36168	100	226	433
+11	36288	140	237	408
+12	300240	339	146	251
+13	306321	100	304	699
+14	337743	100	259	653
+15	741756	180	87	265
+16	743171	160	476	196
+17	744069	199	305	190
+18	1240552	140	487	212
+19	1240951	100	481	265

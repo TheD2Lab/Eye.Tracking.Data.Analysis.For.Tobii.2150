@@ -34,9 +34,11 @@ public class main {
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException{
 		
 		//specify the location of the raw data files
-		String inputURL = "/Users/kayla/OneDrive/Desktop/Fall 2022/Direct Studies/sample/";
+		//String inputURL = "/Users/kayla/OneDrive/Desktop/Fall 2022/Direct Studies/sample/";
+		String inputURL = "/Users/soria/Projects/Eye.Tracking.Data.Analysis.For.Tobii.2150/data/";
 		//specify the location of the analyzed results 
-		String outputURL = "/Users/kayla/OneDrive/Desktop/Fall 2022/Direct Studies/temp/";
+		//String outputURL = "/Users/kayla/OneDrive/Desktop/Fall 2022/Direct Studies/temp/";
+		String outputURL = "/Users/soria/Projects/Eye.Tracking.Data.Analysis.For.Tobii.2150/results/";
 		//specify the subject, e.g. p1, as analysis is generated per-participant
 		String participant = "gazepoint";
 		
@@ -94,13 +96,10 @@ public class main {
         event.processEvent(treeEventInput, treeEventOutput);
         gaze.processGaze(treeGazeInput, treeGazeOutput);
         */
-        //analyze graph related data
+        
+        // Analyze graph related data
         fixation.processFixation(graphFixationInput, graphFixationOutput);
-        
         event.processEvent(graphEventInput, graphEventOutput);
- 
         gaze.processGaze(graphGazeInput, graphGazeOutput);
-        
 	}
-
 }

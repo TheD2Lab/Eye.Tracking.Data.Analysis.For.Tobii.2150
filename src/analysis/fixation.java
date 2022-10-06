@@ -35,6 +35,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -306,45 +307,54 @@ public class fixation {
 	}
 	
 	public static String getFixationCount(String inputFile) throws IOException {
-		File file = new File(inputFile); 
-	  
-	        RandomAccessFile fileHandler = new RandomAccessFile( file, "r" );
-	        long fileLength = file.length() - 1;
-	        StringBuilder sb = new StringBuilder();
-
-	        for(long filePointer = fileLength; filePointer != -1; filePointer--){
-	            fileHandler.seek( filePointer );
-	            int readByte = fileHandler.readByte();
-
-	            if( readByte == 0xA ) {
-	                if( filePointer == fileLength ) {
-	                    continue;
-	                } else {
-	                    break;
-	                }
-	            } else if( readByte == 0xD ) {
-	                if( filePointer == fileLength - 1 ) {
-	                    continue;
-	                } else {
-	                    break;
-	                }
-	            }
-
-	            sb.append( ( char ) readByte );
-	        }
-
-	        String lastLine = sb.reverse().toString();
-	        
-	        //get the first value in the last line, which is the total number of fixations
-	        String[] lineArray = lineToArray(lastLine);
-            String totalFixations = lineArray[0];
-	        
-	        return totalFixations;
-	 
+//		File file = new File(inputFile); 
+//        RandomAccessFile fileHandler = new RandomAccessFile( file, "r" );
+//        long fileLength = file.length() - 1;
+//        StringBuilder sb = new StringBuilder();
+//
+//        for(long filePointer = fileLength; filePointer != -1; filePointer--){
+//            fileHandler.seek( filePointer );
+//            int readByte = fileHandler.readByte();
+//
+//            if( readByte == 0xA ) {
+//                if( filePointer == fileLength ) {
+//                    continue;
+//                } else {
+//                    break;
+//                }
+//            } else if( readByte == 0xD ) {
+//                if( filePointer == fileLength - 1 ) {
+//                    continue;
+//                } else {
+//                    break;
+//                }
+//            }
+//
+//            sb.append( ( char ) readByte );
+//        }
+//
+//        String lastLine = sb.reverse().toString();
+//        
+//        //get the first value in the last line, which is the total number of fixations
+//        String[] lineArray = lineToArray(lastLine);
+//        String totalFixations = lineArray[0];
+//        
+//        return totalFixations;
+		File file = new File(inputFile);
+		FileReader fileReader = new FileReader(file);
+		CSVReader csvReader = new CSVReader(fileReader);
+		Iterator<String[]> iter = csvReader.iterator();
+		String[] line = new String[0];
+		
+		while (iter.hasNext()) {
+			line = iter.next();
+		}
+		
+		return line[9] + "";	
 	}
 	
 
-	public static double getScanpathDuration(ArrayList<Integer> allFixationDurations, ArrayList<Integer> allSaccadeDurations){
+	public static double getScanpathDuration(ArrayList<Integer> allFixationDurations, ArrayList<Integer> allSaccadeDurations) {
 		double fixationDuration = descriptiveStats.getSumOfIntegers(allFixationDurations);
 		double saccadeDuration = descriptiveStats.getSumOfIntegers(allSaccadeDurations);
 		return fixationDuration + saccadeDuration;
