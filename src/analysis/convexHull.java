@@ -27,10 +27,15 @@ package analysis;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
 
 public class convexHull {
-	
+
 	 /**
      * An enum denoting a directional-turn between 3 points (vectors).
      */
@@ -83,7 +88,7 @@ public class convexHull {
             throw new IllegalArgumentException("xs and ys don't have the same size");
         }
 
-        List<Point> points = new ArrayList<Point>();
+        List<Point> points = new ArrayList<>();
 
         for(int i = 0; i < xs.length; i++) {
             points.add(new Point(xs[i], ys[i]));
@@ -106,7 +111,7 @@ public class convexHull {
      */
     public static List<Point> getConvexHull(List<Point> points) throws IllegalArgumentException {
 
-        List<Point> sorted = new ArrayList<Point>(getSortedPointSet(points));
+        List<Point> sorted = new ArrayList<>(getSortedPointSet(points));
 
         if(sorted.size() < 3) {
             throw new IllegalArgumentException("can only create a convex hull of 3 or more unique points");
@@ -116,7 +121,7 @@ public class convexHull {
             throw new IllegalArgumentException("cannot create a convex hull from collinear points");
         }
 
-        Stack<Point> stack = new Stack<Point>();
+        Stack<Point> stack = new Stack<>();
         stack.push(sorted.get(0));
         stack.push(sorted.get(1));
 
@@ -145,7 +150,7 @@ public class convexHull {
         // close the hull
         stack.push(sorted.get(0));
 
-        return new ArrayList<Point>(stack);
+        return new ArrayList<>(stack);
     }
 
     /**
@@ -188,7 +193,7 @@ public class convexHull {
 
         final Point lowest = getLowestPoint(points);
 
-        TreeSet<Point> set = new TreeSet<Point>(new Comparator<Point>() {
+        TreeSet<Point> set = new TreeSet<>(new Comparator<Point>() {
             @Override
             public int compare(Point a, Point b) {
 
@@ -265,7 +270,7 @@ public class convexHull {
             return Turn.COLLINEAR;
         }
     }
-    
+
 	public static double getPolygonArea(Point2D[] allPoints) {
 		int i, j, n = allPoints.length;
 		double area = 0;

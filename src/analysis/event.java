@@ -1,6 +1,6 @@
 package analysis;
 /*
- * Copyright (c) 2013, Bo Fu 
+ * Copyright (c) 2013, Bo Fu
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,9 +24,6 @@ package analysis;
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import java.io.BufferedReader;
-
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -42,10 +39,10 @@ import com.opencsv.exceptions.CsvValidationException;
 public class event {
 
 	public static void processEvent(String inputFile, String outputFile) throws IOException, CsvValidationException {
-		
+
 		String line = null;
-        ArrayList<Object> allMouseLeft = new ArrayList<Object>();
-        
+        ArrayList<Object> allMouseLeft = new ArrayList<>();
+
         FileWriter outputFileWriter = new FileWriter(new File (outputFile));
         CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
 
@@ -53,36 +50,36 @@ public class event {
         	 FileReader fileReader = new FileReader(inputFile);
              CSVReader csvReader = new CSVReader(fileReader);
              String[]nextLine = csvReader.readNext();
-             
+
             int leftMouseButtonIndex = -1;
          	for(int i = 0; i < nextLine.length; i++)
          	{
          		String header = nextLine[i];
-         		
+
          		if(header.equals("CS"))
          		{
          			leftMouseButtonIndex = i;
          		}
          	}
-             
-            while((nextLine = csvReader.readNext()) != null) {     
+
+            while((nextLine = csvReader.readNext()) != null) {
                 if(nextLine[leftMouseButtonIndex].equals("1")){
                 	allMouseLeft.add(nextLine);
                 }
-              
-            }	
+
+            }
             outputCSVWriter.writeNext(new String[]{"total number of L mouse clicks"});
             outputCSVWriter.writeNext(new String[] {String.valueOf(allMouseLeft.size())});
             outputCSVWriter.close();
             csvReader.close();
             System.out.println("done writing event data to: " + outputFile);
-		
+
 		}catch(FileNotFoundException ex) {
-	        System.out.println("Unable to open file '" + inputFile + "'");				
+	        System.out.println("Unable to open file '" + inputFile + "'");
 	    }catch(IOException ex) {
-	        System.out.println("Error reading file '" + inputFile + "'");			
+	        System.out.println("Error reading file '" + inputFile + "'");
 	    }
 	}
-	
+
 }
-	
+
