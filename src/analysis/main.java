@@ -40,18 +40,32 @@ public class main {
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException{
 
 		
-		String inputURL = "";
+		String inputGazeURL = "";
+		String inputFixationURL = "";
 		String outputURL = "";
 		
 		JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
 		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
 		int returnValue = jfc.showOpenDialog(null);
-		jfc.setDialogTitle("Select the .csv file you would like to use: ");
+		jfc.setDialogTitle("Select the gaze .csv file you would like to use: ");
 		if (returnValue == JFileChooser.APPROVE_OPTION) 
 		{
 			File selectedFile = jfc.getSelectedFile();
-			inputURL = selectedFile.getAbsolutePath();
+			inputGazeURL = selectedFile.getAbsolutePath();
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(null, "Must pick an input file", "Error Message", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		returnValue = jfc.showOpenDialog(null);
+		jfc.setDialogTitle("Select the fixation .csv file you would like to use: ");
+		if (returnValue == JFileChooser.APPROVE_OPTION) 
+		{
+			File selectedFile = jfc.getSelectedFile();
+			inputFixationURL = selectedFile.getAbsolutePath();
 		}
 		else
 		{
@@ -77,6 +91,21 @@ public class main {
 		}
 				
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
+		File participantFolder = new File(outputURL + "//participant");
+		if(!participantFolder.exists())
+		{
+			boolean folderCreated = participantFolder.mkdir();
+			if(!folderCreated)
+			{
+				JOptionPane.showMessageDialog(null, "Unable to create participant's folder", "Error Message", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			else
+			{
+				outputURL += "\\" + participant;
+			}
+		}
+		
 	
 
 		/*
@@ -88,10 +117,8 @@ public class main {
 		String treeFixationInput = inputLocation + treeFixation;
         String treeFixationOutput = outputLocation + treeFixationResults;
         */
-        //String graphFixation = participant + ".GZD.csv";
-        String graphFixationResults = "graphFXDResults.csv";
-        String graphFixationInput = inputURL;
-        String graphFixationOutput = outputLocation + graphFixationResults;
+        String graphFixationResults = "\\graphFXDResults.csv";
+        String graphFixationOutput = outputURL + graphFixationResults;
 		/*
 		//EVD data
 		String treeEvent = participant + ".treeEVD.txt";
@@ -99,10 +126,8 @@ public class main {
 		String treeEventInput = inputLocation + treeEvent;
         String treeEventOutput = outputLocation + treeEventResults;
         */
-        String graphEvent = participant + ".GZD.csv";
-        String graphEventResults = "graphEVDResults.csv";
-        String graphEventInput = inputLocation + graphEvent;
-        String graphEventOutput = outputLocation + graphEventResults;
+        String graphEventResults = "\\graphEVDResults.csv";
+        String graphEventOutput = outputURL + graphEventResults;
 
         /*
         //GZD data
@@ -116,10 +141,8 @@ public class main {
         String treeGazeInput = inputLocation + treeGaze;
         String treeGazeOutput = outputLocation + treeGazeResults;
         */
-        String graphGaze = participant + ".GZD.csv";
-        String graphGazeResults = "graphGZDResults.csv";
-        String graphGazeInput = inputLocation + graphGaze;
-        String graphGazeOutput = outputLocation + graphGazeResults;
+        String graphGazeResults = "\\graphGZDResults.csv";
+        String graphGazeOutput = outputURL + graphGazeResults;
         /*
         //analyze gaze baseline
         gaze.processGaze(baselineInput, baselineOutput);
@@ -132,8 +155,8 @@ public class main {
         */
 
 		// Analyze graph related data
-        fixation.processFixation(graphFixationInput, graphFixationOutput);
-        event.processEvent(graphEventInput, graphEventOutput);
-        gaze.processGaze(graphGazeInput, graphGazeOutput);
+        fixation.processFixation(inputFixationURL, graphFixationOutput);
+        event.processEvent(inputGazeURL, graphEventOutput);
+        gaze.processGaze(inputGazeURL, graphGazeOutput);
 	}
 }
