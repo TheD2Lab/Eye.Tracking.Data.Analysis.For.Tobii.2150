@@ -33,10 +33,10 @@ public class saccade {
 		int objectSize = allCoordinates.size();
 		Double[] allLengths = new Double[(objectSize-1)];
 		for(int i=0; i<objectSize; i++){
-			Integer[] earlyCoordinate = (Integer[]) allCoordinates.get(i);
+			Double[] earlyCoordinate = (Double[]) allCoordinates.get(i);
 
 			if(i+1<objectSize){
-				Integer[] laterCoordinate = (Integer[]) allCoordinates.get(i+1);
+				Double[] laterCoordinate = (Double[]) allCoordinates.get(i+1);
 				allLengths[i] = Math.sqrt(Math.pow((laterCoordinate[0] - earlyCoordinate[0]), 2) + Math.pow((laterCoordinate[1] - earlyCoordinate[1]), 2));
 			}
 

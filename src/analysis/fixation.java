@@ -48,7 +48,7 @@ public class fixation {
         String line = null;
         ArrayList<Double> allFixationDurations = new ArrayList<>();
         ArrayList<Object> allCoordinates = new ArrayList<>();
-        List<Point> allPoints = new ArrayList<>();
+        List<Point2D.Double> allPoints = new ArrayList<>();
         ArrayList<Object> saccadeDetails = new ArrayList<>();
 
         FileWriter outputFileWriter = new FileWriter(new File (outputFile));
@@ -111,12 +111,12 @@ public class fixation {
                 //get each fixation's (x,y) coordinates
                 String eachFixationX = nextLine[fixationXIndex];
                 String eachFixationY = nextLine[fixationYIndex];
-                int x = (int)(Double.valueOf(eachFixationX) * screenPixelSizeHeight);
-                int y = (int)(Double.valueOf(eachFixationY) * screenPixelSizeWidth);
+                double x = Double.valueOf(eachFixationX) * screenPixelSizeHeight;
+                double y = Double.valueOf(eachFixationY) * screenPixelSizeWidth	;
 
-                Point eachPoint = new Point(x,y);
+                Point2D.Double eachPoint = new Point2D.Double(x,y);
 
-                Integer[] eachCoordinate = new Integer[2];
+                Double[] eachCoordinate = new Double[2];
                 eachCoordinate[0] = x;
                 eachCoordinate[1] = y;
 
@@ -262,7 +262,7 @@ public class fixation {
             //i.e. Choose point p with smallest y-coordinate.
             //Sort points by polar angle with p to get simple polygon.
             //Consider points in order, and discard those that would create a clockwise turn.
-            List<Point> boundingPoints = convexHull.getConvexHull(allPoints);
+            List<Point2D.Double> boundingPoints = convexHull.getConvexHull(allPoints);
             Point2D[] points = listToArray(boundingPoints);
 
             headers.add("convex hull area");
@@ -295,8 +295,8 @@ public class fixation {
 		return values;
 	}
 
-	public static Point2D[] listToArray(List<Point> allPoints){
-		Point2D[] points = new Point2D[allPoints.size()];
+	public static Point2D.Double[] listToArray(List<Point2D.Double> allPoints){
+		Point2D.Double[] points = new Point2D.Double[allPoints.size()];
         for(int i=0; i<points.length; i++){
         	points[i] = allPoints.get(i);
         }
