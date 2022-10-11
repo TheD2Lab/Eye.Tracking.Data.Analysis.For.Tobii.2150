@@ -43,11 +43,11 @@ public class angle {
 		double absoluteDegree = 0.0;
 
 		for(int i=0; i<allCoordinates.size(); i++){
-			Integer[] earlyCoordinate = (Integer[]) allCoordinates.get(i);
+			Double[] earlyCoordinate = (Double[]) allCoordinates.get(i);
 
 			if((i+1)<allCoordinates.size()){
 
-				Integer[] laterCoordinate = (Integer[]) allCoordinates.get(i+1);
+				Double[] laterCoordinate = (Double[]) allCoordinates.get(i+1);
 
 				double differenceInY = laterCoordinate[1] - earlyCoordinate[1];
 				double differenceInX = laterCoordinate[0] - earlyCoordinate[0];
@@ -86,9 +86,9 @@ public class angle {
 		double secondDegree = 0.0;
 
 		for(int i=1; (i+1)<allCoordinates.size(); i++){
-			Integer[] previousCoordinate = (Integer[]) allCoordinates.get(i-1);
-			Integer[] currentCoordinate = (Integer[]) allCoordinates.get(i);
-			Integer[] nextCoordinate = (Integer[]) allCoordinates.get(i+1);
+			Double[] previousCoordinate = (Double[]) allCoordinates.get(i-1);
+			Double[] currentCoordinate = (Double[]) allCoordinates.get(i);
+			Double[] nextCoordinate = (Double[]) allCoordinates.get(i+1);
 
 			//System.out.println("i=" + i + "; previous X: " + previousCoordinate[0] + "; current X: " + currentCoordinate[0] + "; next X: " + nextCoordinate[0]);
 
