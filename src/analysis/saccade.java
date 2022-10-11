@@ -49,17 +49,17 @@ public class saccade {
 	//e.g. given a fixation A that has timestamp T1 and duration D1,
 	//and a subsequent fixation B that has timestamp T2 and duration T2,
 	//the saccade duration between A and B is: T2-(T1+D1)
-	public static ArrayList<Integer> getAllSaccadeDurations(ArrayList<Object> saccadeDetails){
-		ArrayList<Integer> allSaccadeDurations = new ArrayList<>();
+	public static ArrayList<Double> getAllSaccadeDurations(ArrayList<Object> saccadeDetails){
+		ArrayList<Double> allSaccadeDurations = new ArrayList<>();
 		for (int i=0; (i+1)<saccadeDetails.size(); i++){
-			Integer[] currentDetail = (Integer[]) saccadeDetails.get(i);
-			Integer[] subsequentDetail = (Integer[]) saccadeDetails.get(i+1);
+			Double[] currentDetail = (Double[]) saccadeDetails.get(i);
+			Double[] subsequentDetail = (Double[]) saccadeDetails.get(i+1);
 
-			int currentTimestamp = currentDetail[0];
-			int currentFixationDuration = currentDetail[1];
-			int subsequentTimestamp = subsequentDetail[0];
+			double currentTimestamp = currentDetail[0];
+			double currentFixationDuration = currentDetail[1];
+			double subsequentTimestamp = subsequentDetail[0];
 
-			int eachSaccadeDuration = subsequentTimestamp - (currentTimestamp + currentFixationDuration);
+			double eachSaccadeDuration = subsequentTimestamp - (currentTimestamp + currentFixationDuration);
 
 			allSaccadeDurations.add(eachSaccadeDuration);
 		}

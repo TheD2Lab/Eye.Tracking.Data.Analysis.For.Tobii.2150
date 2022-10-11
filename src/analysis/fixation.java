@@ -46,7 +46,7 @@ public class fixation {
 	public static void processFixation(String inputFile, String outputFile) throws IOException, CsvValidationException{
 
         String line = null;
-        ArrayList<Integer> allFixationDurations = new ArrayList<>();
+        ArrayList<Double> allFixationDurations = new ArrayList<>();
         ArrayList<Object> allCoordinates = new ArrayList<>();
         List<Point> allPoints = new ArrayList<>();
         ArrayList<Object> saccadeDetails = new ArrayList<>();
@@ -100,7 +100,7 @@ public class fixation {
             	}
                 //get each fixation's duration
                 String fixationDurationSeconds = nextLine[fixationDurationIndex];
-                int eachDuration = (int) (Double.valueOf(fixationDurationSeconds) * 1000);
+                double eachDuration = Double.valueOf(fixationDurationSeconds) * 1000;
 
 
                 String [] lineArray = new String[10];
@@ -121,8 +121,8 @@ public class fixation {
                 eachCoordinate[1] = y;
 
                 //get timestamp of each fixation
-                int timestamp = (int)(Double.valueOf(nextLine[timestampIndex])* 1000);
-                Integer[] eachSaccadeDetail = new Integer[2];
+                double timestamp = Double.valueOf(nextLine[timestampIndex])* 1000;
+                Double[] eachSaccadeDetail = new Double[2];
                 eachSaccadeDetail[0] = timestamp;
                 eachSaccadeDetail[1] = eachDuration;
 
@@ -144,22 +144,22 @@ public class fixation {
             data.add(String.valueOf(getFixationCount(inputFile)));
 
             headers.add("sum of all fixation duration");
-            data.add(String.valueOf(descriptiveStats.getSumOfIntegers(allFixationDurations)));
+            data.add(String.valueOf(descriptiveStats.getSumOfDoubles(allFixationDurations)));
 
             headers.add("mean duration");
-            data.add(String.valueOf(descriptiveStats.getMeanOfIntegers(allFixationDurations)));
+            data.add(String.valueOf(descriptiveStats.getMeanOfDoubles(allFixationDurations)));
 
             headers.add("median duration");
-            data.add(String.valueOf(descriptiveStats.getMedianOfIntegers(allFixationDurations)));
+            data.add(String.valueOf(descriptiveStats.getMedianOfDoubles(allFixationDurations)));
 
             headers.add("StDev of durations");
-            data.add(String.valueOf(descriptiveStats.getStDevOfIntegers(allFixationDurations)));
+            data.add(String.valueOf(descriptiveStats.getStDevOfDoubles(allFixationDurations)));
 
             headers.add("Min. duration");
-            data.add(String.valueOf(descriptiveStats.getMinOfIntegers(allFixationDurations)));
+            data.add(String.valueOf(descriptiveStats.getMinOfDoubles(allFixationDurations)));
 
             headers.add("Max. duration");
-            data.add(String.valueOf(descriptiveStats.getMaxOfIntegers(allFixationDurations)));
+            data.add(String.valueOf(descriptiveStats.getMaxOfDoubles(allFixationDurations)));
 
             Double[] allSaccadeLengths = saccade.getAllSaccadeLength(allCoordinates);
 
@@ -186,26 +186,26 @@ public class fixation {
             headers.add("max saccade length");
             data.add(String.valueOf(descriptiveStats.getMax(allSaccadeLengths)));
 
-            ArrayList<Integer> allSaccadeDurations = saccade.getAllSaccadeDurations(saccadeDetails);
+            ArrayList<Double> allSaccadeDurations = saccade.getAllSaccadeDurations(saccadeDetails);
 
             headers.add("sum of all saccade durations");
-            data.add(String.valueOf(descriptiveStats.getSumOfIntegers(allSaccadeDurations)));
+            data.add(String.valueOf(descriptiveStats.getSumOfDoubles(allSaccadeDurations)));
 
             headers.add("mean saccade duration");
-            data.add(String.valueOf(descriptiveStats.getMeanOfIntegers(allSaccadeDurations)));
+            data.add(String.valueOf(descriptiveStats.getMeanOfDoubles(allSaccadeDurations)));
 
             headers.add("median saccade duration");
-            data.add(String.valueOf(descriptiveStats.getMedianOfIntegers(allSaccadeDurations)));
+            data.add(String.valueOf(descriptiveStats.getMedianOfDoubles(allSaccadeDurations)));
 
 
             headers.add("StDev of saccade durations");
-            data.add(String.valueOf(descriptiveStats.getStDevOfIntegers(allSaccadeDurations)));
+            data.add(String.valueOf(descriptiveStats.getStDevOfDoubles(allSaccadeDurations)));
 
             headers.add("Min. saccade duration");
-            data.add(String.valueOf(descriptiveStats.getMinOfIntegers(allSaccadeDurations)));
+            data.add(String.valueOf(descriptiveStats.getMinOfDoubles(allSaccadeDurations)));
 
             headers.add("Max. saccade duration");
-            data.add(String.valueOf(descriptiveStats.getMaxOfIntegers(allSaccadeDurations)));
+            data.add(String.valueOf(descriptiveStats.getMaxOfDoubles(allSaccadeDurations)));
 
             headers.add("scanpath duration");
             data.add(String.valueOf(getScanpathDuration(allFixationDurations, allSaccadeDurations)));
@@ -351,15 +351,15 @@ public class fixation {
 	}
 
 
-	public static double getScanpathDuration(ArrayList<Integer> allFixationDurations, ArrayList<Integer> allSaccadeDurations) {
-		double fixationDuration = descriptiveStats.getSumOfIntegers(allFixationDurations);
-		double saccadeDuration = descriptiveStats.getSumOfIntegers(allSaccadeDurations);
+	public static double getScanpathDuration(ArrayList<Double> allFixationDurations, ArrayList<Double> allSaccadeDurations) {
+		double fixationDuration = descriptiveStats.getSumOfDoubles(allFixationDurations);
+		double saccadeDuration = descriptiveStats.getSumOfDoubles(allSaccadeDurations);
 		return fixationDuration + saccadeDuration;
 	}
 
-	public static double getFixationToSaccadeRatio(ArrayList<Integer> allFixationDurations, ArrayList<Integer> allSaccadeDurations){
-		double fixationDuration = descriptiveStats.getSumOfIntegers(allFixationDurations);
-		double saccadeDuration = descriptiveStats.getSumOfIntegers(allSaccadeDurations);
+	public static double getFixationToSaccadeRatio(ArrayList<Double> allFixationDurations, ArrayList<Double> allSaccadeDurations){
+		double fixationDuration = descriptiveStats.getSumOfDoubles(allFixationDurations);
+		double saccadeDuration = descriptiveStats.getSumOfDoubles(allSaccadeDurations);
 		return fixationDuration/saccadeDuration;
 	}
 
