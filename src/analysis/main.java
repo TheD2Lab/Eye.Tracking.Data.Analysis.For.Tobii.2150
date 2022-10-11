@@ -91,7 +91,7 @@ public class main {
 		}
 				
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
-		File participantFolder = new File(outputURL + "//participant");
+		File participantFolder = new File(outputURL + "//" +participant);
 		if(!participantFolder.exists())
 		{
 			boolean folderCreated = participantFolder.mkdir();
