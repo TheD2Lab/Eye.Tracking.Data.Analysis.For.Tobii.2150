@@ -37,9 +37,7 @@ import com.opencsv.exceptions.CsvValidationException;
 
 public class main {
 
-	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException{
-
-		
+	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
 		String inputGazeURL = "";
 		String inputFixationURL = "";
 		String outputURL = "";
@@ -47,6 +45,8 @@ public class main {
 		JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
 		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
+		
+		// Prompts user to select gaze .csv file
 		int returnValue = jfc.showOpenDialog(null);
 		jfc.setDialogTitle("Select the gaze .csv file you would like to use: ");
 		if (returnValue == JFileChooser.APPROVE_OPTION) 
@@ -60,6 +60,7 @@ public class main {
 			return;
 		}
 		
+		// Prompts user to select fixation .csv file
 		returnValue = jfc.showOpenDialog(null);
 		jfc.setDialogTitle("Select the fixation .csv file you would like to use: ");
 		if (returnValue == JFileChooser.APPROVE_OPTION) 
@@ -73,6 +74,7 @@ public class main {
 			return;
 		}
 		
+		// Prompts user to select a location to save output files
 		jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 		jfc.setDialogTitle("Choose a directory to save your file: ");
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
