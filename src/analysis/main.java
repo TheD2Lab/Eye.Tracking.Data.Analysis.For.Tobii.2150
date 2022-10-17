@@ -34,17 +34,14 @@ import javax.swing.filechooser.FileSystemView;
 
 import com.opencsv.exceptions.CsvValidationException;
 
-
 public class main {
 
-	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException{
-
-		
+	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
 		String inputGazeURL = "";
 		String inputFixationURL = "";
 		String outputURL = "";
 		
-		JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
 
 		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
 		jfc.setDialogTitle("Select the gaze .csv file you would like to use: ");
@@ -61,6 +58,7 @@ public class main {
 			return;
 		}
 		
+		// Prompts user to select fixation .csv file
 		jfc.setDialogTitle("Select the fixation .csv file you would like to use: ");
 		returnValue = jfc.showOpenDialog(null);
 		if (returnValue == JFileChooser.APPROVE_OPTION) 
@@ -74,7 +72,8 @@ public class main {
 			return;
 		}
 		
-		jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		// Prompts user to select a location to save output files
+		jfc = new JFileChooser(System.getProperty("user.dir") + "/results/");
 		jfc.setDialogTitle("Choose a directory to save your file: ");
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		returnValue = jfc.showSaveDialog(null);
