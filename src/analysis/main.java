@@ -180,7 +180,6 @@ public class main {
 		    ArffSaver saver = new ArffSaver();
 		    saver.setInstances(data);
 		    saver.setFile(arffFile);
-		    saver.setDestination(arffFile);
 		    saver.writeBatch();
 		    System.out.println("Successful " + outputARFFPath);
 	    }
