@@ -34,6 +34,11 @@ import javax.swing.filechooser.FileSystemView;
 
 import com.opencsv.exceptions.CsvValidationException;
 
+import weka.core.Instances;
+import weka.core.converters.ArffSaver;
+import weka.core.converters.CSVLoader;
+
+
 public class main {
 
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
@@ -120,6 +125,31 @@ public class main {
         fixation.processFixation(inputFixationURL, graphFixationOutput);
         event.processEvent(inputGazeURL, graphEventOutput);
         gaze.processGaze(inputGazeURL, graphGazeOutput);
-       
+
+        
+        csvToARFF(graphFixationOutput, outputURL + "\\fixation.arff");
+        csvToARFF(graphEventOutput, outputURL + "\\event.arff");
+        csvToARFF(graphGazeOutput, outputURL + "\\gaze.arff");
+	}
+	
+	private static void csvToARFF(String outputCSVPath, String outputARFFPath) throws IOException
+	{
+		CSVLoader loader = new CSVLoader();
+	    loader.setSource(new File(outputCSVPath));
+	    Instances data = loader.getDataSet();
+	    
+	    File arffFile = new File(outputARFFPath);
+	    if(!arffFile.exists())
+	    {
+		    ArffSaver saver = new ArffSaver();
+		    saver.setInstances(data);
+		    saver.setFile(arffFile);
+		    saver.writeBatch();
+		    System.out.println("Successful " + outputARFFPath);
+	    }
+	    else
+	    {
+	    	System.out.println("File Exists");
+	    }
 	}
 }
