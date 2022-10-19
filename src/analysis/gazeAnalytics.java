@@ -11,13 +11,13 @@ import com.opencsv.CSVWriter;
 
 public class gazeAnalytics {
 //String inputFile, String outputFile, int timelength
-	public static void continueousWindow() throws IOException
+	public static void continuousWindow() throws IOException
 	{
 		String inputFile = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Data\\gazepoint.GZD.csv";
 		String outputFolder = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Results\\Window";
 		int timeLength = 2;
 		int currentTime = timeLength;
-		String outputFile = outputFolder + "\\continueous_" + currentTime + ".csv";
+		String outputFile = outputFolder + "\\continuous_" + currentTime + ".csv";
 		
 				
 				
@@ -49,14 +49,14 @@ public class gazeAnalytics {
             	 {
             		 currentTime += timeLength;
             		 initialTime += timeLength;
-            		 outputCSVWriter = new CSVWriter(new FileWriter(new File (outputFolder + "\\continueous_" + currentTime + ".csv")));
+            		 outputCSVWriter = new CSVWriter(new FileWriter(new File (outputFolder + "\\continuous_" + currentTime + ".csv")));
             		 outputCSVWriter.writeNext(nextLine);
             	 }
              }
 
             outputCSVWriter.close();
             csvReader.close();
-            System.out.println("done writing event data to: " + outputFile);
+            System.out.println("done writing continuous data");
         }
         catch(Exception e)
         {
@@ -67,7 +67,9 @@ public class gazeAnalytics {
 	public static void cumulativeWindow() throws IOException
 	{
 		String inputFile = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Data\\gazepoint.GZD.csv";
+		inputFile = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\User 1_all_gaze.csv";
 		String outputFolder = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Results\\Window";
+		outputFolder = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\results";
 		int timeLength = 2;
 		int currentTime = timeLength;
 		String outputFile = outputFolder + "\\cumulative_" + currentTime + ".csv";
@@ -81,7 +83,7 @@ public class gazeAnalytics {
         	 FileReader fileReader = new FileReader(inputFile);
              CSVReader csvReader = new CSVReader(fileReader);
              String[]nextLine = csvReader.readNext();
-             double initialTime = 0;
+             int initialTime = 0;
     
              int timestampIndex = -1;
              for(int i = 0; i < nextLine.length; i++)
@@ -102,24 +104,23 @@ public class gazeAnalytics {
             	 {
             		 currentTime += timeLength;
             		 initialTime += timeLength;
-                     outputCSVWriter.close();
-            		 outputCSVWriter = new CSVWriter(new FileWriter(new File (outputFolder + "\\cumulative_" + currentTime + ".csv")));
-            		 FileReader copy= new FileReader(outputFolder + "\\cumulative_" + initialTime + ".csv");
-            		 CSVReader copyReader = new CSVReader(copy);
-            		 List allData = copyReader.readAll();
-            		 outputCSVWriter.writeAll(allData, false);
-            		 outputCSVWriter.writeNext(nextLine);
-            		 
+            		 outputCSVWriter.close();
+            		 outputFileWriter = new FileWriter(new File (outputFolder + "\\cumulative_" + currentTime + ".csv"));
+            	     outputCSVWriter = new CSVWriter(outputFileWriter);
+            	     copyFile(outputFolder + "\\cumulative_" + initialTime + ".csv", outputCSVWriter);
+            	     outputCSVWriter.writeNext(nextLine);
             	 }
              }
 
             outputCSVWriter.close();
             csvReader.close();
-            System.out.println("done writing event data to: " + outputFile);
+            System.out.println("done writing cumulative data to");
         }
         catch(Exception e)
         {
-        	
+        	System.out.println("Error in writing cumulative data");
+        	System.out.println(e);
+        	return;
         }
 	}
 	
@@ -130,5 +131,30 @@ public class gazeAnalytics {
 			return true;
 		}
 		return false;
+	}
+	
+	private static void copyFile(String inputFile, CSVWriter outputCSVWriter) throws IOException
+	{
+		try 
+		{
+			 FileReader fileReader = new FileReader(inputFile);
+		     CSVReader csvReader = new CSVReader(fileReader);
+		     String[]nextLine = csvReader.readNext();
+
+		     while((nextLine = csvReader.readNext()) != null) 
+		     {
+		    	 outputCSVWriter.writeNext(nextLine);
+		     }
+		
+		    csvReader.close();
+		    System.out.println("done copying data");
+		}
+		catch(Exception e)
+		{
+			System.out.println("Error in copying data");
+			System.out.println(e);
+        	return;
+			
+		}
 	}
 }
