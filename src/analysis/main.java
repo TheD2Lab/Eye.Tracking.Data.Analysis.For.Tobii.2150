@@ -114,11 +114,15 @@ public class main {
 
         String graphGazeResults = "\\graphGZDResults.csv";
         String graphGazeOutput = outputURL + graphGazeResults;
+        
+        String aoiResults = "\\aoiResults.csv";
+        String aoiOutput = outputURL + aoiResults;
 
 
 		// Analyze graph related data
         fixation.processFixation(inputFixationURL, graphFixationOutput);
         event.processEvent(inputGazeURL, graphEventOutput);
         gaze.processGaze(inputGazeURL, graphGazeOutput);
+        AOI.processAOIs(inputGazeURL, aoiOutput);
 	}
 }

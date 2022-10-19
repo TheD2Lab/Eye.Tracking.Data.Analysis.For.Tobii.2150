@@ -84,7 +84,7 @@ public class fixation {
          		default:
          			break;
          		}
-         		if(nextLine[i].contains("TIME"))
+         		if(nextLine[i].contains("TIME") && timestampIndex == -1)
          		{
          			timestampIndex = i;
          		}
@@ -100,7 +100,7 @@ public class fixation {
             	}
                 //get each fixation's duration
                 String fixationDurationSeconds = nextLine[fixationDurationIndex];
-                double eachDuration = Double.valueOf(fixationDurationSeconds) * 1000;
+                double eachDuration = Double.valueOf(fixationDurationSeconds);
 
 
                 String [] lineArray = new String[10];
@@ -121,7 +121,7 @@ public class fixation {
                 eachCoordinate[1] = y;
 
                 //get timestamp of each fixation
-                double timestamp = Double.valueOf(nextLine[timestampIndex])* 1000;
+                double timestamp = Double.valueOf(nextLine[timestampIndex]);
                 Double[] eachSaccadeDetail = new Double[2];
                 eachSaccadeDetail[0] = timestamp;
                 eachSaccadeDetail[1] = eachDuration;
