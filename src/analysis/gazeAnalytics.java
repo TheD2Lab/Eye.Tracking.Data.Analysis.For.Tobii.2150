@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvValidationException;
 
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
@@ -52,6 +53,101 @@ public class gazeAnalytics {
 			outputFile = outputFolder + "\\overlap_" + endTime + ".csv";
 			
 		}
+	}
+	
+	public static void eventWindow(String inputFilePath, String outputFolderPath, String baselineFilePath, String baselineHeader, String inputHeader, int maximumDuration) throws IOException
+	{
+		double intialTime = -1; 
+		int index = 0;
+		double baseline = -1;
+		String outputFile = outputFolderPath + "\\event_" + index + ".csv";
+		
+	
+		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
+        CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
+        FileReader inputFileReader = new FileReader(inputFilePath);
+        CSVReader inputCSVReader = new CSVReader(inputFileReader);
+        
+        //Grabs the baseline value based on the chosen header
+        FileReader baselineFileReader = new FileReader(baselineFilePath);
+        CSVReader baselineCSVReader = new CSVReader(baselineFileReader);
+        try
+        {			
+        	//headers
+        	int baselineIndex = findHeaderIndex(baselineCSVReader, baselineHeader);
+            String[]nextLine = baselineCSVReader.readNext();
+            baseline = Double.valueOf(nextLine[baselineIndex]);
+        }
+        catch (Exception e)
+        {
+        	System.out.println("Error with baseline reading: " + e);
+        	return;
+        }
+        finally
+        {
+        	baselineCSVReader.close();
+        }
+        
+        //Checks the baseline value with the current value
+        try
+        {
+        	int eventIndex = findHeaderIndex(inputCSVReader, inputHeader);
+        	String[]nextLine;
+        	boolean eventStart = false;
+        	while((nextLine = inputCSVReader.readNext())!= null)
+        	{
+        		if(eventStart)
+        		{
+	        		if(Double.valueOf(nextLine[eventIndex]) > baseline)
+	        		{
+	        			outputCSVWriter.writeNext(nextLine);
+	        		}
+	        		else
+	        		{
+	        			eventStart = false;
+	        			index++;
+	        			outputFile = outputFolderPath + "\\event_" + index + ".csv";
+	        			outputCSVWriter.close();
+	        			outputFileWriter = new FileWriter(new File (outputFile));
+	        	        outputCSVWriter = new CSVWriter(outputFileWriter);
+	        		}
+        		}
+        		else
+        		{
+        			if(Double.valueOf(nextLine[eventIndex]) > baseline)
+	        		{
+	        			outputCSVWriter.writeNext(nextLine);
+	        			eventStart = true;
+	        		}
+        		}
+        	}
+        }
+        catch(Exception e)
+        {
+        	System.out.println("Erorr with event: " + e);
+        	return;
+        }
+        finally
+        {
+        	outputCSVWriter.close();
+        	inputCSVReader.close();
+        }
+        
+        
+
+	}
+	
+	private static int findHeaderIndex(CSVReader reader, String header) throws CsvValidationException, IOException
+	{
+		String[]headerArray = reader.readNext();
+        for(int i = 0; i < headerArray.length; i++)
+        {
+           	 if(headerArray[i].equals(header))
+           	 {
+           		 return i;
+           	 }
+        }
+        return -1;
 	}
 	
 	private static boolean window(String inputFile, String outputFile, int start, int end) throws IOException
