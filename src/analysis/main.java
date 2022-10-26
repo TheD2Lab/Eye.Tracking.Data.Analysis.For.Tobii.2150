@@ -41,6 +41,10 @@ public class main {
 		String inputFixationURL = "";
 		String outputURL = "";
 		
+		// Resolution of monitor
+		final int SCREEN_WIDTH = 1024;
+		final int SCREEN_HEIGHT = 768;
+		
 		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
 
 		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
@@ -105,24 +109,21 @@ public class main {
 		outputURL += "\\" + participant;
 		
 	
-		//File paths
+		//Build String for file paths
         String graphFixationResults = "\\graphFXDResults.csv";
         String graphFixationOutput = outputURL + graphFixationResults;
-
         String graphEventResults = "\\graphEVDResults.csv";
         String graphEventOutput = outputURL + graphEventResults;
-
         String graphGazeResults = "\\graphGZDResults.csv";
         String graphGazeOutput = outputURL + graphGazeResults;
-        
         String aoiResults = "\\aoiResults.csv";
         String aoiOutput = outputURL + aoiResults;
 
 
 		// Analyze graph related data
-        fixation.processFixation(inputFixationURL, graphFixationOutput);
+        fixation.processFixation(inputFixationURL, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
         event.processEvent(inputGazeURL, graphEventOutput);
         gaze.processGaze(inputGazeURL, graphGazeOutput);
-        AOI.processAOIs(inputGazeURL, aoiOutput);
+        AOI.processAOIs(inputGazeURL, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 	}
 }

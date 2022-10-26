@@ -17,11 +17,7 @@ import com.opencsv.exceptions.CsvValidationException;
 
 public class AOI {
 	
-	public static void processAOIs(String inputFile, String outputFile) throws IOException, CsvValidationException {
-		// Resolution of monitor
-		int SCREEN_WIDTH = 1024;
-		int SCREEN_HEIGHT = 576;
-		
+	public static void processAOIs(String inputFile, String outputFile, int SCREEN_WIDTH, int SCREEN_HEIGHT) throws IOException, CsvValidationException {		
 		try {
 			// Read input CSV file and initalize the column indexes for the data needed
 			FileReader fileReader = new FileReader(inputFile);
@@ -48,7 +44,7 @@ public class AOI {
             }
             
             // Iterate through input file and group points by AOI
-            HashMap<String, ArrayList<Point2D.Double>> map = new HashMap<String, ArrayList<Point2D.Double>>();
+            HashMap<String, ArrayList<String[]>> map = new HashMap<String, ArrayList<String[]>>();
             while ((nextLine = csvReader.readNext()) != null) {
             	// If the data point is not part of an AOI, skip it
             	// Else if we've already encountered this AOI, add it to it's corresponding list
@@ -57,9 +53,16 @@ public class AOI {
             	if (aoi.equals(""))
             		continue;
             	else if (map.containsKey(aoi))
-            		map.get(aoi).add(new Point2D.Double(Double.valueOf(nextLine[xIndex]) * SCREEN_WIDTH, Double.valueOf(nextLine[yIndex]) * SCREEN_HEIGHT));
-            	else
-            		map.put(aoi, new ArrayList<Point2D.Double>());
+            		map.get(aoi).add(nextLine);
+            	else {
+            		String[] aois = aoi.split("-");
+            		
+            		for (int i = 0; i < aois.length; i++) {
+            			if (!map.containsKey(aois[i]))
+            				map.put(aois[i], new ArrayList<String[]>());
+            			map.get(aois[i]).add(nextLine);
+            		}
+            	}
             }
             
             // Initializing list of headers and their corresponding data for .CSV output
@@ -68,8 +71,15 @@ public class AOI {
             
             // Calculate the convex hull and its area for each AOI and output into a .csv file
             for (String aoi : map.keySet()) {
-            	List<Point2D.Double> boundingPoints = convexHull.getConvexHull(map.get(aoi));
-            	Point2D[] points = listToArray(boundingPoints);
+            	ArrayList<Point2D.Double> aoiPoints = new ArrayList<Point2D.Double>();
+            	ArrayList<String[]> aoiData = map.get(aoi);
+            	
+            	for (int i = 0; i < aoiData.size(); i++) {
+            		String[] row = aoiData.get(i);
+            		aoiPoints.add(new Point2D.Double(Double.valueOf(row[xIndex]) * SCREEN_WIDTH, Double.valueOf(row[yIndex]) * SCREEN_HEIGHT));
+            	}
+            	List<Point2D.Double> boundingPoints = convexHull.getConvexHull(aoiPoints);
+            	Point2D[] points = fixation.listToArray(boundingPoints);
             	
             	headers.add(aoi + " convex hull area");
                 data.add(String.valueOf(convexHull.getPolygonArea(points)));
@@ -91,11 +101,11 @@ public class AOI {
 	    }
 	}
 	
-	public static Point2D.Double[] listToArray(List<Point2D.Double> allPoints){
-		Point2D.Double[] points = new Point2D.Double[allPoints.size()];
-        for(int i=0; i<points.length; i++){
-        	points[i] = allPoints.get(i);
-        }
-        return points;
-	}
+//	public static Point2D.Double[] listToArray(List<Point2D.Double> allPoints){
+//		Point2D.Double[] points = new Point2D.Double[allPoints.size()];
+//        for(int i=0; i<points.length; i++){
+//        	points[i] = allPoints.get(i);
+//        }
+//        return points;
+//	}
 }
