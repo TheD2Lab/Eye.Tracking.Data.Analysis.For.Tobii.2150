@@ -25,13 +25,22 @@ package analysis;
  */
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SpringLayout;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
+import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
 import weka.core.Instances;
@@ -51,6 +60,7 @@ public class main {
 		//		gazeAnalytics.overlappingWindow(inputFile, outputFolder, 3, 1);
 
 
+		main.gazeAnalyticsCalcuation();
 		String[] urls = new String[3];
 		calcuationFileChooser(urls);
 		String inputGazeURL = urls[0];
@@ -79,13 +89,13 @@ public class main {
 		//        gazeAnalytics.csvToARFF(graphEventOutput);
 		//        gazeAnalytics.csvToARFF(graphGazeOutput);
 	}
-	
+
 	private static void calcuationFileChooser(String[]urls)
 	{
 		String inputGazeURL = "";
 		String inputFixationURL = "";
 		String outputURL = "";
-		
+
 		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
 
 		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
@@ -100,7 +110,7 @@ public class main {
 		else
 		{
 			JOptionPane.showMessageDialog(null, "Must pick an input file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			return;
+			System.exit(0);
 		}
 
 		// Prompts user to select fixation .csv file
@@ -114,9 +124,9 @@ public class main {
 		else
 		{
 			JOptionPane.showMessageDialog(null, "Must pick an input file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			return;
+			System.exit(0);
 		}
-		
+
 		// Prompts user to select a location to save output files
 		jfc = new JFileChooser(System.getProperty("user.dir") + "/results/");
 		jfc.setDialogTitle("Choose a directory to save your file: ");
@@ -132,7 +142,7 @@ public class main {
 		else
 		{
 			JOptionPane.showMessageDialog(null, "Must pick a location to output the file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			return;
+			System.exit(0);
 		}
 
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
@@ -143,27 +153,27 @@ public class main {
 			if(!folderCreated)
 			{
 				JOptionPane.showMessageDialog(null, "Unable to create participant's folder", "Error Message", JOptionPane.ERROR_MESSAGE);
-				return;
+				System.exit(0);
 			}
 		}
 
 		outputURL += "\\" + participant;
-		
+
 		urls[0] = inputGazeURL;
 		urls[1] = inputFixationURL;
 		urls[2] =  outputURL;
 
 	}
-	
-	private void gazeAnalyticsCalcuation()
+
+	private static void gazeAnalyticsCalcuation() throws CsvValidationException, IOException
 	{
 		String baselineFilePath = "";
+		String inputFilePath = "";
 		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
 
 		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
 		jfc.setDialogTitle("Select the baseline CSV file you would like to use: ");
 		int returnValue = jfc.showOpenDialog(null);
-
 		if (returnValue == JFileChooser.APPROVE_OPTION) 
 		{
 			File selectedFile = jfc.getSelectedFile();
@@ -172,11 +182,63 @@ public class main {
 		else
 		{
 			JOptionPane.showMessageDialog(null, "Must pick an input file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			return;
+			System.exit(0);
 		}
+		FileReader baslineFileReader = new FileReader(baselineFilePath);
+		CSVReader baselineCSVReader = new CSVReader(baslineFileReader);
+		String[]baselineHeader = baselineCSVReader.readNext();
+
+
+
+		jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
+		jfc.setDialogTitle("Choose the input csv file: ");
+		returnValue = jfc.showSaveDialog(null);
+		if (returnValue == JFileChooser.APPROVE_OPTION) 
+		{
+			File selectedFile = jfc.getSelectedFile();
+			inputFilePath = selectedFile.getAbsolutePath();
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(null, "Must pick a location to output the file", "Error Message", JOptionPane.ERROR_MESSAGE);
+			System.exit(0);
+		}
+
+		FileReader inputFileReader = new FileReader(inputFilePath);
+		CSVReader inputCSVReader = new CSVReader(inputFileReader);
+		String[]inputHeader = inputCSVReader.readNext();
+
+		JFrame eventFrame = new JFrame("Define the event");
+		eventFrame.setVisible(true);
+		eventFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		eventFrame.setSize(400, 250);
+		JPanel eventPanel = new JPanel();
+		eventFrame.add(eventPanel);
+
+		JLabel baselineLabel = new JLabel("Please select the baseline value you would like to use");
+		eventPanel.add(baselineLabel);
+
+		final JComboBox<String> baselineHeaderOption = new JComboBox<String>(baselineHeader);
+		baselineHeaderOption.setVisible(true);
+		baselineHeaderOption.setEditable(true);
+		eventPanel.add(baselineHeaderOption);
 		
 		
+		JLabel inputLabel = new JLabel("Please select the input header that correspond with the baslineHeader");
+		eventPanel.add(inputLabel);
 		
+		final JComboBox<String> inputHeaderOption = new JComboBox<String>(inputHeader);
+		inputHeaderOption.setVisible(true);
+		inputHeaderOption.setEditable(true);
+		eventPanel.add(inputHeaderOption);
+
+		JButton btn = new JButton("OK");
+		eventPanel.add(btn);
+		btn.addActionListener(e -> {
+			eventFrame.dispose();
+		});
+
+        
 	}
 
 
