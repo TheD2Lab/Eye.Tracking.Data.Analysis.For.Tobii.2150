@@ -65,12 +65,20 @@ public class AOI {
             	}
             }
             
-            // Initializing list of headers and their corresponding data for .CSV output
+            // Initializing output writers
+            FileWriter outputFileWriter = new FileWriter(new File (outputFile));
+            CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
+            
+            // Initialize list of headers and write it to the output .csv file
             ArrayList<String> headers = new ArrayList<>();
-            ArrayList<String> data = new ArrayList<>();
+            headers.add("AOI Name");
+        	headers.add("Convex Hull Area");
+        	outputCSVWriter.writeNext(headers.toArray(new String[headers.size()]));
+        	
             
             // Calculate the convex hull and its area for each AOI and output into a .csv file
             for (String aoi : map.keySet()) {
+            	ArrayList<String> data = new ArrayList<>();
             	ArrayList<Point2D.Double> aoiPoints = new ArrayList<Point2D.Double>();
             	ArrayList<String[]> aoiData = map.get(aoi);
             	
@@ -78,17 +86,14 @@ public class AOI {
             		String[] row = aoiData.get(i);
             		aoiPoints.add(new Point2D.Double(Double.valueOf(row[xIndex]) * SCREEN_WIDTH, Double.valueOf(row[yIndex]) * SCREEN_HEIGHT));
             	}
+            	
             	List<Point2D.Double> boundingPoints = convexHull.getConvexHull(aoiPoints);
             	Point2D[] points = fixation.listToArray(boundingPoints);
             	
-            	headers.add(aoi + " convex hull area");
+            	data.add(aoi);
                 data.add(String.valueOf(convexHull.getPolygonArea(points)));
+                outputCSVWriter.writeNext(data.toArray(new String[data.size()]));
             }
-            
-            FileWriter outputFileWriter = new FileWriter(new File (outputFile));
-            CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
-            outputCSVWriter.writeNext(headers.toArray(new String[headers.size()]));
-            outputCSVWriter.writeNext(data.toArray(new String[data.size()]));
             outputCSVWriter.close();
             csvReader.close();
             System.out.println("done writing AOI data to" + outputFile);
@@ -100,12 +105,4 @@ public class AOI {
 	        System.out.println("Error reading file '" + inputFile + "'");
 	    }
 	}
-	
-//	public static Point2D.Double[] listToArray(List<Point2D.Double> allPoints){
-//		Point2D.Double[] points = new Point2D.Double[allPoints.size()];
-//        for(int i=0; i<points.length; i++){
-//        	points[i] = allPoints.get(i);
-//        }
-//        return points;
-//	}
 }
