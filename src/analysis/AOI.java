@@ -23,7 +23,7 @@ public class AOI {
 			FileReader fileReader = new FileReader(inputFile);
             CSVReader csvReader = new CSVReader(fileReader);
             String[] nextLine = csvReader.readNext();
-            int aoiIndex = -1, xIndex = -1, yIndex = -1;
+            int aoiIndex = -1, xIndex = -1, yIndex = -1, fixDurIndex = -1, fixId = -1;
             
             for (int i = 0; i < nextLine.length; i++) {
             	String header = nextLine[i];
@@ -37,6 +37,12 @@ public class AOI {
             			break;
             		case "FPOGY":
             			yIndex = i;
+            			break;
+            		case "FPOGD":
+             			fixDurIndex = i;
+             			break;
+            		case "FPOGID":
+            			fixId = i;
             			break;
             		default:
             			break;
@@ -73,27 +79,73 @@ public class AOI {
             ArrayList<String> headers = new ArrayList<>();
             headers.add("AOI Name");
         	headers.add("Convex Hull Area");
+        	headers.add("Fixation Count");
+        	headers.add("Total Duration");
+        	headers.add("Mean Duration");
+        	headers.add("Median Duration");
+        	headers.add("StDev of Durations");
+        	headers.add("Min Duration");
+        	headers.add("Max Duration");
         	outputCSVWriter.writeNext(headers.toArray(new String[headers.size()]));
         	
             
-            // Calculate the convex hull and its area for each AOI and output into a .csv file
+            // Iterate through each AOI and calculate their gaze analytics
             for (String aoi : map.keySet()) {
+            	// Data row for output .csv file
             	ArrayList<String> data = new ArrayList<>();
-            	ArrayList<Point2D.Double> aoiPoints = new ArrayList<Point2D.Double>();
-            	ArrayList<String[]> aoiData = map.get(aoi);
+            	data.add(aoi);
             	
+            	ArrayList<String[]> aoiData = map.get(aoi);
+            	ArrayList<Point2D.Double> aoiPoints = new ArrayList<Point2D.Double>();
+            	HashMap<Integer, Integer> fixCount = new HashMap<Integer, Integer>();
+            	ArrayList<Double> allDurations = new ArrayList<Double>();
+            	
+            	// Iterate through each AOI data to populate the above lists
             	for (int i = 0; i < aoiData.size(); i++) {
-            		String[] row = aoiData.get(i);
-            		aoiPoints.add(new Point2D.Double(Double.valueOf(row[xIndex]) * SCREEN_WIDTH, Double.valueOf(row[yIndex]) * SCREEN_HEIGHT));
+            		String[] entry = aoiData.get(i);
+            		
+            		// Add each coordinate to the list
+            		aoiPoints.add(new Point2D.Double(Double.valueOf(entry[xIndex]) * SCREEN_WIDTH, Double.valueOf(entry[yIndex]) * SCREEN_HEIGHT));
+            		
+            		// Count the number of unique fixations in each AOI
+            		if (!fixCount.containsKey(Integer.valueOf(entry[fixId])))
+            			fixCount.put(Integer.valueOf(entry[fixId]), 1);
+            		
+            		// Add duration value to list
+            		allDurations.add(Double.valueOf(entry[fixDurIndex]));
+            		
             	}
             	
+            	// Calculate the convex hull and its area 
             	List<Point2D.Double> boundingPoints = convexHull.getConvexHull(aoiPoints);
             	Point2D[] points = fixation.listToArray(boundingPoints);
+            	data.add(String.valueOf(convexHull.getPolygonArea(points)));
             	
-            	data.add(aoi);
-                data.add(String.valueOf(convexHull.getPolygonArea(points)));
+            	// Write the number of fixations located in each AOI
+            	data.add(String.valueOf(fixCount.keySet().size()));
+            	
+            	// Write the total duration of the AOI
+            	data.add(String.valueOf(descriptiveStats.getSumOfDoubles(allDurations)));
+            	
+            	// Write the mean duration
+                data.add(String.valueOf(descriptiveStats.getMeanOfDoubles(allDurations)));
+
+                // Write the median duration
+                data.add(String.valueOf(descriptiveStats.getMedianOfDoubles(allDurations)));
+
+                // Write the standard deviation between durations
+                data.add(String.valueOf(descriptiveStats.getStDevOfDoubles(allDurations)));
+
+                // Write the minimum duration
+                data.add(String.valueOf(descriptiveStats.getMinOfDoubles(allDurations)));
+
+                // Write the max duration
+                data.add(String.valueOf(descriptiveStats.getMaxOfDoubles(allDurations)));
+            	
+            	// Write the data into the .csv file as a new row
                 outputCSVWriter.writeNext(data.toArray(new String[data.size()]));
             }
+            
             outputCSVWriter.close();
             csvReader.close();
             System.out.println("done writing AOI data to" + outputFile);
