@@ -58,31 +58,37 @@ public class main {
 		//		gazeAnalytics.continuousWindow(inputFile, outputFolder, 3);
 		//		gazeAnalytics.cumulativeWindow(inputFile, outputFolder, 2);
 		//		gazeAnalytics.overlappingWindow(inputFile, outputFolder, 3, 1);
+		
+		String baselineFilePath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies\\graphGZDResults.csv";
+		String inputFilePath = "C:\\Users\\kayla\\Downloads\\User 3_all_gaze.csv";
+		String outputFolderPath0 = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\results";
 
+		gazeAnalytics.eventWindow(inputFilePath, outputFolderPath0, baselineFilePath, 3, 35, 5);
 
-		main.gazeAnalyticsCalcuation();
-		String[] urls = new String[3];
-		calcuationFileChooser(urls);
-		String inputGazeURL = urls[0];
-		String inputFixationURL = urls[1];
-		String outputURL = urls[2];
+		
+		String[] paths = new String[3];
+		calcuationFileChooser(paths);
+		String inputGazePath = paths[0];
+		String inputFixationPath = paths[1];
+		String outputFolderPath = paths[2];
+		gazeAnalyticsCalcuation(outputFolderPath);
 
 
 		//File paths
 		String graphFixationResults = "\\graphFXDResults.csv";
-		String graphFixationOutput = outputURL + graphFixationResults;
+		String graphFixationOutput = outputFolderPath + graphFixationResults;
 
 		String graphEventResults = "\\graphEVDResults.csv";
-		String graphEventOutput = outputURL + graphEventResults;
+		String graphEventOutput = outputFolderPath + graphEventResults;
 
 		String graphGazeResults = "\\graphGZDResults.csv";
-		String graphGazeOutput = outputURL + graphGazeResults;
+		String graphGazeOutput = outputFolderPath + graphGazeResults;
 
 
 		// Analyze graph related data
-		fixation.processFixation(inputFixationURL, graphFixationOutput);
-		event.processEvent(inputGazeURL, graphEventOutput);
-		gaze.processGaze(inputGazeURL, graphGazeOutput);
+		fixation.processFixation(inputFixationPath, graphFixationOutput);
+		event.processEvent(inputGazePath, graphEventOutput);
+		gaze.processGaze(inputGazePath, graphGazeOutput);
 
 		//        
 		//        gazeAnalytics.csvToARFF(graphFixationOutput);
@@ -165,7 +171,7 @@ public class main {
 
 	}
 
-	private static void gazeAnalyticsCalcuation() throws CsvValidationException, IOException
+	private static void gazeAnalyticsCalcuation(String outputFolderPath) throws CsvValidationException, IOException
 	{
 		String baselineFilePath = "";
 		String inputFilePath = "";
@@ -237,7 +243,8 @@ public class main {
 		btn.addActionListener(e -> {
 			eventFrame.dispose();
 		});
-
+		
+		gazeAnalytics.eventWindow(inputFilePath, outputFolderPath, baselineFilePath, baselineHeaderOption.getSelectedIndex(), inputHeaderOption.getSelectedIndex(), 5);
         
 	}
 
