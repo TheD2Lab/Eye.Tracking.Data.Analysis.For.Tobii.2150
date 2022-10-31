@@ -1,18 +1,6 @@
 package analysis;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
-import com.opencsv.exceptions.CsvValidationException;
-
-
 /*
- * Copyright (c) 2013, Bo Fu
+ * Copyright (c) 2013, Bo Fu 
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -36,123 +24,291 @@ import com.opencsv.exceptions.CsvValidationException;
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-public class gaze {
+import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
-	public static void processGaze(String inputFile, String outputFile) throws IOException, CsvValidationException, NumberFormatException{
-        ArrayList<Object> allValidData = new ArrayList<>();
 
-        FileWriter outputFileWriter = new FileWriter(new File (outputFile));
-        CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
+public class fixation {
+	
+	public static void processFixation(String inputFile, String outputFile) throws IOException{
+
+        String line = null;
+        ArrayList<Integer> allFixationDurations = new ArrayList<Integer>();
+        ArrayList<Object> allCoordinates = new ArrayList<Object>();
+        List<Point> allPoints = new ArrayList<Point>();
+        ArrayList<Object> saccadeDetails = new ArrayList<Object>();
+        
+        FileWriter fileWriter = new FileWriter(outputFile);
+        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
         try {
             FileReader fileReader = new FileReader(inputFile);
-            CSVReader csvReader = new CSVReader(fileReader);
-            String[]nextLine = csvReader.readNext();
-
-            //finds the index where the left and right validity code is at
-            //finds the index where the left and right diameter in millimeters is at
-            int pupilLeftValidityIndex = -1;
-            int pupilRightValidityIndex = -1;
-            int pupilLeftDiameterIndex = -1;
-            int pupilRightDiameterIndex = -1;
-        	for(int i = 0; i < nextLine.length; i++)
-        	{
-        		String header = nextLine[i];
-
-        		switch(header)
-        		{
-        		case "LPMMV":
-        			pupilLeftValidityIndex = i;
-        			break;
-        		case "RPMMV":
-        			pupilRightValidityIndex = i;
-        			break;
-        		case "LPMM":
-        			pupilLeftDiameterIndex = i;
-        			break;
-        		case "RPMM":
-        			pupilRightDiameterIndex = i;
-        			break;
-        		default:
-        			break;
-        		}
-        	}
-
-        	//starts to look at the data
-            while((nextLine = csvReader.readNext()) != null) {
-
-            	//checking the validity of the recording
-                //a code with 0 indicates the eye tracker was confident with this data
-                //note that only instances where BOTH pupil sizes are valid will be used in the analysis
-                //if pupilLeft and pupilRight is missing coordinates than the entry is skipped
-                if(nextLine[pupilLeftValidityIndex].equals("1") && nextLine[pupilRightValidityIndex].equals("1") && nextLine[pupilLeftDiameterIndex]!=null && nextLine[pupilRightDiameterIndex] != null){
-                	double pupilLeft = Double.parseDouble(nextLine[pupilLeftDiameterIndex]);
-                	double pupilRight = Double.parseDouble(nextLine[pupilRightDiameterIndex]);
-                	double[] pupilSizes = new double[2];
-                	pupilSizes[0] = pupilLeft;
-                	pupilSizes[1] = pupilRight;
-
-                	//checks if pupil sizes are possible (between 2mm to 8mm)
-                	if(pupilLeft >=2 && pupilLeft <=8 && pupilRight >=2 && pupilRight <=8)
-                	{
-
-                		//checks if the difference in size between the left and right is 1mm or less
-                		if(Math.abs(pupilRight - pupilLeft) <= 1)
-                		{
-                			allValidData.add(pupilSizes);
-                		}
-                	}
-
-                }
-            }
-
-            String[]headers = {"total number of valid recordings", "average pupil size of left eye", "average pupil size of right eye", "average pupil size of both eyes"};
-            String[]data = {String.valueOf(allValidData.size()),String.valueOf(getAverageOfLeft(allValidData)),String.valueOf(getAverageOfRight(allValidData)),String.valueOf(getAverageOfBoth(allValidData))};
-
-            outputCSVWriter.writeNext(headers);
-            outputCSVWriter.writeNext(data);
-            outputCSVWriter.close();
-            csvReader.close();
-            System.out.println("done writing gaze data to: " + outputFile);
-
-		}catch(FileNotFoundException ex) {
-	        System.out.println("Unable to open file '" + inputFile + "'");
-	    }catch(IOException ex) {
-	        System.out.println("Error reading file '" + inputFile + "'");
-	    }
-        catch(Error e)
-        {
-        	System.out.println("Error with csv file");
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while((line = bufferedReader.readLine()) != null) {
+                
+                String[] lineArray = lineToArray(line);
+                
+                //get each fixation's duration
+                String eachFixationDuration = lineArray[2];
+                int eachDuration = Integer.parseInt(eachFixationDuration);
+                
+                //get each fixation's (x,y) coordinates
+                String eachFixationX = lineArray[3];
+                String eachFixationY = lineArray[4];
+                int x = Integer.parseInt(eachFixationX);
+                int y = Integer.parseInt(eachFixationY);
+                
+                Point eachPoint = new Point(x,y);
+                
+                Integer[] eachCoordinate = new Integer[2];
+                eachCoordinate[0] = x;
+                eachCoordinate[1] = y;
+                
+                //get timestamp of each fixation
+                int timestamp = Integer.parseInt(lineArray[1]);
+                Integer[] eachSaccadeDetail = new Integer[2];
+                eachSaccadeDetail[0] = timestamp;
+                eachSaccadeDetail[1] = eachDuration;
+                
+                
+                allFixationDurations.add(eachDuration);
+                
+                allCoordinates.add(eachCoordinate);
+                
+                allPoints.add(eachPoint);
+                
+                saccadeDetails.add(eachSaccadeDetail);
+               
+            }	
+            
+            bufferedWriter.write("total number of fixations: " + getFixationCount(inputFile));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("sum of all fixation duration: " + descriptiveStats.getSumOfIntegers(allFixationDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("mean duration: " + descriptiveStats.getMeanOfIntegers(allFixationDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("median duration: " + descriptiveStats.getMedianOfIntegers(allFixationDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("StDev of durations: " + descriptiveStats.getStDevOfIntegers(allFixationDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("Min. duration: " + descriptiveStats.getMinOfIntegers(allFixationDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("Max. duration: " + descriptiveStats.getMaxOfIntegers(allFixationDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.newLine();
+            
+            Double[] allSaccadeLengths = saccade.getAllSaccadeLength(allCoordinates);
+            
+            bufferedWriter.write("total number of saccades: " + allSaccadeLengths.length);
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("sum of all saccade length: " + descriptiveStats.getSum(allSaccadeLengths));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("mean saccade length: " + descriptiveStats.getMean(allSaccadeLengths));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("median saccade length: " + descriptiveStats.getMedian(allSaccadeLengths));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("StDev of saccade lengths: " + descriptiveStats.getStDev(allSaccadeLengths));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("min saccade length: " + descriptiveStats.getMin(allSaccadeLengths));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("max saccade length: " + descriptiveStats.getMax(allSaccadeLengths));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.newLine();
+            
+            ArrayList<Integer> allSaccadeDurations = saccade.getAllSaccadeDurations(saccadeDetails);
+            
+            bufferedWriter.write("sum of all saccade durations: " + descriptiveStats.getSumOfIntegers(allSaccadeDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("mean saccade duration: " + descriptiveStats.getMeanOfIntegers(allSaccadeDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("median saccade duration: " + descriptiveStats.getMedianOfIntegers(allSaccadeDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("StDev of saccade durations: " + descriptiveStats.getStDevOfIntegers(allSaccadeDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("Min. saccade duration: " + descriptiveStats.getMinOfIntegers(allSaccadeDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("Max. saccade duration: " + descriptiveStats.getMaxOfIntegers(allSaccadeDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("scanpath duration: " + getScanpathDuration(allFixationDurations, allSaccadeDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("fixation to saccade ratio: " + getFixationToSaccadeRatio(allFixationDurations, allSaccadeDurations));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.newLine();
+            
+            ArrayList<Double> allAbsoluteDegrees = angle.getAllAbsoluteAngles(allCoordinates);
+            
+            bufferedWriter.write("sum of all absolute degrees: " + descriptiveStats.getSumOfDoubles(allAbsoluteDegrees));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("mean absolute degree: " + descriptiveStats.getMeanOfDoubles(allAbsoluteDegrees));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("median absolute degree: " + descriptiveStats.getMedianOfDoubles(allAbsoluteDegrees));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("StDev of absolute degrees: " + descriptiveStats.getStDevOfDoubles(allAbsoluteDegrees));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("min absolute degree: " + descriptiveStats.getMinOfDoubles(allAbsoluteDegrees));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("max absolute degree: " + descriptiveStats.getMaxOfDoubles(allAbsoluteDegrees));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.newLine();
+            
+            ArrayList<Double> allRelativeDegrees = angle.getAllRelativeAngles(allCoordinates);
+           
+            bufferedWriter.write("sum of all relative degrees: " + descriptiveStats.getSumOfDoubles(allRelativeDegrees));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("mean relative degree: " + descriptiveStats.getMeanOfDoubles(allRelativeDegrees));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("median relative degree: " + descriptiveStats.getMedianOfDoubles(allRelativeDegrees));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("StDev of relative degrees: " + descriptiveStats.getStDevOfDoubles(allRelativeDegrees));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("min relative degree: " + descriptiveStats.getMinOfDoubles(allRelativeDegrees));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.write("max relative degree: " + descriptiveStats.getMaxOfDoubles(allRelativeDegrees));
+            bufferedWriter.newLine();
+            
+            bufferedWriter.newLine();
+           
+            //getting the convex hull using Graham Scan
+            //i.e. Choose point p with smallest y-coordinate.
+            //Sort points by polar angle with p to get simple polygon.
+            //Consider points in order, and discard those that would create a clockwise turn.
+            List<Point> boundingPoints = convexHull.getConvexHull(allPoints);
+            Point2D[] points = listToArray(boundingPoints);
+            
+            bufferedWriter.write("convex hull area: " + convexHull.getPolygonArea(points));
+            bufferedWriter.newLine();
+            
+            
+            bufferedWriter.close();
+            bufferedReader.close();	
+            System.out.println("done writing fixation data to: " + outputFile);
+            
+        }catch(FileNotFoundException ex) {
+            System.out.println("Unable to open file '" + inputFile + "'");				
+        }catch(IOException ex) {
+            System.out.println("Error reading file '" + inputFile + "'");			
         }
 	}
+	
+	public static String[] lineToArray(String lineOfData){
+		
+		StringTokenizer str = new StringTokenizer(lineOfData);
+		String[] values = new String[str.countTokens()];
 
-	//calculate the average pupil size of the left eye
-	public static double getAverageOfLeft(ArrayList<Object> allValidData){
-		ArrayList<Double> allLeftSizes = new ArrayList<>();
-		for (int i=0; i<allValidData.size(); i++){
-			double[] eachPair = (double[]) allValidData.get(i);
-			double pupilSizeLeft = eachPair[0];
-			allLeftSizes.add(pupilSizeLeft);
-
+		while(str.hasMoreElements()) {
+			for(int i=0; i<values.length; i++){
+				values[i] = (String) str.nextElement();
+			}
 		}
-		return descriptiveStats.getMeanOfDoubles(allLeftSizes);
+		
+		return values;
 	}
-
-	//calculate the average pupil size of the right eye
-	public static double getAverageOfRight(ArrayList<Object> allValidData){
-		ArrayList<Double> allRightSizes = new ArrayList<>();
-		for (int i=0; i<allValidData.size(); i++){
-			double[] eachPair = (double[]) allValidData.get(i);
-			double pupilSizeRight = eachPair[1];
-			allRightSizes.add(pupilSizeRight);
-
-		}
-		return descriptiveStats.getMeanOfDoubles(allRightSizes);
+	
+	public static Point2D[] listToArray(List<Point> allPoints){
+		Point2D[] points = new Point2D[allPoints.size()];
+        for(int i=0; i<points.length; i++){
+        	points[i] = allPoints.get(i);
+        }
+        return points;
 	}
+	
+	public static String getFixationCount(String inputFile) throws IOException {
+		File file = new File(inputFile); 
+	  
+	        RandomAccessFile fileHandler = new RandomAccessFile( file, "r" );
+	        long fileLength = file.length() - 1;
+	        StringBuilder sb = new StringBuilder();
 
-	//computes the average pupil size of both eyes
-	public static double getAverageOfBoth(ArrayList<Object> allValidData){
-		double averageOfLeft = getAverageOfLeft(allValidData);
-		double averageOfRight = getAverageOfRight(allValidData);
-		return (averageOfLeft + averageOfRight)/2.0;
+	        for(long filePointer = fileLength; filePointer != -1; filePointer--){
+	            fileHandler.seek( filePointer );
+	            int readByte = fileHandler.readByte();
+
+	            if( readByte == 0xA ) {
+	                if( filePointer == fileLength ) {
+	                    continue;
+	                } else {
+	                    break;
+	                }
+	            } else if( readByte == 0xD ) {
+	                if( filePointer == fileLength - 1 ) {
+	                    continue;
+	                } else {
+	                    break;
+	                }
+	            }
+
+	            sb.append( ( char ) readByte );
+	        }
+
+	        String lastLine = sb.reverse().toString();
+	        
+	        //get the first value in the last line, which is the total number of fixations
+	        String[] lineArray = lineToArray(lastLine);
+            String totalFixations = lineArray[0];
+	        
+	        return totalFixations;
+	 
 	}
+	
+
+	public static double getScanpathDuration(ArrayList<Integer> allFixationDurations, ArrayList<Integer> allSaccadeDurations){
+		double fixationDuration = descriptiveStats.getSumOfIntegers(allFixationDurations);
+		double saccadeDuration = descriptiveStats.getSumOfIntegers(allSaccadeDurations);
+		return fixationDuration + saccadeDuration;
+	}
+	
+	public static double getFixationToSaccadeRatio(ArrayList<Integer> allFixationDurations, ArrayList<Integer> allSaccadeDurations){
+		double fixationDuration = descriptiveStats.getSumOfIntegers(allFixationDurations);
+		double saccadeDuration = descriptiveStats.getSumOfIntegers(allSaccadeDurations);
+		return fixationDuration/saccadeDuration;
+	}
+	
 }

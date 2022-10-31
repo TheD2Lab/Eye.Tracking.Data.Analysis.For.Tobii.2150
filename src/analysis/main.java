@@ -1,6 +1,6 @@
 package analysis;
 /*
- * Copyright (c) 2013, Bo Fu
+ * Copyright (c) 2013, Bo Fu 
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,175 +24,76 @@ package analysis;
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
-
-import com.opencsv.exceptions.CsvValidationException;
 
 
 public class main {
-
-	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException{
-
-		
-		String inputGazeURL = "";
-		String inputFixationURL = "";
-		String outputURL = "";
-		
-		JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-
-		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
-		
-		// Prompts user to select gaze .csv file
-		int returnValue = jfc.showOpenDialog(null);
-		jfc.setDialogTitle("Select the gaze .csv file you would like to use: ");
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			File selectedFile = jfc.getSelectedFile();
-			inputGazeURL = selectedFile.getAbsolutePath();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick an input file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
-
-		// Prompts user to select fixation .csv file
-<<<<<<< HEAD
-
-=======
->>>>>>> parent of 742a435 (Changed GUI starting directory and title bug)
-		returnValue = jfc.showOpenDialog(null);
-		jfc.setDialogTitle("Select the fixation .csv file you would like to use: ");
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			File selectedFile = jfc.getSelectedFile();
-			inputFixationURL = selectedFile.getAbsolutePath();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick an input file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
-
-		// Prompts user to select a location to save output files
-		jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-		jfc.setDialogTitle("Choose a directory to save your file: ");
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		returnValue = jfc.showSaveDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			if (jfc.getSelectedFile().isDirectory()) 
-			{
-				outputURL = jfc.getSelectedFile().toString();
-			}
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick a location to output the file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-				
-		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
-		File participantFolder = new File(outputURL + "//" +participant);
-		if(!participantFolder.exists())
-		{
-			boolean folderCreated = participantFolder.mkdir();
-			if(!folderCreated)
-			{
-				JOptionPane.showMessageDialog(null, "Unable to create participant's folder", "Error Message", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			else
-			{
-				outputURL += "\\" + participant;
-			}
-		}
-		
 	
-
-		/*
+	public static void main(String args[]) throws IOException{
+		
+		//specify the location of the raw data files
+		String inputURL = "/Users/.../";
+		//specify the location of the analyzed results 
+		String outputURL = "/Users/.../";
+		//specify the subject, e.g. p1, as analysis is generated per-participant
+		String participant = "...";
+		
+		String inputLocation = inputURL + participant + "/";
+		String outputLocation = outputURL + participant + "/";
+		
 		//FXD data
 		//testing cases where X axis values are the same
 		//String fixationData = "fxdSameXValues.txt";
 		String treeFixation = participant + ".treeFXD.txt";
-		String treeFixationResults = "treeFXDResults.csv";
+		String treeFixationResults = "treeFXDResults.txt";
 		String treeFixationInput = inputLocation + treeFixation;
-        String treeFixationOutput = outputLocation + treeFixationResults;
-        */
-        String graphFixationResults = "\\graphFXDResults.csv";
-        String graphFixationOutput = outputURL + graphFixationResults;
-		/*
+        String treeFixationOutput = outputLocation + treeFixationResults; 
+        
+        String graphFixation = participant + ".graphFXD.txt";
+        String graphFixationResults = "graphFXDResults.txt";
+        String graphFixationInput = inputLocation + graphFixation;
+        String graphFixationOutput = outputLocation + graphFixationResults;
+		
 		//EVD data
 		String treeEvent = participant + ".treeEVD.txt";
-		String treeEventResults = "treeEVDResults.csv";
+		String treeEventResults = "treeEVDResults.txt";
 		String treeEventInput = inputLocation + treeEvent;
         String treeEventOutput = outputLocation + treeEventResults;
-        */
-        String graphEventResults = "\\graphEVDResults.csv";
-        String graphEventOutput = outputURL + graphEventResults;
-
-        /*
+        
+        String graphEvent = participant + ".graphEVD.txt";
+        String graphEventResults = "graphEVDResults.txt";
+        String graphEventInput = inputLocation + graphEvent;
+        String graphEventOutput = outputLocation + graphEventResults;
+;
+        
         //GZD data
-        String gazeBaseline = participant + "GZD.txt";//input
-        String baselineResults = "baselineResults.csv";//output
+        String gazeBaseline = participant + "GZD.txt";
+        String baselineResults = "baselineResults.txt";
         String baselineInput = inputLocation + gazeBaseline;
         String baselineOutput = outputLocation + baselineResults;
-
+        
         String treeGaze = participant + ".treeGZD.txt";
-        String treeGazeResults = "treeGZDResults.csv";
+        String treeGazeResults = "treeGZDResults.txt";
         String treeGazeInput = inputLocation + treeGaze;
         String treeGazeOutput = outputLocation + treeGazeResults;
-        */
-        String graphGazeResults = "\\graphGZDResults.csv";
-        String graphGazeOutput = outputURL + graphGazeResults;
-        /*
+        
+        String graphGaze = participant + ".graphGZD.txt";
+        String graphGazeResults = "graphGZDResults.txt";
+        String graphGazeInput = inputLocation + graphGaze;
+        String graphGazeOutput = outputLocation + graphGazeResults;
+        
         //analyze gaze baseline
         gaze.processGaze(baselineInput, baselineOutput);
-
+        
         //analyze tree related data
-
         fixation.processFixation(treeFixationInput, treeFixationOutput);
         event.processEvent(treeEventInput, treeEventOutput);
         gaze.processGaze(treeGazeInput, treeGazeOutput);
-        */
-
-		// Analyze graph related data
-        fixation.processFixation(inputFixationURL, graphFixationOutput);
-        event.processEvent(inputGazeURL, graphEventOutput);
-        gaze.processGaze(inputGazeURL, graphGazeOutput);
         
-        csvToARFF(graphFixationOutput, outputURL + "\\fixation.arff");
-        csvToARFF(graphEventOutput, outputURL + "\\event.arff");
-        csvToARFF(graphGazeOutput, outputURL + "\\gaze.arff");
+        //analyze graph related data
+        fixation.processFixation(graphFixationInput, graphFixationOutput);
+        event.processEvent(graphEventInput, graphEventOutput);
+        gaze.processGaze(graphGazeInput, graphGazeOutput);
 	}
-	
-	private static void csvToARFF(String outputCSVPath, String outputARFFPath) throws IOException
-	{
-		CSVLoader loader = new CSVLoader();
-	    loader.setSource(new File(outputCSVPath));
-	    Instances data = loader.getDataSet();
-	    
-	    File arffFile = new File(outputARFFPath);
-	    if(!arffFile.exists())
-	    {
-		    ArffSaver saver = new ArffSaver();
-		    saver.setInstances(data);
-		    saver.setFile(arffFile);
-		    saver.setDestination(arffFile);
-		    saver.writeBatch();
-		    System.out.println("Successful " + outputARFFPath);
-	    }
-	    else
-	    {
-	    	System.out.println("File Exists");
-	    }
-	}
+
 }

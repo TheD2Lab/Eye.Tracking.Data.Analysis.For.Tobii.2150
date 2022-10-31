@@ -27,15 +27,10 @@ package analysis;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
+import java.util.*;
 
 public class convexHull {
-
+	
 	 /**
      * An enum denoting a directional-turn between 3 points (vectors).
      */
@@ -47,18 +42,18 @@ public class convexHull {
      * @param points the list of points.
      * @return       true iff all points in <code>points</code> are collinear.
      */
-    protected static boolean areAllCollinear(List<Point2D.Double> points) {
+    protected static boolean areAllCollinear(List<Point> points) {
 
         if(points.size() < 2) {
             return true;
         }
 
-        final Point2D.Double a = points.get(0);
-        final Point2D.Double b = points.get(1);
+        final Point a = points.get(0);
+        final Point b = points.get(1);
 
         for(int i = 2; i < points.size(); i++) {
 
-        	Point2D.Double c = points.get(i);
+            Point c = points.get(i);
 
             if(getTurn(a, b, c) != Turn.COLLINEAR) {
                 return false;
@@ -82,16 +77,16 @@ public class convexHull {
      *                                  are collinear or if there are less than
      *                                  3 unique points present.
      */
-    public static List<Point2D.Double> getConvexHull(int[] xs, int[] ys) throws IllegalArgumentException {
+    public static List<Point> getConvexHull(int[] xs, int[] ys) throws IllegalArgumentException {
 
         if(xs.length != ys.length) {
             throw new IllegalArgumentException("xs and ys don't have the same size");
         }
 
-        List<Point2D.Double> points = new ArrayList<>();
+        List<Point> points = new ArrayList<Point>();
 
         for(int i = 0; i < xs.length; i++) {
-            points.add(new Point2D.Double(xs[i], ys[i]));
+            points.add(new Point(xs[i], ys[i]));
         }
 
         return getConvexHull(points);
@@ -109,9 +104,9 @@ public class convexHull {
      * @throws IllegalArgumentException if all points are collinear or if there
      *                                  are less than 3 unique points present.
      */
-    public static List<Point2D.Double> getConvexHull(List<Point2D.Double> points) throws IllegalArgumentException {
+    public static List<Point> getConvexHull(List<Point> points) throws IllegalArgumentException {
 
-        List<Point2D.Double> sorted = new ArrayList<>(getSortedPointSet(points));
+        List<Point> sorted = new ArrayList<Point>(getSortedPointSet(points));
 
         if(sorted.size() < 3) {
             throw new IllegalArgumentException("can only create a convex hull of 3 or more unique points");
@@ -121,15 +116,15 @@ public class convexHull {
             throw new IllegalArgumentException("cannot create a convex hull from collinear points");
         }
 
-        Stack<Point2D.Double> stack = new Stack<>();
+        Stack<Point> stack = new Stack<Point>();
         stack.push(sorted.get(0));
         stack.push(sorted.get(1));
 
         for (int i = 2; i < sorted.size(); i++) {
 
-        	Point2D.Double head = sorted.get(i);
-        	Point2D.Double middle = stack.pop();
-        	Point2D.Double tail = stack.peek();
+            Point head = sorted.get(i);
+            Point middle = stack.pop();
+            Point tail = stack.peek();
 
             Turn turn = getTurn(tail, middle, head);
 
@@ -150,7 +145,7 @@ public class convexHull {
         // close the hull
         stack.push(sorted.get(0));
 
-        return new ArrayList<>(stack);
+        return new ArrayList<Point>(stack);
     }
 
     /**
@@ -162,13 +157,13 @@ public class convexHull {
      *               1 such point exists, the one with the lowest x coordinate
      *               is returned.
      */
-    protected static Point2D.Double getLowestPoint(List<Point2D.Double> points) {
+    protected static Point getLowestPoint(List<Point> points) {
 
-        Point2D.Double lowest = points.get(0);
+        Point lowest = points.get(0);
 
         for(int i = 1; i < points.size(); i++) {
 
-        	Point2D.Double temp = points.get(i);
+            Point temp = points.get(i);
 
             if(temp.y < lowest.y || (temp.y == lowest.y && temp.x < lowest.x)) {
                 lowest = temp;
@@ -189,13 +184,13 @@ public class convexHull {
      * @return       a sorted set of points from the list <code>points</code>.
      * @see GrahamScan#getLowestPoint(java.util.List)
      */
-    protected static Set<Point2D.Double> getSortedPointSet(List<Point2D.Double> points) {
+    protected static Set<Point> getSortedPointSet(List<Point> points) {
 
-        final Point2D.Double lowest = getLowestPoint(points);
+        final Point lowest = getLowestPoint(points);
 
-        TreeSet<Point.Double> set = new TreeSet<>(new Comparator<Point2D.Double>() {
+        TreeSet<Point> set = new TreeSet<Point>(new Comparator<Point>() {
             @Override
-            public int compare(Point2D.Double a, Point2D.Double b) {
+            public int compare(Point a, Point b) {
 
                 if(a == b || a.equals(b)) {
                     return 0;
@@ -254,11 +249,11 @@ public class convexHull {
      *         ordered points <code>a</code>, <code>b</code> and
      *         <code>c</code>.
      */
-    protected static Turn getTurn(Point2D.Double a, Point2D.Double b, Point2D.Double c) {
+    protected static Turn getTurn(Point a, Point b, Point c) {
 
         // use longs to guard against int-over/underflow
-        long crossProduct = (long) ((((long)b.x - a.x) * ((long)c.y - a.y)) -
-                            (((long)b.y - a.y) * ((long)c.x - a.x)));
+        long crossProduct = (((long)b.x - a.x) * ((long)c.y - a.y)) -
+                            (((long)b.y - a.y) * ((long)c.x - a.x));
 
         if(crossProduct > 0) {
             return Turn.COUNTER_CLOCKWISE;
@@ -270,7 +265,7 @@ public class convexHull {
             return Turn.COLLINEAR;
         }
     }
-
+    
 	public static double getPolygonArea(Point2D[] allPoints) {
 		int i, j, n = allPoints.length;
 		double area = 0;
