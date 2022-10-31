@@ -9,10 +9,6 @@ import java.util.List;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-import weka.core.Instances;
-import weka.core.converters.ArffSaver;
-import weka.core.converters.CSVLoader;
-
 public class gazeAnalytics {
 //String inputFile, String outputFile, int timelength
 	public static void continuousWindow(String inputFile, String outputFolder, int windowSize) throws IOException
@@ -50,7 +46,6 @@ public class gazeAnalytics {
 			initialTime = endTime - overlap;
 			endTime += windowSize;
 			outputFile = outputFolder + "\\overlap_" + endTime + ".csv";
-			
 		}
 	}
 	
@@ -95,13 +90,11 @@ public class gazeAnalytics {
              }
              
             System.out.println("done writing file: " + outputFile);
-            outputCSVWriter.close();
+            return true;
         }
         catch(NullPointerException ne)
         {
         	System.out.println("done writing file: " + outputFile);
-        	outputCSVWriter.close();
-        	csvToARFF(outputFile);
         	return false;
         }
         catch(Exception e)
@@ -112,35 +105,9 @@ public class gazeAnalytics {
         }
         finally
         {
+            outputCSVWriter.close();
             csvReader.close();
         }
-        
-        csvToARFF(outputFile);
-        return true;
-	}
-	
-	
-	public static void csvToARFF(String outputCSVPath) throws IOException
-	{
-		CSVLoader loader = new CSVLoader();
-	    loader.setSource(new File(outputCSVPath));
-	    Instances data = loader.getDataSet();
-	    
-	    String outputARFFPath = outputCSVPath.replace(".csv", ".arff");
-	    
-	    File arffFile = new File(outputARFFPath);
-	    if(!arffFile.exists())
-	    {
-		    ArffSaver saver = new ArffSaver();
-		    saver.setInstances(data);
-		    saver.setFile(arffFile);
-		    saver.writeBatch();
-		    System.out.println("Successful " + outputARFFPath);
-	    }
-	    else
-	    {
-	    	System.out.println("File Exists");
-	    }
 	}
 	
 }

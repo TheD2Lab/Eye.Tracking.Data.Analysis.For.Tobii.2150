@@ -42,14 +42,6 @@ import weka.core.converters.CSVLoader;
 public class main {
 
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
-		String inputFile = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Data\\gazepoint.GZD.csv";
-		inputFile = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\User 1_all_gaze.csv";
-		String outputFolder = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Results\\Window";
-		outputFolder = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\results";
-		gazeAnalytics.continuousWindow(inputFile, outputFolder, 3);
-		gazeAnalytics.cumulativeWindow(inputFile, outputFolder, 2);
-		gazeAnalytics.overlappingWindow(inputFile, outputFolder, 3, 1);
-		/*
 		String inputGazeURL = "";
 		String inputFixationURL = "";
 		String outputURL = "";
@@ -135,11 +127,29 @@ public class main {
         gaze.processGaze(inputGazeURL, graphGazeOutput);
 
         
-        gazeAnalytics.csvToARFF(graphFixationOutput);
-        gazeAnalytics.csvToARFF(graphEventOutput);
-        gazeAnalytics.csvToARFF(graphGazeOutput);
+        csvToARFF(graphFixationOutput, outputURL + "\\fixation.arff");
+        csvToARFF(graphEventOutput, outputURL + "\\event.arff");
+        csvToARFF(graphGazeOutput, outputURL + "\\gaze.arff");
 	}
-	*/
 	
+	private static void csvToARFF(String outputCSVPath, String outputARFFPath) throws IOException
+	{
+		CSVLoader loader = new CSVLoader();
+	    loader.setSource(new File(outputCSVPath));
+	    Instances data = loader.getDataSet();
+	    
+	    File arffFile = new File(outputARFFPath);
+	    if(!arffFile.exists())
+	    {
+		    ArffSaver saver = new ArffSaver();
+		    saver.setInstances(data);
+		    saver.setFile(arffFile);
+		    saver.writeBatch();
+		    System.out.println("Successful " + outputARFFPath);
+	    }
+	    else
+	    {
+	    	System.out.println("File Exists");
+	    }
 	}
 }
