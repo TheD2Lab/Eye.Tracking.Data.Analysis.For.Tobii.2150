@@ -42,46 +42,14 @@ import weka.core.converters.CSVLoader;
 public class main {
 
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
-		//		String inputFile = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Data\\gazepoint.GZD.csv";
-		//		inputFile = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\User 1_all_gaze.csv";
-		//		String outputFolder = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Results\\Window";
-		//		outputFolder = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\results";
-		//		gazeAnalytics.continuousWindow(inputFile, outputFolder, 3);
-		//		gazeAnalytics.cumulativeWindow(inputFile, outputFolder, 2);
-		//		gazeAnalytics.overlappingWindow(inputFile, outputFolder, 3, 1);
-
-
-		String[] urls = new String[3];
-		calcuationFileChooser(urls);
-		String inputGazeURL = urls[0];
-		String inputFixationURL = urls[1];
-		String outputURL = urls[2];
-
-
-		//File paths
-		String graphFixationResults = "\\graphFXDResults.csv";
-		String graphFixationOutput = outputURL + graphFixationResults;
-
-		String graphEventResults = "\\graphEVDResults.csv";
-		String graphEventOutput = outputURL + graphEventResults;
-
-		String graphGazeResults = "\\graphGZDResults.csv";
-		String graphGazeOutput = outputURL + graphGazeResults;
-
-
-		// Analyze graph related data
-		fixation.processFixation(inputFixationURL, graphFixationOutput);
-		event.processEvent(inputGazeURL, graphEventOutput);
-		gaze.processGaze(inputGazeURL, graphGazeOutput);
-
-		//        
-		//        gazeAnalytics.csvToARFF(graphFixationOutput);
-		//        gazeAnalytics.csvToARFF(graphEventOutput);
-		//        gazeAnalytics.csvToARFF(graphGazeOutput);
-	}
-	
-	private static void calcuationFileChooser(String[]urls)
-	{
+		String inputFile = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Data\\gazepoint.GZD.csv";
+		inputFile = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\User 1_all_gaze.csv";
+		String outputFolder = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Results\\Window";
+		outputFolder = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\results";
+		gazeAnalytics.continuousWindow(inputFile, outputFolder, 3);
+		gazeAnalytics.cumulativeWindow(inputFile, outputFolder, 2);
+		gazeAnalytics.overlappingWindow(inputFile, outputFolder, 3, 1);
+		/*
 		String inputGazeURL = "";
 		String inputFixationURL = "";
 		String outputURL = "";
@@ -102,7 +70,7 @@ public class main {
 			JOptionPane.showMessageDialog(null, "Must pick an input file", "Error Message", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-
+		
 		// Prompts user to select fixation .csv file
 		jfc.setDialogTitle("Select the fixation .csv file you would like to use: ");
 		returnValue = jfc.showOpenDialog(null);
@@ -134,7 +102,7 @@ public class main {
 			JOptionPane.showMessageDialog(null, "Must pick a location to output the file", "Error Message", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-
+				
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
 		File participantFolder = new File(outputURL + "\\" + participant);
 		if(!participantFolder.exists())
@@ -146,39 +114,32 @@ public class main {
 				return;
 			}
 		}
-
+		
 		outputURL += "\\" + participant;
 		
-		urls[0] = inputGazeURL;
-		urls[1] = inputFixationURL;
-		urls[2] =  outputURL;
-
-	}
 	
-	private void gazeAnalyticsCalcuation()
-	{
-		String baselineFilePath = "";
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
+		//File paths
+        String graphFixationResults = "\\graphFXDResults.csv";
+        String graphFixationOutput = outputURL + graphFixationResults;
 
-		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
-		jfc.setDialogTitle("Select the baseline CSV file you would like to use: ");
-		int returnValue = jfc.showOpenDialog(null);
+        String graphEventResults = "\\graphEVDResults.csv";
+        String graphEventOutput = outputURL + graphEventResults;
 
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			File selectedFile = jfc.getSelectedFile();
-			baselineFilePath = selectedFile.getAbsolutePath();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick an input file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
-		
-		
+        String graphGazeResults = "\\graphGZDResults.csv";
+        String graphGazeOutput = outputURL + graphGazeResults;
+
+
+		// Analyze graph related data
+        fixation.processFixation(inputFixationURL, graphFixationOutput);
+        event.processEvent(inputGazeURL, graphEventOutput);
+        gaze.processGaze(inputGazeURL, graphGazeOutput);
+
+        
+        gazeAnalytics.csvToARFF(graphFixationOutput);
+        gazeAnalytics.csvToARFF(graphEventOutput);
+        gazeAnalytics.csvToARFF(graphGazeOutput);
 	}
-
-
-
+	*/
+	
+	}
 }
