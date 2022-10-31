@@ -37,6 +37,8 @@ import com.opencsv.exceptions.CsvValidationException;
 public class main {
 
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
+		gazeAnalytics.cumulativeWindow();
+		/*
 		String inputGazeURL = "";
 		String inputFixationURL = "";
 		String outputURL = "";
@@ -120,6 +122,6 @@ public class main {
         fixation.processFixation(inputFixationURL, graphFixationOutput);
         event.processEvent(inputGazeURL, graphEventOutput);
         gaze.processGaze(inputGazeURL, graphGazeOutput);
-       
+        */
 	}
 }
