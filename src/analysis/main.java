@@ -59,20 +59,18 @@ public class main {
 		//		gazeAnalytics.cumulativeWindow(inputFile, outputFolder, 2);
 		//		gazeAnalytics.overlappingWindow(inputFile, outputFolder, 3, 1);
 		
-		String baselineFilePath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies\\graphGZDResults.csv";
-		String inputFilePath = "C:\\Users\\kayla\\Downloads\\User 3_all_gaze.csv";
-		String outputFolderPath0 = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\results";
-
-		gazeAnalytics.eventWindow(inputFilePath, outputFolderPath0, baselineFilePath, 3, 35, 5);
+//		String baselineFilePath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies\\graphGZDResults.csv";
+//		String inputFilePath = "C:\\Users\\kayla\\Downloads\\User 3_all_gaze.csv";
+//		String outputFolderPath0 = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\results";
+//
+//		gazeAnalytics.eventWindow(inputFilePath, outputFolderPath0, baselineFilePath, 3, 35, 5);
 
 		
 		String[] paths = new String[3];
-		calcuationFileChooser(paths);
+		calcuations(paths);
 		String inputGazePath = paths[0];
 		String inputFixationPath = paths[1];
 		String outputFolderPath = paths[2];
-		gazeAnalyticsCalcuation(outputFolderPath);
-
 
 		//File paths
 		String graphFixationResults = "\\graphFXDResults.csv";
@@ -83,76 +81,30 @@ public class main {
 
 		String graphGazeResults = "\\graphGZDResults.csv";
 		String graphGazeOutput = outputFolderPath + graphGazeResults;
-
-
+		
 		// Analyze graph related data
 		fixation.processFixation(inputFixationPath, graphFixationOutput);
 		event.processEvent(inputGazePath, graphEventOutput);
 		gaze.processGaze(inputGazePath, graphGazeOutput);
+		
+		//Gaze Analytics
+		
+		
 
 		//        
 		//        gazeAnalytics.csvToARFF(graphFixationOutput);
 		//        gazeAnalytics.csvToARFF(graphEventOutput);
-		//        gazeAnalytics.csvToARFF(graphGazeOutput);
+ c 		//        gazeAnalytics.csvToARFF(graphGazeOutput);
 	}
 
-	private static void calcuationFileChooser(String[]urls)
+	private static void calcuations(String[]filePaths)
 	{
-		String inputGazeURL = "";
-		String inputFixationURL = "";
-		String outputURL = "";
-
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
-
-		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
-		jfc.setDialogTitle("Select the gaze .csv file you would like to use: ");
-		int returnValue = jfc.showOpenDialog(null);
-
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			File selectedFile = jfc.getSelectedFile();
-			inputGazeURL = selectedFile.getAbsolutePath();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick an input file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
-		}
-
-		// Prompts user to select fixation .csv file
-		jfc.setDialogTitle("Select the fixation .csv file you would like to use: ");
-		returnValue = jfc.showOpenDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			File selectedFile = jfc.getSelectedFile();
-			inputFixationURL = selectedFile.getAbsolutePath();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick an input file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
-		}
-
-		// Prompts user to select a location to save output files
-		jfc = new JFileChooser(System.getProperty("user.dir") + "/results/");
-		jfc.setDialogTitle("Choose a directory to save your file: ");
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		returnValue = jfc.showSaveDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			if (jfc.getSelectedFile().isDirectory()) 
-			{
-				outputURL = jfc.getSelectedFile().toString();
-			}
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick a location to output the file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
-		}
+		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use");
+		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use");
+		String outputPath = folderChooser("Choose a directory to save your file");
 
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
-		File participantFolder = new File(outputURL + "\\" + participant);
+		File participantFolder = new File(outputPath + "\\" + participant);
 		if(!participantFolder.exists())
 		{
 			boolean folderCreated = participantFolder.mkdir();
@@ -163,52 +115,26 @@ public class main {
 			}
 		}
 
-		outputURL += "\\" + participant;
+		outputPath += "\\" + participant;
 
-		urls[0] = inputGazeURL;
-		urls[1] = inputFixationURL;
-		urls[2] =  outputURL;
+		filePaths[0] = inputGazePath;
+		filePaths[1] = inputFixationPath;
+		filePaths[2] =  outputPath;
 
 	}
 
-	private static void gazeAnalyticsCalcuation(String outputFolderPath) throws CsvValidationException, IOException
+	private static void gazeAnalyticsSnapshot(String outputFolderPath) throws CsvValidationException, IOException
 	{
 		String baselineFilePath = "";
 		String inputFilePath = "";
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
-
-		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
-		jfc.setDialogTitle("Select the baseline CSV file you would like to use: ");
-		int returnValue = jfc.showOpenDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			File selectedFile = jfc.getSelectedFile();
-			baselineFilePath = selectedFile.getAbsolutePath();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick an input file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
-		}
+		
+		baselineFilePath = fileChooser("Select the baseline CSV file you would like to use ");
+		inputFilePath = fileChooser("Select the input CSV file you would like to use ");
+		
+		
 		FileReader baslineFileReader = new FileReader(baselineFilePath);
 		CSVReader baselineCSVReader = new CSVReader(baslineFileReader);
 		String[]baselineHeader = baselineCSVReader.readNext();
-
-
-
-		jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
-		jfc.setDialogTitle("Choose the input csv file: ");
-		returnValue = jfc.showSaveDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			File selectedFile = jfc.getSelectedFile();
-			inputFilePath = selectedFile.getAbsolutePath();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick a location to output the file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
-		}
 
 		FileReader inputFileReader = new FileReader(inputFilePath);
 		CSVReader inputCSVReader = new CSVReader(inputFileReader);
@@ -246,6 +172,48 @@ public class main {
 		
 		gazeAnalytics.eventWindow(inputFilePath, outputFolderPath, baselineFilePath, baselineHeaderOption.getSelectedIndex(), inputHeaderOption.getSelectedIndex(), 5);
         
+	}
+	
+	private static String fileChooser(String dialogTitle)
+	{
+		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
+
+		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
+		jfc.setDialogTitle(dialogTitle);
+		int returnValue = jfc.showOpenDialog(null);
+
+		if (returnValue == JFileChooser.APPROVE_OPTION) 
+		{
+			File selectedFile = jfc.getSelectedFile();
+			return selectedFile.getAbsolutePath();
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(null, "Must pick a file", "Error Message", JOptionPane.ERROR_MESSAGE);
+			System.exit(0);
+		}
+		return "";
+	}
+	
+	private static String folderChooser(String dialogTitle)
+	{
+		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/results/");
+		jfc.setDialogTitle("Choose a directory to save your file: ");
+		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int returnValue = jfc.showSaveDialog(null);
+		if (returnValue == JFileChooser.APPROVE_OPTION) 
+		{
+			if (jfc.getSelectedFile().isDirectory()) 
+			{
+				return jfc.getSelectedFile().toString();
+			}
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(null, "Must pick a location to output the file", "Error Message", JOptionPane.ERROR_MESSAGE);
+			System.exit(0);
+		}
+		return "";
 	}
 
 
