@@ -64,7 +64,10 @@ public class main {
 		
 
 		// Prompts user to select fixation .csv file
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 742a435 (Changed GUI starting directory and title bug)
 		returnValue = jfc.showOpenDialog(null);
 		jfc.setDialogTitle("Select the fixation .csv file you would like to use: ");
 		if (returnValue == JFileChooser.APPROVE_OPTION) 
