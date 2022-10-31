@@ -7,8 +7,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Date;
 
+/*
+ * responsible for keeping track of the progress of the program
+ */
 public class systemLogger {
 	private static String logFilePath = "";
+	
+	/*
+	 * Creates a text file named SystemLog.txt and puts the file in the given folder path
+	 * @param	folderPath	path of where the text file belongs
+	 */
 	public static void createSystemLog(String folderPath)
 	{
 		try 
@@ -38,6 +46,13 @@ public class systemLogger {
 		
 	}
 	
+	/*
+	 * Writes a descriptive statement to the system log outlining the time, the level of importance
+	 * what class the method was called, and the given message
+	 * @param	level			a set of standard logging level 
+	 * @param	sourceClass		what class called the method
+	 * @param	message			the message to be written
+	 */
 	public static void writeToSystemLog(Level level, String sourceClass, String message)
 	{	
 		try
