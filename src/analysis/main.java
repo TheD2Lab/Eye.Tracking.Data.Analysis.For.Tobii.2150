@@ -54,7 +54,6 @@ import weka.core.converters.CSVLoader;
 public class main {
 
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
- 
 		//		String inputFile = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Data\\gazepoint.GZD.csv";
 		//		inputFile = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\User 1_all_gaze.csv";
 		//		String outputFolder = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Results\\Window";
@@ -62,16 +61,6 @@ public class main {
 		//		gazeAnalytics.continuousWindow(inputFile, outputFolder, 3);
 		//		gazeAnalytics.cumulativeWindow(inputFile, outputFolder, 2);
 		//		gazeAnalytics.overlappingWindow(inputFile, outputFolder, 3, 1);
-
-		String inputGazeURL = "";
-		String inputFixationURL = "";
-		String outputURL = "";
-		
-		// Resolution of monitor
-		final int SCREEN_WIDTH = 1024;
-		final int SCREEN_HEIGHT = 768;
-		
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
 
 		//		String baselineFilePath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies\\graphGZDResults.csv";
 		//		String inputFilePath = "C:\\Users\\kayla\\Downloads\\User 3_all_gaze.csv";
@@ -165,26 +154,6 @@ public class main {
 		filePaths[1] = inputFixationPath;
 		filePaths[2] =  outputPath;
 
-		
-		outputURL += "\\" + participant;
-		
-	
-		//Build String for file paths
-        String graphFixationResults = "\\graphFXDResults.csv";
-        String graphFixationOutput = outputURL + graphFixationResults;
-        String graphEventResults = "\\graphEVDResults.csv";
-        String graphEventOutput = outputURL + graphEventResults;
-        String graphGazeResults = "\\graphGZDResults.csv";
-        String graphGazeOutput = outputURL + graphGazeResults;
-        String aoiResults = "\\aoiResults.csv";
-        String aoiOutput = outputURL + aoiResults;
-
-
-		// Analyze graph related data
-        fixation.processFixation(inputFixationURL, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
-        event.processEvent(inputGazeURL, graphEventOutput);
-        gaze.processGaze(inputGazeURL, graphGazeOutput);
-        AOI.processAOIs(inputGazeURL, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 	}
 
 	private static void eventGUI(String outputFolderPath) throws CsvValidationException, IOException
