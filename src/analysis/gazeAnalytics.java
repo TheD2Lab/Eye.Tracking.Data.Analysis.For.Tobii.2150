@@ -55,13 +55,12 @@ public class gazeAnalytics {
 		}
 	}
 	
-	public static void eventWindow(String inputFilePath, String outputFolderPath, String baselineFilePath, int baselineHeaderIndex, int inputHeaderIndex, int maximumDuration) throws IOException
+	public static void eventWindow(String inputFilePath, String outputFolderPath, String baselineFilePath, String baselineHeader, String inputHeader, int maximumDuration) throws IOException
 	{
 		double intialTime = -1; 
 		int index = 0;
 		double baseline = -1;
 		String outputFile = outputFolderPath + "\\event_" + index + ".csv";
-		String [] header;
 		
 	
 		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
@@ -75,9 +74,9 @@ public class gazeAnalytics {
         try
         {			
         	//headers
+        	int baselineIndex = findHeaderIndex(baselineCSVReader, baselineHeader);
             String[]nextLine = baselineCSVReader.readNext();
-            nextLine = baselineCSVReader.readNext();
-            baseline = Double.valueOf(nextLine[baselineHeaderIndex]);
+            baseline = Double.valueOf(nextLine[baselineIndex]);
         }
         catch (Exception e)
         {
@@ -92,16 +91,14 @@ public class gazeAnalytics {
         //Checks the baseline value with the current value
         try
         {
-        	//header
-        	String[]nextLine = inputCSVReader.readNext();
-        	header = nextLine;
-        	outputCSVWriter.writeNext(header);
+        	int eventIndex = findHeaderIndex(inputCSVReader, inputHeader);
+        	String[]nextLine;
         	boolean eventStart = false;
         	while((nextLine = inputCSVReader.readNext())!= null)
         	{
         		if(eventStart)
         		{
-	        		if(Double.valueOf(nextLine[inputHeaderIndex]) > baseline)
+	        		if(Double.valueOf(nextLine[eventIndex]) > baseline)
 	        		{
 	        			outputCSVWriter.writeNext(nextLine);
 	        		}
@@ -113,12 +110,11 @@ public class gazeAnalytics {
 	        			outputCSVWriter.close();
 	        			outputFileWriter = new FileWriter(new File (outputFile));
 	        	        outputCSVWriter = new CSVWriter(outputFileWriter);
-	        	        outputCSVWriter.writeNext(header);
 	        		}
         		}
         		else
         		{
-        			if(Double.valueOf(nextLine[inputHeaderIndex]) > baseline)
+        			if(Double.valueOf(nextLine[eventIndex]) > baseline)
 	        		{
 	        			outputCSVWriter.writeNext(nextLine);
 	        			eventStart = true;
