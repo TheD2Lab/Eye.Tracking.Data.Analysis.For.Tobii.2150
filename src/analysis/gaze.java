@@ -81,7 +81,7 @@ public class gaze {
             while((nextLine = csvReader.readNext()) != null) {
 
             	//checking the validity of the recording
-                //a code with 1 indicates the eye tracker was confident with this data
+                //a code with 0 indicates the eye tracker was confident with this data
                 //note that only instances where BOTH pupil sizes are valid will be used in the analysis
                 //if pupilLeft and pupilRight is missing coordinates than the entry is skipped
                 if(nextLine[pupilLeftValidityIndex].equals("1") && nextLine[pupilRightValidityIndex].equals("1") && nextLine[pupilLeftDiameterIndex]!=null && nextLine[pupilRightDiameterIndex] != null){
