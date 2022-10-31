@@ -74,6 +74,10 @@ public class main {
 		String inputGazePath = paths[0];
 		String inputFixationPath = paths[1];
 		String outputFolderPath = paths[2];
+		
+		// Resolution of monitor
+		final int SCREEN_WIDTH = 1024;
+		final int SCREEN_HEIGHT = 768;
 
 		//File paths
 		String graphFixationResults = "\\graphFXDResults.csv";
@@ -84,7 +88,10 @@ public class main {
 
 		String graphGazeResults = "\\graphGZDResults.csv";
 		String graphGazeOutput = outputFolderPath + graphGazeResults;
-
+		
+		String aoiResults = "\\aoiResults.csv";
+		String aoiOutput = outputFolderPath + aoiResults;
+		 
 		// Analyze graph related data
 		fixation.processFixation(inputFixationPath, graphFixationOutput);
 		event.processEvent(inputGazePath, graphEventOutput);
@@ -95,6 +102,8 @@ public class main {
 		gazeAnalytics.csvToARFF(graphEventOutput);
 		gazeAnalytics.csvToARFF(graphGazeOutput);
 
+		AOI.processAOIs(inputGazePath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+		
 		JFrame f = new JFrame("Would you like to select a window");
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
