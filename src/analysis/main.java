@@ -50,7 +50,6 @@ import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 
-
 public class main {
 
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
@@ -134,9 +133,6 @@ public class main {
 			}
 
 		});
-
-
-
 	}
 
 	private static void calcuations(String[]filePaths)
