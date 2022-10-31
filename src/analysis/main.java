@@ -293,7 +293,6 @@ public class main {
 			else if(overlappingWindowButton.isSelected())
 			{
 				f.dispose();
-				fileChooser("Please select which file you would like to parse out");
 				JTextField windowSizeInput = new JTextField("", 5);
 				JTextField overlappingInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size: ");
