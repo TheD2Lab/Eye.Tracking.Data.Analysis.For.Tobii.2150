@@ -43,7 +43,7 @@ import com.opencsv.exceptions.CsvValidationException;
 
 public class fixation {
 
-	public static void processFixation(String inputFile, String outputFile, int SCREEN_WIDTH, int SCREEN_HEIGHT) throws IOException, CsvValidationException{
+	public static void processFixation(String inputFile, String outputFile) throws IOException, CsvValidationException{
 
         String line = null;
         ArrayList<Double> allFixationDurations = new ArrayList<>();
@@ -84,7 +84,7 @@ public class fixation {
          		default:
          			break;
          		}
-         		if(nextLine[i].contains("TIME") && timestampIndex == -1)
+         		if(nextLine[i].contains("TIME"))
          		{
          			timestampIndex = i;
          		}
@@ -100,16 +100,19 @@ public class fixation {
             	}
                 //get each fixation's duration
                 String fixationDurationSeconds = nextLine[fixationDurationIndex];
-                double eachDuration = Double.valueOf(fixationDurationSeconds);
+                double eachDuration = Double.valueOf(fixationDurationSeconds) * 1000;
 
 
                 String [] lineArray = new String[10];
+                //1024 * 768
+                int screenPixelSizeWidth = 1024;
+                int screenPixelSizeHeight = 768;
 
                 //get each fixation's (x,y) coordinates
                 String eachFixationX = nextLine[fixationXIndex];
                 String eachFixationY = nextLine[fixationYIndex];
-                double x = Double.valueOf(eachFixationX) * SCREEN_WIDTH;
-                double y = Double.valueOf(eachFixationY) * SCREEN_HEIGHT;
+                double x = Double.valueOf(eachFixationX) * screenPixelSizeHeight;
+                double y = Double.valueOf(eachFixationY) * screenPixelSizeWidth	;
 
                 Point2D.Double eachPoint = new Point2D.Double(x,y);
 
@@ -118,7 +121,7 @@ public class fixation {
                 eachCoordinate[1] = y;
 
                 //get timestamp of each fixation
-                double timestamp = Double.valueOf(nextLine[timestampIndex]);
+                double timestamp = Double.valueOf(nextLine[timestampIndex])* 1000;
                 Double[] eachSaccadeDetail = new Double[2];
                 eachSaccadeDetail[0] = timestamp;
                 eachSaccadeDetail[1] = eachDuration;
