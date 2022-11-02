@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -112,16 +113,20 @@ public class gaze {
             outputCSVWriter.writeNext(data);
             outputCSVWriter.close();
             csvReader.close();
-            System.out.println("done writing gaze data to: " + outputFile);
+            systemLogger.writeToSystemLog(Level.INFO, gaze.class.getName(), "done writing gaze data to " + outputFile);
 
-		}catch(FileNotFoundException ex) {
-	        System.out.println("Unable to open file '" + inputFile + "'");
-	    }catch(IOException ex) {
-	        System.out.println("Error reading file '" + inputFile + "'");
+		}
+        catch(FileNotFoundException ex) 
+        {
+			 systemLogger.writeToSystemLog(Level.WARNING, gaze.class.getName(), "Error with outputFile " + outputFile + "\n" + ex.toString());
+	    }
+        catch(IOException ex) 
+        {
+			 systemLogger.writeToSystemLog(Level.WARNING, gaze.class.getName(), "Error with outputFile " + outputFile + "\n" + ex.toString());
 	    }
         catch(Error e)
         {
-        	System.out.println("Error with csv file");
+			 systemLogger.writeToSystemLog(Level.SEVERE, gaze.class.getName(), "Error with outputFile " + outputFile + "\n" + e.toString());
         }
 	}
 

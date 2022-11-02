@@ -73,6 +73,7 @@ public class main {
 		String inputGazePath = paths[0];
 		String inputFixationPath = paths[1];
 		String outputFolderPath = paths[2];
+		systemLogger.createSystemLog(outputFolderPath);
 		
 		// Resolution of monitor
 		final int SCREEN_WIDTH = 1024;
@@ -275,9 +276,6 @@ public class main {
 						} catch (NumberFormatException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
 						}
 					}
 					else
@@ -285,9 +283,6 @@ public class main {
 						try {
 							gazeAnalytics.cumulativeWindow(inputFile, outputFolder, Integer.parseInt(windowSizeInput.getText()));
 						} catch (NumberFormatException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
@@ -318,9 +313,6 @@ public class main {
 					try {
 						gazeAnalytics.overlappingWindow(inputFile, outputFolder,Integer.parseInt(windowSizeInput.getText()), Integer.parseInt(overlappingInput.getText()) );
 					} catch (NumberFormatException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}

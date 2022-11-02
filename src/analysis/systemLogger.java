@@ -25,11 +25,12 @@ public class systemLogger {
 			File logFile = new File(logFilePath);
 			if(logFile.createNewFile())
 			{
-				System.out.println("INFO: SystemLog.txt has successfully been created");
-				FileWriter logWriter = new FileWriter(logFilePath);
+				
 				Date date = new Date();
-				logWriter.write("Log was created on" + date.toString());
+				FileWriter logWriter = new FileWriter(logFilePath);
+				logWriter.write("Log was created on" + date.toString() + "\n");
 				logWriter.close();
+				System.out.println("INFO: SystemLog.txt has successfully been created");
 			}
 			else
 			{
@@ -39,7 +40,7 @@ public class systemLogger {
 		}
 		catch(IOException e)
 		{
-			System.out.println("FATAL: unable to create SystemLog.txt");
+			System.out.println("ERROR: unable to create SystemLog.txt");
 			e.printStackTrace();
 			System.exit(0);
 		}
@@ -57,10 +58,10 @@ public class systemLogger {
 	{	
 		try
 		{
-			FileWriter logWriter = new FileWriter(logFilePath);
+			FileWriter logWriter = new FileWriter(logFilePath,true);
 			java.util.Date date = new java.util.Date();
-			logWriter.write(date.toString());
-			logWriter.write(level.getName() + ": " + sourceClass + "-"  + message);
+			logWriter.write("\n" + date.toString() + "\n");
+			logWriter.write("\t" + level.getName() + ": " + sourceClass + " - "  + message);
 			logWriter.close();
 		}
 		catch(IOException e)

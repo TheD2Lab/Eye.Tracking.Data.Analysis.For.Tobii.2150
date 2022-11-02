@@ -25,6 +25,7 @@ package analysis;
  */
 
 import java.awt.Point;
+
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -272,12 +274,18 @@ public class fixation {
             outputCSVWriter.writeNext(data.toArray(new String[data.size()]));
             outputCSVWriter.close();
             csvReader.close();
-            System.out.println("done writing fixation data to" + outputFile);
+            System.out.println();
+            systemLogger.writeToSystemLog(Level.INFO, fixation.class.getName(), "done writing fixation data to " + outputFile);
 
-        }catch(FileNotFoundException ex) {
-            System.out.println("Unable to open file '" + inputFile + "'");
-        }catch(IOException ex) {
-            System.out.println("Error reading file '" + inputFile + "'");
+
+        }
+        catch(FileNotFoundException ex) 
+        {
+            systemLogger.writeToSystemLog(Level.WARNING, fixation.class.getName(), "Error with outputFile " + outputFile + "\n" + ex.toString());
+        }
+        catch(IOException ex) 
+        {
+        	systemLogger.writeToSystemLog(Level.WARNING, fixation.class.getName(), "Error with outputFile " + outputFile + "\n" + ex.toString());
         }
 	}
 
