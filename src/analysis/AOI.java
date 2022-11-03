@@ -10,10 +10,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
+
+import analysis.gazeAnalytics;
+import analysis.systemLogger;
 
 public class AOI {
 	
@@ -149,12 +153,15 @@ public class AOI {
             outputCSVWriter.close();
             csvReader.close();
             System.out.println("done writing AOI data to" + outputFile);
+			 systemLogger.writeToSystemLog(Level.INFO, AOI.class.getName(), "done writing AOI data to " + outputFile );
+
 		}
 		catch(FileNotFoundException e) {
-			System.out.println("Unable to open file '" + inputFile + "'");
+			 systemLogger.writeToSystemLog(Level.WARNING, AOI.class.getName(), "Unable to open file " + outputFile );
+
 	    }
 		catch(IOException e) {
-	        System.out.println("Error reading file '" + inputFile + "'");
+			 systemLogger.writeToSystemLog(Level.WARNING, AOI.class.getName(), "ERROR reading file " + outputFile );
 	    }
 	}
 }
