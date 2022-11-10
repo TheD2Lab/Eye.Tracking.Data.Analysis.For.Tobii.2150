@@ -118,6 +118,7 @@ public class gazeAnalytics {
         	String[]nextLine = inputCSVReader.readNext();
         	header = nextLine;
         	outputCSVWriter.writeNext(header);
+        	
         	boolean eventStart = false;
         	while((nextLine = inputCSVReader.readNext())!= null)
         	{
@@ -195,7 +196,10 @@ public class gazeAnalytics {
 
         try 
         {
+        	//header
              String[]nextLine = csvReader.readNext();
+             outputCSVWriter.writeNext(nextLine);
+             
              int timestampIndex = -1;
              for(int i = 0; i < nextLine.length; i++)
              {

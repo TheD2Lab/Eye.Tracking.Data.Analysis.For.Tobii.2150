@@ -213,8 +213,9 @@ public class main {
 		btn.addActionListener(e -> {
 			eventFrame.dispose();
 		});
-
-		gazeAnalytics.eventWindow(inputFilePath, outputFolderPath, baselineFilePath, baselineHeaderOption.getSelectedIndex(), inputHeaderOption.getSelectedIndex(), Integer.valueOf(maximumDurationInput.getText()));
+		
+//Integer.valueOf(maximumDurationInput.getText())
+		gazeAnalytics.eventWindow(inputFilePath, outputFolderPath, baselineFilePath, baselineHeaderOption.getSelectedIndex(), inputHeaderOption.getSelectedIndex(), 5);
 
 	}
 
