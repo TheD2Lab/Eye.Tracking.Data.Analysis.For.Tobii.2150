@@ -93,15 +93,16 @@ public class main {
 		String aoiOutput = outputFolderPath + aoiResults;
 		 
 		// Analyze graph related data
-		fixation.processFixation(inputFixationPath, graphFixationOutput);
+		fixation.processFixation(inputFixationPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		event.processEvent(inputGazePath, graphEventOutput);
 		gaze.processGaze(inputGazePath, graphGazeOutput);
 
-		//Gaze Analytics 
+		// Gaze Analytics 
 		gazeAnalytics.csvToARFF(graphFixationOutput);
 		gazeAnalytics.csvToARFF(graphEventOutput);
 		gazeAnalytics.csvToARFF(graphGazeOutput);
 
+		// Analyze AOI data
 		AOI.processAOIs(inputGazePath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		
 		JFrame f = new JFrame("Would you like to select a window");
