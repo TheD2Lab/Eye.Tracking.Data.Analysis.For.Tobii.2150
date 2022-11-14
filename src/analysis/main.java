@@ -53,21 +53,6 @@ import weka.core.converters.CSVLoader;
 public class main {
 
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
-		//		String inputFile = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Data\\gazepoint.GZD.csv";
-		//		inputFile = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\User 1_all_gaze.csv";
-		//		String outputFolder = "C:\\Users\\kayla\\OneDrive\\Desktop\\Boeing Test Folder\\Results\\Window";
-		//		outputFolder = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\results";
-		//		gazeAnalytics.continuousWindow(inputFile, outputFolder, 3);
-		//		gazeAnalytics.cumulativeWindow(inputFile, outputFolder, 2);
-		//		gazeAnalytics.overlappingWindow(inputFile, outputFolder, 3, 1);
-
-		//		String baselineFilePath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies\\graphGZDResults.csv";
-		//		String inputFilePath = "C:\\Users\\kayla\\Downloads\\User 3_all_gaze.csv";
-		//		String outputFolderPath0 = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\results";
-		//
-		//		gazeAnalytics.eventWindow(inputFilePath, outputFolderPath0, baselineFilePath, 3, 35, 5);
-
-
 		String[] paths = new String[3];
 		calcuations(paths);
 		String inputGazePath = paths[0];
@@ -124,8 +109,8 @@ public class main {
 		btn.addActionListener(e -> {
 			if(yesButton.isSelected())
 			{
-				f.dispose();
-				gazeAnalyticsOptions(outputFolderPath);
+				p.removeAll();
+				gazeAnalyticsOptions(p, outputFolderPath);
 
 
 			}
@@ -163,7 +148,7 @@ public class main {
 
 	}
 
-	private static void eventGUI(String outputFolderPath) throws CsvValidationException, IOException
+	private static void eventGUI(JPanel p, String outputFolderPath) throws CsvValidationException, IOException
 	{
 		String baselineFilePath = "";
 		String inputFilePath = "";
@@ -180,53 +165,40 @@ public class main {
 		CSVReader inputCSVReader = new CSVReader(inputFileReader);
 		String[]inputHeader = inputCSVReader.readNext();
 
-		JFrame eventFrame = new JFrame("Define the event");
-		eventFrame.setVisible(true);
-		eventFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		eventFrame.setSize(400, 250);
-		JPanel eventPanel = new JPanel();
-		eventFrame.add(eventPanel);
 
 		JLabel baselineLabel = new JLabel("Please select the baseline value you would like to use");
-		eventPanel.add(baselineLabel);
+		p.add(baselineLabel);
 
 		final JComboBox<String> baselineHeaderOption = new JComboBox<String>(baselineHeader);
 		baselineHeaderOption.setVisible(true);
 		baselineHeaderOption.setEditable(true);
-		eventPanel.add(baselineHeaderOption);
+		p.add(baselineHeaderOption);
 
 
 		JLabel inputLabel = new JLabel("Please select the input header that correspond with the baslineHeader");
-		eventPanel.add(inputLabel);
+		p.add(inputLabel);
 
 		final JComboBox<String> inputHeaderOption = new JComboBox<String>(inputHeader);
 		inputHeaderOption.setVisible(true);
 		inputHeaderOption.setEditable(true);
-		eventPanel.add(inputHeaderOption);
+		p.add(inputHeaderOption);
 
 		JLabel maximumDurationLabel = new JLabel("Maximum Duration: ");
 		JTextField maximumDurationInput = new JTextField("", 5);
-		eventPanel.add(maximumDurationLabel);
-		eventPanel.add(maximumDurationInput);
+		p.add(maximumDurationLabel);
+		p.add(maximumDurationInput);
 
 		JButton btn = new JButton("OK");
-		eventPanel.add(btn);
+		p.add(btn);
 		btn.addActionListener(e -> {
-			eventFrame.dispose();
+			System.exit(0);
 		});
-		
-//Integer.valueOf(maximumDurationInput.getText())
 		gazeAnalytics.eventWindow(inputFilePath, outputFolderPath, baselineFilePath, baselineHeaderOption.getSelectedIndex(), inputHeaderOption.getSelectedIndex(), 5);
 
 	}
 
-	private static void gazeAnalyticsOptions(String outputFolder)
+	private static void gazeAnalyticsOptions(JPanel p, String outputFolder)
 	{
-		JFrame f = new JFrame("Would you like to select a window");
-		f.setVisible(true);
-		f.setSize(400,400);
-
-		JPanel p = new JPanel();
 		JRadioButton continuousWindowButton = new JRadioButton("Continuous Window");
 		JRadioButton cumulativeWindowButton = new JRadioButton("Cumulative Window");
 		JRadioButton overlappingWindowButton = new JRadioButton("Overlapping Window");
@@ -240,14 +212,16 @@ public class main {
 		p.add(cumulativeWindowButton);
 		p.add(overlappingWindowButton);
 		p.add(eventWindowButton);
-		f.add(p);
 		JButton btn = new JButton("OK");
 		p.add(btn);
+		p.revalidate();
+		
 		btn.addActionListener(e -> {
 			String inputFile = fileChooser("Please select which file you would like to parse out");
+			p.removeAll();
+			p.repaint();
 			if(continuousWindowButton.isSelected()||cumulativeWindowButton.isSelected())
 			{
-				f.dispose();
 				String windowName = "";
 				if(continuousWindowButton.isSelected())
 				{
@@ -260,17 +234,12 @@ public class main {
 
 				JTextField windowSizeInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size: ");
-				JFrame contFrame = new JFrame(windowName);
-				contFrame.setVisible(true);
-				contFrame.setSize(400,400);
-				JPanel contPanel = new JPanel();
-				contFrame.add(contPanel);
-				contPanel.add(windowSizeLabel);
-				contPanel.add(windowSizeInput);
+				p.add(windowSizeLabel);
+				p.add(windowSizeInput);
 				JButton contBtn = new JButton("OK");
-				contPanel.add(contBtn);
+				p.add(contBtn);
+				p.revalidate();
 				contBtn.addActionListener(ev -> {
-					contFrame.dispose();
 					if(continuousWindowButton.isSelected())
 					{
 						try {
@@ -294,24 +263,19 @@ public class main {
 			}
 			else if(overlappingWindowButton.isSelected())
 			{
-				f.dispose();
 				JTextField windowSizeInput = new JTextField("", 5);
 				JTextField overlappingInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size: ");
 				JLabel overlappingLabel = new JLabel("Overlapping Amount: ");
-				JFrame overlappingFrame = new JFrame("Overlapping Window");
-				overlappingFrame.setVisible(true);
-				overlappingFrame.setSize(400,400);
-				JPanel overlappingPanel = new JPanel();
-				overlappingFrame.add(overlappingPanel);
-				overlappingPanel.add(windowSizeLabel);
-				overlappingPanel.add(windowSizeInput);
-				overlappingPanel.add(overlappingLabel);
-				overlappingPanel.add(overlappingInput);
+
+				p.add(windowSizeLabel);
+				p.add(windowSizeInput);
+				p.add(overlappingLabel);
+				p.add(overlappingInput);
 				JButton overlappingBtn = new JButton("OK");
-				overlappingPanel.add(overlappingBtn);
+				p.add(overlappingBtn);
+				p.revalidate();
 				overlappingBtn.addActionListener(ev -> {
-					overlappingFrame.dispose();
 					try {
 						gazeAnalytics.overlappingWindow(inputFile, outputFolder,Integer.parseInt(windowSizeInput.getText()), Integer.parseInt(overlappingInput.getText()) );
 					} catch (NumberFormatException e1) {
@@ -325,9 +289,8 @@ public class main {
 			}
 			else if(eventWindowButton.isSelected())
 			{
-				f.dispose();
 				try {
-					eventGUI(outputFolder);
+					eventGUI(p, outputFolder);
 				} catch (CsvValidationException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
