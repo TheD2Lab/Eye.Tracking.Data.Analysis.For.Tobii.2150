@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Level;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -54,7 +55,7 @@ public class main {
 
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
 		String[] paths = new String[3];
-		calcuations(paths);
+		findPaths(paths);
 		String inputGazePath = paths[0];
 		String inputFixationPath = paths[1];
 		String outputFolderPath = paths[2];
@@ -90,6 +91,7 @@ public class main {
 		// Analyze AOI data
 		AOI.processAOIs(inputGazePath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		
+		//User Interface for selecting type of gaze analytics
 		JFrame f = new JFrame("Would you like to select a window");
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
@@ -104,6 +106,7 @@ public class main {
 		p.add(yesButton);
 		p.add(noButton);
 		f.add(p);
+		
 		JButton btn = new JButton("OK");
 		p.add(btn);
 		btn.addActionListener(e -> {
@@ -122,7 +125,12 @@ public class main {
 		});
 	}
 
-	private static void calcuations(String[]filePaths)
+	/*
+	 * find all the paths for the input files and the output folder location
+	 * 
+	 * @param	filePaths	an array where all the file paths will be stored
+	 */
+	private static void findPaths(String[]filePaths)
 	{
 		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use");
 		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use");
@@ -196,42 +204,47 @@ public class main {
 		gazeAnalytics.eventWindow(inputFilePath, outputFolderPath, baselineFilePath, baselineHeaderOption.getSelectedIndex(), inputHeaderOption.getSelectedIndex(), 5);
 
 	}
-
+	
+	/*
+	 * UI where the user will select which the type of gaze analytics that they will want to output
+	 * UI where the user will input the information needed for the program to output the desired files
+	 * 
+	 * @param	p				the panel the UI will be placed on
+	 * @param	outputfolder	the folder path where all the files will be placed in
+	 */
 	private static void gazeAnalyticsOptions(JPanel p, String outputFolder)
 	{
+		//All the gaze analytics options
 		JRadioButton continuousWindowButton = new JRadioButton("Continuous Window");
 		JRadioButton cumulativeWindowButton = new JRadioButton("Cumulative Window");
 		JRadioButton overlappingWindowButton = new JRadioButton("Overlapping Window");
 		JRadioButton eventWindowButton = new JRadioButton("Event Window");
+		
+		//Adds all the JRadioButton to a layout
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(continuousWindowButton);
 		bg.add(cumulativeWindowButton);
 		bg.add(overlappingWindowButton);
 		bg.add(eventWindowButton);
+		
+		//adds the buttons to a panel
 		p.add(continuousWindowButton);
 		p.add(cumulativeWindowButton);
 		p.add(overlappingWindowButton);
 		p.add(eventWindowButton);
+		
 		JButton btn = new JButton("OK");
 		p.add(btn);
 		p.revalidate();
 		
+		//checks what button has been selected and generates the required files 
 		btn.addActionListener(e -> {
 			String inputFile = fileChooser("Please select which file you would like to parse out");
 			p.removeAll();
 			p.repaint();
+			
 			if(continuousWindowButton.isSelected()||cumulativeWindowButton.isSelected())
 			{
-				String windowName = "";
-				if(continuousWindowButton.isSelected())
-				{
-					windowName = "Continuous Window";
-				}
-				else
-				{
-					windowName = "Cumulative Window";
-				}
-
 				JTextField windowSizeInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size: ");
 				p.add(windowSizeLabel);
@@ -239,23 +252,28 @@ public class main {
 				JButton contBtn = new JButton("OK");
 				p.add(contBtn);
 				p.revalidate();
+				
 				contBtn.addActionListener(ev -> {
 					if(continuousWindowButton.isSelected())
 					{
-						try {
+						try 
+						{
 							gazeAnalytics.continuousWindow(inputFile, outputFolder,Integer.parseInt(windowSizeInput.getText()) );
-						} catch (NumberFormatException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						} 
+						catch (NumberFormatException e1) 
+						{
+							 systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
 						}
 					}
 					else
 					{
-						try {
+						try 
+						{
 							gazeAnalytics.cumulativeWindow(inputFile, outputFolder, Integer.parseInt(windowSizeInput.getText()));
-						} catch (NumberFormatException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						} 
+						catch (NumberFormatException e1) 
+						{
+							 systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
 						}
 					}
 				});
@@ -276,11 +294,14 @@ public class main {
 				p.add(overlappingBtn);
 				p.revalidate();
 				overlappingBtn.addActionListener(ev -> {
-					try {
+					try 
+					{
 						gazeAnalytics.overlappingWindow(inputFile, outputFolder,Integer.parseInt(windowSizeInput.getText()), Integer.parseInt(overlappingInput.getText()) );
-					} catch (NumberFormatException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					} 
+					catch (NumberFormatException e1) 
+					{
+						 systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
+
 					}
 
 
@@ -292,21 +313,32 @@ public class main {
 				try {
 					eventGUI(p, outputFolder);
 				} catch (CsvValidationException e1) {
-					// TODO Auto-generated catch block
+
 					e1.printStackTrace();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
+
 					e1.printStackTrace();
 				}
 			}
 
 		});
+		
+		//terminates after all the files are created
+		System.exit(0);
 	}
 
+	
+	/*
+	 * UI for users to select the file they want to use
+	 * 
+	 * @param	dialogTitle		title of the window
+	 */
 	private static String fileChooser(String dialogTitle)
 	{
+		//Initializes the user to a set directory
 		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
 
+		//ensures that only CSV files will be able to be selected
 		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
 		jfc.setDialogTitle(dialogTitle);
 		int returnValue = jfc.showOpenDialog(null);
@@ -324,10 +356,19 @@ public class main {
 		return "";
 	}
 
+	
+	/*
+	 * UI for users to select the folder they would want to use to place files in
+	 * 
+	 * @param	dialogTitle		title of the window
+	 */
 	private static String folderChooser(String dialogTitle)
 	{
+		//Initializes the user to a set directory
 		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/results/");
 		jfc.setDialogTitle("Choose a directory to save your file: ");
+		
+		//only directories can be selected
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int returnValue = jfc.showSaveDialog(null);
 		if (returnValue == JFileChooser.APPROVE_OPTION) 

@@ -15,8 +15,11 @@ import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 
+/*
+ * Output files based on the gaze calculations that are done
+ */
 public class gazeAnalytics {
-//String inputFile, String outputFile, int timelength
+
 	public static void continuousWindow(String inputFile, String outputFolder, int windowSize)
 	{
 		
