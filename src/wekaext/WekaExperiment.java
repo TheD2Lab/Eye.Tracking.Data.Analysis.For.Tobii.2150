@@ -36,382 +36,367 @@ import weka.experiment.*;
 import javax.swing.*;
 
 public class WekaExperiment {
-    public static void main(String[] args) throws Exception {
-        Scanner in = new Scanner(System.in);
 
-        System.out.print("Experiment type: ");
-        String exptype = in.nextLine();
-        boolean classification;
+	public WekaExperiment() {
 
-        if (exptype.equalsIgnoreCase("classification") || exptype.equalsIgnoreCase("c")) {
-            classification = true;
-        } else if (exptype.equalsIgnoreCase("regression") || exptype.equalsIgnoreCase("r")) {
-            classification = false;
-        } else {
-            throw new Exception("Not a valid experiment type");
-        }
+	}
 
+	public void runExperiment(boolean classification, String dirLocation) throws Exception {
+		File dirPath = new File(dirLocation);
 
-        System.out.print("Enter directory: ");
-        File dirPath = new File(in.nextLine());
+		ArrayList<String> fileNames = new ArrayList<>();
 
-        ArrayList<String> fileNames = new ArrayList<>();
+		for (String s : dirPath.list()) {
+			if (s.contains("arff")) {
+				fileNames.add(s);
+			}
+		}
 
-        for (String s : dirPath.list()) {
-            if (s.contains("arff")) {
-                fileNames.add(s);
-            }
-        }
+		Collections.sort(fileNames, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return extractInt(o1) - extractInt(o2);
+			}
 
-        Collections.sort(fileNames, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return extractInt(o1) - extractInt(o2);
-            }
+			int extractInt(String s) {
+				String num = s.replaceAll("\\D", "");
+				// return 0 if no digits found
+				return num.isEmpty() ? 0 : Integer.parseInt(num);
+			}
+		});
 
-            int extractInt(String s) {
-                String num = s.replaceAll("\\D", "");
-                // return 0 if no digits found
-                return num.isEmpty() ? 0 : Integer.parseInt(num);
-            }
-        });
+		// build classifiers
+		Classifier[] classifiers;
 
-        System.out.print("Output results to: ");
-        String outputLocation = in.nextLine();
+		if (classification) {
+			classifiers = getClassificationClassifiers();
+		} else {
+			classifiers = getRegressionClassifiers();
+		}
 
-        // close scanner
-        in.close();
+		// run experiment
 
+		ArrayList<ClassifierResult[]> allResults = new ArrayList<>();
 
-        // build classifiers
-        Classifier[] classifiers;
+		for (int i = 0; i < fileNames.size(); i++) {
+			String fileLocation = String.format("%s/%s", dirPath.getAbsolutePath(), fileNames.get(i));
+			ResultMatrix matrix = runExperiment(classifiers, fileLocation, classification, false);
 
-        if (classification) {
-            classifiers = getClassificationClassifiers();
-        } else {
-            classifiers = getRegressionClassifiers();
-        }
+			// returns results from classification experiment
+			ClassifierResult[] res = getClassificationExperimentResults(classifiers, matrix);
 
-        // run experiment
+			allResults.add(res);
+			System.out.printf("%d/%d Process Complete ^^^\n==============================", i + 1, fileNames.size());
+		}
 
-        ArrayList<ClassifierResult[]> allResults = new ArrayList<>();
+		// saves classification experiment to csv file
+		writeResultsToCSV(classifiers, allResults, fileNames,
+				String.format("%s/csv_results-%s", dirPath.getParent(), dirPath.getName()));
 
-        for (int i = 0; i < fileNames.size(); i++) {
-            String fileLocation = String.format("%s/%s", dirPath.getAbsolutePath(), fileNames.get(i));
-            ResultMatrix matrix = runExperiment(classifiers, fileLocation, classification, false);
+		System.out.println("==============================\nProcess Complete");
 
-            // returns results from classification experiment
-            ClassifierResult[] res = getClassificationExperimentResults(classifiers, matrix);
+	}
 
-            allResults.add(res);
-            System.out.printf("%d/%d Process Complete ^^^\n==============================", i + 1, fileNames.size());
-        }
+	private void writeResultsToCSV(Classifier[] classifiers, ArrayList<ClassifierResult[]> results,
+			ArrayList<String> fileNames, String fileLocation) {
+		// first create file object for file placed at location
+		// specified by filepath
+		File file = new File(fileLocation);
+		try {
+			// create FileWriter object with file as parameter
+			FileWriter outputfile = new FileWriter(file);
 
-        // saves classification experiment to csv file
-        writeResultsToCSV(classifiers, allResults, fileNames, outputLocation + "results.csv");
+			// create CSVWriter object filewriter object as parameter
+			CSVWriter writer = new CSVWriter(outputfile);
 
+			// adding header to csv
+			String[] header = new String[fileNames.size() + 1];
+			header[0] = "Classifier Name";
 
-        System.out.println("==============================\nProcess Complete");
+			for (int i = 0; i < fileNames.size(); i++) {
+				header[i + 1] = fileNames.get(i);
+			}
 
-    }
+			writer.writeNext(header);
 
-    public static void writeResultsToCSV(Classifier[] classifiers, ArrayList<ClassifierResult[]> results, ArrayList<String> fileNames, String fileLocation) {
-        // first create file object for file placed at location
-        // specified by filepath
-        File file = new File(fileLocation);
-        try {
-            // create FileWriter object with file as parameter
-            FileWriter outputfile = new FileWriter(file);
+			// add data to csv
 
-            // create CSVWriter object filewriter object as parameter
-            CSVWriter writer = new CSVWriter(outputfile);
+			for (int i = 0; i < classifiers.length; i++) {
+				String[] data = new String[fileNames.size() + 1];
+				data[0] = classifiers[i].getClass().getSimpleName();
+				for (int j = 0; j < results.size(); j++) {
 
-            // adding header to csv
-            String[] header = new String[fileNames.size() + 1];
-            header[0] = "Classifier Name";
+					ClassifierResult r = results.get(j)[i];
+					int sig = r.getSignificance();
+					String score = r.getScore().toString();
+					if (sig > 0 || sig < 0) {
+						data[j + 1] = String.format("%s,%d", score, sig);
+					} else {
+						data[j + 1] = score;
+					}
 
-            for (int i = 0; i < fileNames.size(); i++) {
-                header[i + 1] = fileNames.get(i);
-            }
+				}
+				writer.writeNext(data);
+			}
 
-            writer.writeNext(header);
+			// closing writer connection
+			writer.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-            // add data to csv
+	private Classifier[] getClassificationClassifiers() throws Exception {
+		Classifier[] classifiers = new Classifier[44];
 
-            for (int i = 0; i < classifiers.length; i++) {
-                String[] data = new String[fileNames.size() + 1];
-                data[0] = classifiers[i].getClass().getSimpleName();
-                for (int j = 0; j < results.size(); j++) {
+		// set baseline classifier here
+		classifiers[0] = new ZeroR();
 
-                    ClassifierResult r = results.get(j)[i];
-                    int sig = r.getSignificance();
-                    String score = r.getScore().toString();
-                    if (sig > 0 || sig < 0) {
-                        data[j + 1] = String.format("%s,%d", score, sig);
-                    } else {
-                        data[j + 1] = score;
-                    }
+		// bayes
+		classifiers[1] = new BayesNet();
+		classifiers[2] = new NaiveBayes();
+		classifiers[3] = new NaiveBayesMultinomialText();
+		classifiers[4] = new NaiveBayesUpdateable();
 
-                }
-                writer.writeNext(data);
-            }
+		// functions
+		classifiers[5] = new Logistic();
+		classifiers[6] = new MultilayerPerceptron();
+		classifiers[7] = new SGD();
+		classifiers[8] = new SGDText();
+		classifiers[9] = new SimpleLogistic();
+		classifiers[10] = new SMO();
+		classifiers[11] = new VotedPerceptron();
 
+		// lazy
+		classifiers[12] = new IBk();
+		classifiers[13] = new KStar();
+		classifiers[14] = new LWL();
 
-            // closing writer connection
-            writer.close();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+		// meta classifiers
+		classifiers[15] = new AdaBoostM1();
+		classifiers[16] = new AttributeSelectedClassifier();
+		classifiers[17] = new Bagging();
+		classifiers[18] = new ClassificationViaRegression();
+		classifiers[19] = new CVParameterSelection();
+		classifiers[20] = new FilteredClassifier();
+		classifiers[21] = new IterativeClassifierOptimizer();
+		classifiers[22] = new LogitBoost();
+		classifiers[23] = new MultiClassClassifier();
+		classifiers[24] = new MultiClassClassifierUpdateable();
+		classifiers[25] = new MultiScheme();
+		classifiers[26] = new RandomCommittee();
+		classifiers[27] = new RandomizableFilteredClassifier();
+		classifiers[28] = new RandomSubSpace();
+		classifiers[29] = new Stacking();
+		classifiers[30] = new Vote();
+		classifiers[31] = new WeightedInstancesHandlerWrapper();
 
-    public static Classifier[] getClassificationClassifiers() throws Exception {
-        Classifier[] classifiers = new Classifier[44];
+		// misc
+		InputMappedClassifier imc = new InputMappedClassifier();
+		imc.setOptions(Utils.splitOptions("-M"));
+		classifiers[32] = imc;
 
-        // set baseline classifier here
-        classifiers[0] = new ZeroR();
-
-        // bayes
-        classifiers[1] = new BayesNet();
-        classifiers[2] = new NaiveBayes();
-        classifiers[3] = new NaiveBayesMultinomialText();
-        classifiers[4] = new NaiveBayesUpdateable();
-
-        // functions
-        classifiers[5] = new Logistic();
-        classifiers[6] = new MultilayerPerceptron();
-        classifiers[7] = new SGD();
-        classifiers[8] = new SGDText();
-        classifiers[9] = new SimpleLogistic();
-        classifiers[10] = new SMO();
-        classifiers[11] = new VotedPerceptron();
-
-        // lazy
-        classifiers[12] = new IBk();
-        classifiers[13] = new KStar();
-        classifiers[14] = new LWL();
-
-        // meta classifiers
-        classifiers[15] = new AdaBoostM1();
-        classifiers[16] = new AttributeSelectedClassifier();
-        classifiers[17] = new Bagging();
-        classifiers[18] = new ClassificationViaRegression();
-        classifiers[19] = new CVParameterSelection();
-        classifiers[20] = new FilteredClassifier();
-        classifiers[21] = new IterativeClassifierOptimizer();
-        classifiers[22] = new LogitBoost();
-        classifiers[23] = new MultiClassClassifier();
-        classifiers[24] = new MultiClassClassifierUpdateable();
-        classifiers[25] = new MultiScheme();
-        classifiers[26] = new RandomCommittee();
-        classifiers[27] = new RandomizableFilteredClassifier();
-        classifiers[28] = new RandomSubSpace();
-        classifiers[29] = new Stacking();
-        classifiers[30] = new Vote();
-        classifiers[31] = new WeightedInstancesHandlerWrapper();
-
-        // misc
-        InputMappedClassifier imc = new InputMappedClassifier();
-        imc.setOptions(Utils.splitOptions("-M"));
-        classifiers[32] = imc;
-
-        // rules
-        classifiers[33] = new DecisionTable();
-        classifiers[34] = new JRip();
-        classifiers[35] = new OneR();
-        classifiers[36] = new PART();
+		// rules
+		classifiers[33] = new DecisionTable();
+		classifiers[34] = new JRip();
+		classifiers[35] = new OneR();
+		classifiers[36] = new PART();
 
 //        // tree
-        classifiers[37] = new DecisionStump();
-        classifiers[38] = new HoeffdingTree();
-        classifiers[39] = new J48();
-        classifiers[40] = new LMT();
-        classifiers[41] = new RandomForest();
-        classifiers[42] = new RandomTree();
-        classifiers[43] = new REPTree();
+		classifiers[37] = new DecisionStump();
+		classifiers[38] = new HoeffdingTree();
+		classifiers[39] = new J48();
+		classifiers[40] = new LMT();
+		classifiers[41] = new RandomForest();
+		classifiers[42] = new RandomTree();
+		classifiers[43] = new REPTree();
 
-        return classifiers;
-    }
+		return classifiers;
+	}
 
-    public static Classifier[] getRegressionClassifiers() {
-        Classifier[] classifiers = new Classifier[20];
+	private Classifier[] getRegressionClassifiers() {
+		Classifier[] classifiers = new Classifier[20];
 
-        // set baseline classifier here
-        classifiers[0] = new ZeroR();
+		// set baseline classifier here
+		classifiers[0] = new ZeroR();
 
-        // functions
-        classifiers[1] = new GaussianProcesses();
-        classifiers[2] = new LinearRegression();
-        classifiers[3] = new MultilayerPerceptron();
-        classifiers[4] = new SimpleLinearRegression();
-        classifiers[5] = new SMOreg();
+		// functions
+		classifiers[1] = new GaussianProcesses();
+		classifiers[2] = new LinearRegression();
+		classifiers[3] = new MultilayerPerceptron();
+		classifiers[4] = new SimpleLinearRegression();
+		classifiers[5] = new SMOreg();
 
-        // meta
-        classifiers[6] = new Bagging();
-        classifiers[7] = new CVParameterSelection();
-        classifiers[8] = new RegressionByDiscretization();
+		// meta
+		classifiers[6] = new Bagging();
+		classifiers[7] = new CVParameterSelection();
+		classifiers[8] = new RegressionByDiscretization();
 
-        classifiers[9] = new MultiScheme();
-        classifiers[10] = new RandomCommittee();
-        classifiers[11] = new RandomizableFilteredClassifier();
-        classifiers[12] = new RandomSubSpace();
-        classifiers[13] = new Stacking();
-        classifiers[14] = new Vote();
-        classifiers[15] = new WeightedInstancesHandlerWrapper();
+		classifiers[9] = new MultiScheme();
+		classifiers[10] = new RandomCommittee();
+		classifiers[11] = new RandomizableFilteredClassifier();
+		classifiers[12] = new RandomSubSpace();
+		classifiers[13] = new Stacking();
+		classifiers[14] = new Vote();
+		classifiers[15] = new WeightedInstancesHandlerWrapper();
 
-        // rules
-        classifiers[16] = new DecisionTable();
-        classifiers[17] = new M5Rules();
+		// rules
+		classifiers[16] = new DecisionTable();
+		classifiers[17] = new M5Rules();
 
+		// trees
+		classifiers[18] = new M5P();
+		classifiers[19] = new REPTree();
 
-        // trees
-        classifiers[18] = new M5P();
-        classifiers[19] = new REPTree();
+		return classifiers;
+	}
 
-        return classifiers;
-    }
+	private void printClassifierOptions(Classifier classifier) {
+		AbstractClassifier c = (AbstractClassifier) classifier;
+		StringBuilder classifierOptions = new StringBuilder();
 
-    public static void printClassifierOptions(Classifier classifier) {
-        AbstractClassifier c = (AbstractClassifier) classifier;
-        StringBuilder classifierOptions = new StringBuilder();
+		String classifierName = c.getClass().getSimpleName();
+		String[] options = c.getOptions();
 
-        String classifierName = c.getClass().getSimpleName();
-        String[] options = c.getOptions();
+		classifierOptions.append(classifierName + ": ");
+		if (options.length > 0) {
+			for (String s : options) {
+				classifierOptions.append(s + " ");
+			}
+		}
+		System.out.println(classifierOptions);
+	}
 
-        classifierOptions.append(classifierName + ": ");
-        if (options.length > 0) {
-            for (String s : options) {
-                classifierOptions.append(s + " ");
-            }
-        }
-        System.out.println(classifierOptions);
-    }
+	private ResultMatrix runExperiment(Classifier[] classifiers, String fileLocation, boolean classification,
+			Boolean logData) throws Exception {
+		// setup weka.experiment
+		Experiment exp = new Experiment();
+		exp.setPropertyArray(new Classifier[0]);
+		exp.setUsePropertyIterator(true);
 
-    public static ResultMatrix runExperiment(Classifier[] classifiers, String fileLocation, boolean classification, Boolean logData) throws Exception {
-        // setup weka.experiment
-        Experiment exp = new Experiment();
-        exp.setPropertyArray(new Classifier[0]);
-        exp.setUsePropertyIterator(true);
+		// setup for classification or regression
+		SplitEvaluator se = null;
+		Classifier sec = null;
 
-        // setup for classification or regression
-        SplitEvaluator se = null;
-        Classifier sec = null;
+		if (classification) {
+			classification = true;
+			se = new ClassifierSplitEvaluator();
+			sec = ((ClassifierSplitEvaluator) se).getClassifier();
+		} else {
+			se = new RegressionSplitEvaluator();
+			sec = ((RegressionSplitEvaluator) se).getClassifier();
+		}
 
-        if (classification) {
-            classification = true;
-            se = new ClassifierSplitEvaluator();
-            sec = ((ClassifierSplitEvaluator) se).getClassifier();
-        } else {
-            se = new RegressionSplitEvaluator();
-            sec = ((RegressionSplitEvaluator) se).getClassifier();
-        }
+		// cross validation
+		CrossValidationResultProducer cvrp = new CrossValidationResultProducer();
+		cvrp.setNumFolds(10);
+		cvrp.setSplitEvaluator(se);
 
+		PropertyNode[] propertyPath = new PropertyNode[2];
+		propertyPath[0] = new PropertyNode(se,
+				new PropertyDescriptor("splitEvaluator", CrossValidationResultProducer.class),
+				CrossValidationResultProducer.class);
 
-        // cross validation
-        CrossValidationResultProducer cvrp = new CrossValidationResultProducer();
-        cvrp.setNumFolds(10);
-        cvrp.setSplitEvaluator(se);
+		propertyPath[1] = new PropertyNode(sec, new PropertyDescriptor("classifier", se.getClass()), se.getClass());
 
-        PropertyNode[] propertyPath = new PropertyNode[2];
-        propertyPath[0] = new PropertyNode(se, new PropertyDescriptor("splitEvaluator", CrossValidationResultProducer.class), CrossValidationResultProducer.class);
+		exp.setResultProducer(cvrp);
+		exp.setPropertyPath(propertyPath);
 
-        propertyPath[1] = new PropertyNode(sec, new PropertyDescriptor("classifier", se.getClass()), se.getClass());
+		// set classifiers here
+		exp.setPropertyArray(classifiers);
 
-        exp.setResultProducer(cvrp);
-        exp.setPropertyPath(propertyPath);
+		DefaultListModel model = new DefaultListModel();
 
-        // set classifiers here
-        exp.setPropertyArray(classifiers);
+		// set dataset here
+		File file = new File(fileLocation);
 
-        DefaultListModel model = new DefaultListModel();
+		model.addElement(file);
 
-        // set dataset here
-        File file = new File(fileLocation);
+		exp.setDatasets(model);
 
-        model.addElement(file);
+		// *this is important for WEKA experimenter calculations*
+		InstancesResultListener irl = new InstancesResultListener();
 
-        exp.setDatasets(model);
+		irl.setOutputFile(new File(file.getParent() + "/output.csv"));
+		exp.setResultListener(irl);
 
-        // *this is important for WEKA experimenter calculations*
-        InstancesResultListener irl = new InstancesResultListener();
+		exp.initialize();
+		exp.runExperiment();
+		exp.postProcess();
 
-        irl.setOutputFile(new File(file.getParent() + "/output.csv"));
-        exp.setResultListener(irl);
+		PairedCorrectedTTester tester = new PairedCorrectedTTester();
+		Instances result = new Instances(new BufferedReader(new FileReader(irl.getOutputFile())));
 
-        exp.initialize();
-        exp.runExperiment();
-        exp.postProcess();
+		tester.setInstances(result);
+		tester.setSortColumn(-1);
 
-        PairedCorrectedTTester tester = new PairedCorrectedTTester();
-        Instances result = new Instances(new BufferedReader(new FileReader(irl.getOutputFile())));
+		tester.setRunColumn(result.attribute("Key_Run").index());
+		if (classification) {
+			tester.setFoldColumn(result.attribute("Key_Fold").index());
+		}
+		tester.setDatasetKeyColumns(new Range("" + (result.attribute("Key_Dataset").index() + 1)));
+		tester.setResultsetKeyColumns(new Range("" + (result.attribute("Key_Scheme").index() + 1) + ","
+				+ (result.attribute("Key_Scheme_options").index() + 1) + ","
+				+ (result.attribute("Key_Scheme_version_ID").index() + 1)));
+		tester.setResultMatrix(new ResultMatrixPlainText());
+		tester.setDisplayedResultsets(null);
+		tester.setSignificanceLevel(0.05);
+		tester.setShowStdDevs(true);
 
-        tester.setInstances(result);
-        tester.setSortColumn(-1);
+		// experiment results
 
-        tester.setRunColumn(result.attribute("Key_Run").index());
-        if (classification) {
-            tester.setFoldColumn(result.attribute("Key_Fold").index());
-        }
-        tester.setDatasetKeyColumns(new Range("" + (result.attribute("Key_Dataset").index() + 1)));
-        tester.setResultsetKeyColumns(new Range("" + (result.attribute("Key_Scheme").index() + 1) + "," + (result.attribute("Key_Scheme_options").index() + 1) + "," + (result.attribute("Key_Scheme_version_ID").index() + 1)));
-        tester.setResultMatrix(new ResultMatrixPlainText());
-        tester.setDisplayedResultsets(null);
-        tester.setSignificanceLevel(0.05);
-        tester.setShowStdDevs(true);
+		if (classification) {
+			tester.multiResultsetFull(0, result.attribute("Percent_correct").index());
+		} else {
+			tester.multiResultsetFull(0, result.attribute("Root_relative_squared_error").index());
+		}
 
-        // experiment results
+		ResultMatrix matrix = tester.getResultMatrix();
 
-        if (classification) {
-            tester.multiResultsetFull(0, result.attribute("Percent_correct").index());
-        } else {
-            tester.multiResultsetFull(0, result.attribute("Root_relative_squared_error").index());
-        }
+		if (logData) {
+			System.out.println(matrix.toStringMatrix());
+		}
 
-        ResultMatrix matrix = tester.getResultMatrix();
+		// delete output file
+		irl.getOutputFile().delete();
 
-        if (logData) {
-            System.out.println(matrix.toStringMatrix());
-        }
+		return matrix;
+	}
 
-        // delete output file
-        irl.getOutputFile().delete();
+	private ClassifierResult[] getClassificationExperimentResults(Classifier[] classifiers, ResultMatrix matrix) {
+		ClassifierResult[] classifierResults = new ClassifierResult[classifiers.length];
 
-        return matrix;
-    }
+		for (int i = 0; i < matrix.getColCount(); i++) {
 
-    public static ClassifierResult[] getClassificationExperimentResults(Classifier[] classifiers, ResultMatrix matrix) {
-        ClassifierResult[] classifierResults = new ClassifierResult[classifiers.length];
+			classifierResults[i] = new ClassifierResult(classifiers[i], Precision.round(matrix.getMean(i, 0), 2),
+					matrix.getSignificance(i, 0));
 
-        for (int i = 0; i < matrix.getColCount(); i++) {
+		}
 
-            classifierResults[i] = new ClassifierResult(classifiers[i], Precision.round(matrix.getMean(i, 0), 2), matrix.getSignificance(i, 0));
+		return classifierResults;
+	}
 
-        }
+	private void evaluateAllClassifiers(Classifier[] classifiers, Instances train) {
+		// classifier evaluations
+		ArrayList<String> dnw = new ArrayList<String>();
 
-        return classifierResults;
-    }
+		for (Classifier c : classifiers) {
+			try {
+				Evaluation eval = new Evaluation(train);
+				eval.crossValidateModel(c, train, 10, new Random(1));
 
+			} catch (Exception e) {
+				e.printStackTrace();
+				dnw.add(c.getClass().getSimpleName());
 
-    public static void evaluateAllClassifiers(Classifier[] classifiers, Instances train) {
-        // classifier evaluations
-        ArrayList<String> dnw = new ArrayList<String>();
+			}
+		}
 
-        for (Classifier c : classifiers) {
-            try {
-                Evaluation eval = new Evaluation(train);
-                eval.crossValidateModel(c, train, 10, new Random(1));
+		for (String s : dnw) {
+			System.out.println(s);
+		}
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                dnw.add(c.getClass().getSimpleName());
-
-            }
-        }
-
-        for (String s : dnw) {
-            System.out.println(s);
-        }
-
-    }
+	}
 
 }

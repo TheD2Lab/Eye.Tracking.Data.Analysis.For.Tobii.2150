@@ -42,8 +42,9 @@ public class CSVFilterData {
 		}
 
 		header[j] = "Binary_Task_Success";
-		
-		int MEDIAN = getMedianFromCSV("/Users/pgatsby/Desktop/csv_result-Expanding_Window_by_Time_Overall_24mins.csv", 12);
+
+		int MEDIAN = getMedianFromCSV("/Users/pgatsby/Desktop/csv_result-Expanding_Window_by_Time_Overall_24mins.csv",
+				12);
 
 		File file = new File(fileLocation);
 		try {
@@ -63,16 +64,15 @@ public class CSVFilterData {
 				String[] data = new String[DATA_LENGTH];
 				int i = 0;
 				for (String k : columnFeature.keySet()) {
-					if(k.equalsIgnoreCase("time_on_task")) {
-						if(Integer.parseInt(nextRecord[columnFeature.get(k)]) >= MEDIAN) {
+					if (k.equalsIgnoreCase("time_on_task")) {
+						if (Integer.parseInt(nextRecord[columnFeature.get(k)]) >= MEDIAN) {
 							data[j] = "1";
-						}
-						else {
+						} else {
 							data[j] = "0";
 						}
-						
+
 					}
-					
+
 					data[i] = nextRecord[columnFeature.get(k)];
 					i++;
 				}
@@ -104,12 +104,12 @@ public class CSVFilterData {
 				taskScores.add(Integer.parseInt(row[columnID]));
 
 			} catch (Exception e) {
-				System.out.println(row[columnID] + " Not a number");
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 
 		Collections.sort(taskScores);
-
 
 		if (taskScores.size() % 2 == 0) {
 			return (int) (taskScores.get(taskScores.size() / 2) + taskScores.get(taskScores.size() / 2) - 1) / 2;
