@@ -101,6 +101,7 @@ public class main {
 		JRadioButton yesButton = new JRadioButton("Yes");
 		JRadioButton noButton = new JRadioButton("No");
 		ButtonGroup bg = new ButtonGroup();
+		
 		bg.add(yesButton);
 		bg.add(noButton);
 		p.add(yesButton);
@@ -112,16 +113,12 @@ public class main {
 		btn.addActionListener(e -> {
 			if(yesButton.isSelected())
 			{
+				//removes all the objects from the panel
 				p.removeAll();
 				gazeAnalyticsOptions(p, outputFolderPath);
 
 
 			}
-			else if(noButton.isSelected())
-			{
-				f.dispose();
-			}
-
 		});
 	}
 
@@ -138,6 +135,8 @@ public class main {
 
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
 		File participantFolder = new File(outputPath + "\\" + participant);
+		
+		//creates the folder only if it doesn't exists already
 		if(!participantFolder.exists())
 		{
 			boolean folderCreated = participantFolder.mkdir();
