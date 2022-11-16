@@ -91,7 +91,7 @@ public class WekaExperiment {
 
 		// saves classification experiment to csv file
 		writeResultsToCSV(classifiers, allResults, fileNames,
-				String.format("%s/csv_results-%s", dirPath.getParent(), dirPath.getName()));
+				String.format("%s/csv_results-%s.csv", dirPath.getParent(), dirPath.getName()));
 
 		System.out.println("==============================\nProcess Complete");
 
