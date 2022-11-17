@@ -10,9 +10,9 @@ import com.opencsv.exceptions.CsvValidationException;
 
 public class CSVFilterData {
 	
-	int DATA_LENGTH;
+	private int DATA_LENGTH;
 	
-	int MEDIAN;
+	private int MEDIAN;
 
 	public CSVFilterData() {}
 
@@ -100,7 +100,7 @@ public class CSVFilterData {
 
 	}
 
-	public static int getMedianFromCSV(String fileLocation, int columnID) throws Exception {
+	private static int getMedianFromCSV(String fileLocation, int columnID) throws Exception {
 
 		// create csv reader
 		CSVReader csvReader = new CSVReader(new FileReader(fileLocation));
