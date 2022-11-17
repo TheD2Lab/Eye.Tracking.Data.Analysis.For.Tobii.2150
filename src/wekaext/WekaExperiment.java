@@ -37,13 +37,13 @@ import javax.swing.*;
 
 public class WekaExperiment {
 
-	public WekaExperiment() {
+	public WekaExperiment() {}
 
-	}
-
-	public void runExperiment(boolean classification, String dirLocation) throws Exception {
+	public void setupExperiment(boolean classification, String dirLocation) throws Exception {
+		// set directory path
 		File dirPath = new File(dirLocation);
-
+		
+		// find all arff files
 		ArrayList<String> fileNames = new ArrayList<>();
 
 		for (String s : dirPath.list()) {
@@ -51,7 +51,8 @@ public class WekaExperiment {
 				fileNames.add(s);
 			}
 		}
-
+		
+		// sort all files by filename 
 		Collections.sort(fileNames, new Comparator<String>() {
 			@Override
 			public int compare(String o1, String o2) {

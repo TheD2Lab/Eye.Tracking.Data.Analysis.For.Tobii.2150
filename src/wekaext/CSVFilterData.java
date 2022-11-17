@@ -9,26 +9,31 @@ import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
 public class CSVFilterData {
-	public static void main(String[] args) throws Exception {
+	
+	int DATA_LENGTH;
+	
+	int MEDIAN;
 
-		String fileLocation = "/Users/pgatsby/Desktop/output.csv";
+	public CSVFilterData() {}
+
+	public void filterCSVData(String fileLocation, ArrayList<String> filter, String featureNameForMedianSplit) throws Exception {
+		// set file path
+		File filePath = new File(fileLocation);
 
 		// create reader
-		FileReader reader = new FileReader(
-				"/Users/pgatsby/Desktop/csv_result-Expanding_Window_by_Time_Overall_24mins.csv");
+		FileReader reader = new FileReader(fileLocation);
 
 		// create csv reader
 		CSVReader csvReader = new CSVReader(reader);
 
 		String[] nextRecord = csvReader.readNext();
-
-		ArrayList<String> filter = new ArrayList<>();
-		filter.add("id");
-
-		int DATA_LENGTH = nextRecord.length - filter.size() + 1;
+		
+		// set headers without filtered data
+		DATA_LENGTH = nextRecord.length - filter.size() + 1;
 
 		String[] header = new String[DATA_LENGTH];
-
+		
+		// maps feature to original column number
 		LinkedHashMap<String, Integer> columnFeature = new LinkedHashMap<String, Integer>();
 
 		int j = 0;
@@ -36,17 +41,22 @@ public class CSVFilterData {
 		for (int i = 0; i < nextRecord.length; i++) {
 			if (!filter.contains(nextRecord[i].toLowerCase())) {
 				header[j] = nextRecord[i];
+				
+				// maps feature to original column number
 				columnFeature.put(nextRecord[i].toLowerCase(), i);
 				j++;
 			}
 		}
-
+		
+		// makes new column for binary success
 		header[j] = "Binary_Task_Success";
-
-		int MEDIAN = getMedianFromCSV("/Users/pgatsby/Desktop/csv_result-Expanding_Window_by_Time_Overall_24mins.csv",
-				12);
-
-		File file = new File(fileLocation);
+		
+		
+		// calculates median from column and returns median
+		MEDIAN = getMedianFromCSV(filePath.getAbsolutePath(), columnFeature.get(featureNameForMedianSplit));
+		
+		
+		File file = new File(String.format("%s/filtered_data-%s.csv", filePath.getParent(), filePath.getName()));
 		try {
 			// create FileWriter object with file as parameter
 			FileWriter outputfile = new FileWriter(file);
@@ -64,7 +74,7 @@ public class CSVFilterData {
 				String[] data = new String[DATA_LENGTH];
 				int i = 0;
 				for (String k : columnFeature.keySet()) {
-					if (k.equalsIgnoreCase("time_on_task")) {
+					if (k.equalsIgnoreCase(featureNameForMedianSplit)) {
 						if (Integer.parseInt(nextRecord[columnFeature.get(k)]) >= MEDIAN) {
 							data[j] = "1";
 						} else {
