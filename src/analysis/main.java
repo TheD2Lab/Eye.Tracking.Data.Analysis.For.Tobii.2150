@@ -54,18 +54,22 @@ import weka.core.converters.CSVLoader;
 public class main {
 
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
+		//find the folder and input file paths
 		String[] paths = new String[3];
-		findPaths(paths);
+		
+		findFolderPath(paths);
 		String inputGazePath = paths[0];
 		String inputFixationPath = paths[1];
 		String outputFolderPath = paths[2];
+		
+		//create the system log
 		systemLogger.createSystemLog(outputFolderPath);
 		
 		// Resolution of monitor
 		final int SCREEN_WIDTH = 1024;
 		final int SCREEN_HEIGHT = 768;
 
-		//File paths
+		//output file paths
 		String graphFixationResults = "\\graphFXDResults.csv";
 		String graphFixationOutput = outputFolderPath + graphFixationResults;
 
@@ -116,8 +120,6 @@ public class main {
 				//removes all the objects from the panel
 				p.removeAll();
 				gazeAnalyticsOptions(p, outputFolderPath);
-
-
 			}
 		});
 	}
@@ -127,7 +129,7 @@ public class main {
 	 * 
 	 * @param	filePaths	an array where all the file paths will be stored
 	 */
-	private static void findPaths(String[]filePaths)
+	private static void findFolderPath(String[]filePaths)
 	{
 		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use");
 		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use");

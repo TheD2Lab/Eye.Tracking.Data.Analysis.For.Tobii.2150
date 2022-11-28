@@ -27,7 +27,7 @@ public class gazeAnalytics {
 		int initialTime = 0;
 		String outputFile = outputFolder + "\\continuous_" + endTime + ".csv";
 		try {
-			while(window(inputFile,outputFile,initialTime,endTime))
+			while(snapshot(inputFile,outputFile,initialTime,endTime))
 			{
 				initialTime += windowSize;
 				endTime += windowSize;
@@ -48,7 +48,7 @@ public class gazeAnalytics {
 		String outputFile = outputFolder + "\\cumulative_" + endTime + ".csv";
 		try 
 		{
-			while(window(inputFile,outputFile,initialTime,endTime))
+			while(snapshot(inputFile,outputFile,initialTime,endTime))
 			{
 				endTime += windowSize;
 				outputFile = outputFolder + "\\cumulative_" + endTime + ".csv";
@@ -66,7 +66,7 @@ public class gazeAnalytics {
 		int initialTime = 0;
 		String outputFile = outputFolder + "\\overlap_" + endTime + ".csv";
 		try {
-			while(window(inputFile,outputFile,initialTime,endTime))
+			while(snapshot(inputFile,outputFile,initialTime,endTime))
 			{
 				initialTime = endTime - overlap;
 				endTime += windowSize;
@@ -167,30 +167,7 @@ public class gazeAnalytics {
 
 	}
 	
-	private static int findHeaderIndex(CSVReader reader, String header)
-	{
-		String[] headerArray;
-		try 
-		{
-			headerArray = reader.readNext();
-			for(int i = 0; i < headerArray.length; i++)
-	        {
-	           	 if(headerArray[i].equals(header))
-	           	 {
-	           		 return i;
-	           	 }
-	        }
-		} 
-		catch (CsvValidationException | IOException e) 
-		{
-    		systemLogger.writeToSystemLog(Level.SEVERE, gazeAnalytics.class.getName(), "unable to find index \n" + e.toString());
-    		System.exit(0);
-
-		}
-        return -1;
-	}
-	
-	private static boolean window(String inputFile, String outputFile, int start, int end) throws IOException
+	private static boolean snapshot(String inputFile, String outputFile, int start, int end) throws IOException
 	{
 		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
         CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
