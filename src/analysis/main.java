@@ -27,7 +27,10 @@ package analysis;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.swing.ButtonGroup;
@@ -45,6 +48,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
 import weka.core.Instances;
@@ -79,14 +83,19 @@ public class main {
 		String graphGazeResults = "\\graphGZDResults.csv";
 		String graphGazeOutput = outputFolderPath + graphGazeResults;
 		
+		
 		String aoiResults = "\\aoiResults.csv";
 		String aoiOutput = outputFolderPath + aoiResults;
+		
+		//combining all result files
+		mergingCSVFiles(inputFixationPath, inputGazePath, outputFolderPath+ "\\combine.csv");
 		 
 		// Analyze graph related data
 		fixation.processFixation(inputFixationPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		event.processEvent(inputGazePath, graphEventOutput);
 		gaze.processGaze(inputGazePath, graphGazeOutput);
 
+		
 		// Gaze Analytics 
 		gazeAnalytics.csvToARFF(graphFixationOutput);
 		gazeAnalytics.csvToARFF(graphEventOutput);
@@ -121,9 +130,70 @@ public class main {
 				p.removeAll();
 				gazeAnalyticsOptions(p, outputFolderPath);
 			}
+			else if(noButton.isSelected())
+			{
+				System.exit(0);
+			}
 		});
 	}
 
+	
+	private static void mergingCSVFiles(String FXD, String GZD, String outputFile) throws IOException
+	{
+ 		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
+        CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
+        
+        FileReader fileReaderFXD = new FileReader(FXD);
+        CSVReader csvReaderFXD = new CSVReader(fileReaderFXD);
+        FileReader fileReaderGZD = new FileReader(GZD);
+        CSVReader csvReaderGZD = new CSVReader(fileReaderGZD);
+        try
+        {
+        	int size = 0;
+        	
+        	String[] nextLineFXD = csvReaderFXD.readNext();
+        	String[] nextLineGZD = csvReaderGZD.readNext();
+        	size = nextLineFXD.length + nextLineGZD.length;
+        	String[]mergeLine = new String[size];
+        	do 
+        	{
+        		int index = 0;
+        		if(nextLineFXD != null) 
+        		{
+	        		for(String f: nextLineFXD)
+	        		{
+		        		mergeLine[index] = f;
+		        		index++;
+	        			
+	        		}
+        		}
+        		if(nextLineGZD != null)
+        		{
+	        		for(String g: nextLineGZD)
+	        		{
+	
+		        		mergeLine[index] = g;
+		        		index++;
+	        			
+	        		}
+        		}
+        		outputCSVWriter.writeNext(mergeLine);
+        	}
+        	while((nextLineFXD = csvReaderFXD.readNext()) != null ||  (nextLineGZD = csvReaderGZD.readNext()) != null);
+        	
+        }
+        catch(Exception e)
+        {
+        	System.out.println(e);
+        	System.exit(0);
+        }
+        finally
+        {
+        	outputCSVWriter.close();
+        	csvReaderFXD.close();
+        	csvReaderGZD.close();
+        }
+	}
 	/*
 	 * find all the paths for the input files and the output folder location
 	 * 
@@ -156,6 +226,7 @@ public class main {
 		filePaths[2] =  outputPath;
 
 	}
+	
 
 	private static void eventGUI(JPanel p, String outputFolderPath) throws CsvValidationException, IOException
 	{
