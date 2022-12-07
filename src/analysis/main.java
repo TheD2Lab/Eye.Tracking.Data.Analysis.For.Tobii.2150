@@ -337,6 +337,7 @@ public class main {
 						{
 							 systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
 						}
+						System.exit(0);
 					}
 					else
 					{
@@ -348,6 +349,7 @@ public class main {
 						{
 							 systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
 						}
+						System.exit(0);
 					}
 				});
 
@@ -374,8 +376,8 @@ public class main {
 					catch (NumberFormatException e1) 
 					{
 						 systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
-
 					}
+					System.exit(0);
 
 
 				});
