@@ -287,23 +287,24 @@ public class main {
 	private static void gazeAnalyticsOptions(JPanel p, String outputFolder)
 	{
 		//All the gaze analytics options
+		p.removeAll();
 		JRadioButton continuousWindowButton = new JRadioButton("Continuous Window");
 		JRadioButton cumulativeWindowButton = new JRadioButton("Cumulative Window");
 		JRadioButton overlappingWindowButton = new JRadioButton("Overlapping Window");
-		JRadioButton eventWindowButton = new JRadioButton("Event Window");
+		//JRadioButton eventWindowButton = new JRadioButton("Event Window");
 		
 		//Adds all the JRadioButton to a layout
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(continuousWindowButton);
 		bg.add(cumulativeWindowButton);
 		bg.add(overlappingWindowButton);
-		bg.add(eventWindowButton);
+		//bg.add(eventWindowButton);
 		
 		//adds the buttons to a panel
 		p.add(continuousWindowButton);
 		p.add(cumulativeWindowButton);
 		p.add(overlappingWindowButton);
-		p.add(eventWindowButton);
+		//p.add(eventWindowButton);
 		
 		JButton btn = new JButton("OK");
 		p.add(btn);
@@ -380,6 +381,7 @@ public class main {
 				});
 
 			}
+			/*
 			else if(eventWindowButton.isSelected())
 			{
 				try {
@@ -392,12 +394,10 @@ public class main {
 					e1.printStackTrace();
 				}
 			}
-
+			*/
 		});
-		
-		//terminates after all the files are created
-		System.exit(0);
 	}
+		
 
 	
 	/*
