@@ -266,6 +266,9 @@ public class fixation {
 
             headers.add("convex hull area");
             data.add(String.valueOf(convexHull.getPolygonArea(points)));
+            
+            headers.add("Average Saccade Velocity");
+            data.add(avgSaccadeVelocity(inputFile));
 
             outputCSVWriter.writeNext(headers.toArray(new String[headers.size()]));
             outputCSVWriter.writeNext(data.toArray(new String[data.size()]));
@@ -324,7 +327,33 @@ public class fixation {
 		// Return the 9th column of the last row, which is the fixation ID
 		return line[9] + "";
 	}
-
+	
+	public static String avgSaccadeVelocity(String inputFile) throws IOException 
+	{
+		File file = new File(inputFile);
+		FileReader fileReader = new FileReader(file);
+		CSVReader csvReader = new CSVReader(fileReader);
+		Iterator<String[]> iter = csvReader.iterator();
+		String[] rowA = new String[0];
+		String[] rowB = new String[0];
+		double totalSaccadeVelocity = 0;
+		
+		rowA = iter.next();
+		while (iter.hasNext())
+		{
+			rowB = iter.next();
+			
+			//column 48 is SACCADE_MAG and column 3 is the timestamp
+			totalSaccadeVelocity += Double.valueOf(rowB[48])/Math.abs(Double.valueOf(rowA[3]) - Double.valueOf(rowB[3]));
+			rowA = rowB; 
+		}
+		
+		csvReader.close();
+		
+		return (totalSaccadeVelocity/Double.valueOf(rowB[9])) + "";
+	
+	}
+	
 
 	public static double getScanpathDuration(ArrayList<Double> allFixationDurations, ArrayList<Double> allSaccadeDurations) {
 		double fixationDuration = descriptiveStats.getSumOfDoubles(allFixationDurations);
