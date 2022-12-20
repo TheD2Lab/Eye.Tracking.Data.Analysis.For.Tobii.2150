@@ -341,14 +341,16 @@ public class fixation {
 		String[] rowB = new String[0];
 		double totalSaccadeVelocity = 0;
 		
+		//skips header row
+		iter.next();
 		rowA = iter.next();
 		
 		while (iter.hasNext())
 		{
 			rowB = iter.next();
 			
-			//column 49 is SACCADE_MAG and column 4 is the timestamp
-			totalSaccadeVelocity += Double.valueOf(rowB[48])/Math.abs(Double.valueOf(rowA[3]) - Double.valueOf(rowB[3]));
+			//column 50 is SACCADE_DIR and column 4 is the timestamp
+			totalSaccadeVelocity += Double.valueOf(rowB[49])/Math.abs(Double.valueOf(rowA[3]) - Double.valueOf(rowB[3]));
 			rowA = rowB; 
 		}
 		
@@ -365,6 +367,9 @@ public class fixation {
 		String[] row = new String[0];
 		int minutes = 1; 
 		int totalBlinks = 0;
+		
+		//skips header row
+		iter.next();
 			
 		while (iter.hasNext())
 		{

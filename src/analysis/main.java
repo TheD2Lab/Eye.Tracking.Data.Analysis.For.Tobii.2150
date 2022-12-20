@@ -30,6 +30,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -147,40 +148,27 @@ public class main {
         CSVReader csvReaderFXD = new CSVReader(fileReaderFXD);
         FileReader fileReaderGZD = new FileReader(GZD);
         CSVReader csvReaderGZD = new CSVReader(fileReaderGZD);
+		Iterator<String[]> iterFXD = csvReaderFXD.iterator();
+		Iterator<String[]> iterGZD = csvReaderGZD.iterator();
+		String[] rowFXD= new String[0];
+		String[] rowGZD = new String[0];
+    	String[]results = new String[104];
         try
         {
-        	int size = 0;
-        	
-        	String[] nextLineFXD = csvReaderFXD.readNext();
-        	String[] nextLineGZD = csvReaderGZD.readNext();
-        	size = nextLineFXD.length + nextLineGZD.length;
-        	String[]mergeLine = new String[size];
-        	do 
+        	while(iterFXD.hasNext())
         	{
-        		int index = 0;
-        		if(nextLineFXD != null) 
-        		{
-	        		for(String f: nextLineFXD)
-	        		{
-		        		mergeLine[index] = f;
-		        		index++;
-	        			
-	        		}
-        		}
-        		if(nextLineGZD != null)
-        		{
-	        		for(String g: nextLineGZD)
-	        		{
-	
-		        		mergeLine[index] = g;
-		        		index++;
-	        			
-	        		}
-        		}
-        		outputCSVWriter.writeNext(mergeLine);
+        		rowGZD = iterGZD.next();
+        		rowFXD = iterFXD.next();
+            	System.arraycopy(rowGZD, 0, results, 0, rowGZD.length);
+            	System.arraycopy(rowFXD, 0, results, rowGZD.length, rowFXD.length);
+            	outputCSVWriter.writeNext(results);
         	}
-        	while((nextLineFXD = csvReaderFXD.readNext()) != null ||  (nextLineGZD = csvReaderGZD.readNext()) != null);
         	
+        	while(iterGZD.hasNext())
+        	{
+        		outputCSVWriter.writeNext(iterGZD.next());
+        	}
+
         }
         catch(Exception e)
         {
@@ -291,20 +279,17 @@ public class main {
 		JRadioButton continuousWindowButton = new JRadioButton("Continuous Window");
 		JRadioButton cumulativeWindowButton = new JRadioButton("Cumulative Window");
 		JRadioButton overlappingWindowButton = new JRadioButton("Overlapping Window");
-		//JRadioButton eventWindowButton = new JRadioButton("Event Window");
 		
 		//Adds all the JRadioButton to a layout
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(continuousWindowButton);
 		bg.add(cumulativeWindowButton);
 		bg.add(overlappingWindowButton);
-		//bg.add(eventWindowButton);
 		
 		//adds the buttons to a panel
 		p.add(continuousWindowButton);
 		p.add(cumulativeWindowButton);
 		p.add(overlappingWindowButton);
-		//p.add(eventWindowButton);
 		
 		JButton btn = new JButton("OK");
 		p.add(btn);
@@ -383,20 +368,6 @@ public class main {
 				});
 
 			}
-			/*
-			else if(eventWindowButton.isSelected())
-			{
-				try {
-					eventGUI(p, outputFolder);
-				} catch (CsvValidationException e1) {
-
-					e1.printStackTrace();
-				} catch (IOException e1) {
-
-					e1.printStackTrace();
-				}
-			}
-			*/
 		});
 	}
 		
