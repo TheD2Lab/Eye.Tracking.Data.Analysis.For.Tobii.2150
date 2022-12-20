@@ -138,7 +138,12 @@ public class main {
 		});
 	}
 
-	
+
+	/*
+	 * merges all the input files 
+	 * 
+	 * @param	filePaths	an array where all the file paths will be stored
+	 */
 	private static void mergingCSVFiles(String FXD, String GZD, String outputFile) throws IOException
 	{
  		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
@@ -216,54 +221,6 @@ public class main {
 	}
 	
 
-	private static void eventGUI(JPanel p, String outputFolderPath) throws CsvValidationException, IOException
-	{
-		String baselineFilePath = "";
-		String inputFilePath = "";
-
-		baselineFilePath = fileChooser("Select the baseline CSV file you would like to use ");
-		inputFilePath = fileChooser("Select the input CSV file you would like to use ");
-
-
-		FileReader baslineFileReader = new FileReader(baselineFilePath);
-		CSVReader baselineCSVReader = new CSVReader(baslineFileReader);
-		String[]baselineHeader = baselineCSVReader.readNext();
-
-		FileReader inputFileReader = new FileReader(inputFilePath);
-		CSVReader inputCSVReader = new CSVReader(inputFileReader);
-		String[]inputHeader = inputCSVReader.readNext();
-
-
-		JLabel baselineLabel = new JLabel("Please select the baseline value you would like to use");
-		p.add(baselineLabel);
-
-		final JComboBox<String> baselineHeaderOption = new JComboBox<String>(baselineHeader);
-		baselineHeaderOption.setVisible(true);
-		baselineHeaderOption.setEditable(true);
-		p.add(baselineHeaderOption);
-
-
-		JLabel inputLabel = new JLabel("Please select the input header that correspond with the baslineHeader");
-		p.add(inputLabel);
-
-		final JComboBox<String> inputHeaderOption = new JComboBox<String>(inputHeader);
-		inputHeaderOption.setVisible(true);
-		inputHeaderOption.setEditable(true);
-		p.add(inputHeaderOption);
-
-		JLabel maximumDurationLabel = new JLabel("Maximum Duration: ");
-		JTextField maximumDurationInput = new JTextField("", 5);
-		p.add(maximumDurationLabel);
-		p.add(maximumDurationInput);
-
-		JButton btn = new JButton("OK");
-		p.add(btn);
-		btn.addActionListener(e -> {
-			System.exit(0);
-		});
-		gazeAnalytics.eventWindow(inputFilePath, outputFolderPath, baselineFilePath, baselineHeaderOption.getSelectedIndex(), inputHeaderOption.getSelectedIndex(), 5);
-
-	}
 	
 	/*
 	 * UI where the user will select which the type of gaze analytics that they will want to output
