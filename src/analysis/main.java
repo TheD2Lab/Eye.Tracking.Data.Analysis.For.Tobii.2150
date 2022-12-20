@@ -157,7 +157,7 @@ public class main {
 		Iterator<String[]> iterGZD = csvReaderGZD.iterator();
 		String[] rowFXD= new String[0];
 		String[] rowGZD = new String[0];
-    	String[]results = new String[104];
+    	String[]results = new String[120];
         try
         {
         	while(iterFXD.hasNext())

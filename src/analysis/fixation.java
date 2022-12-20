@@ -56,7 +56,6 @@ public class fixation {
         FileWriter outputFileWriter = new FileWriter(new File (outputFile));
         CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
         try {
-
         	 FileReader fileReader = new FileReader(inputFile);
              CSVReader csvReader = new CSVReader(fileReader);
              String[]nextLine = csvReader.readNext();
@@ -268,7 +267,7 @@ public class fixation {
             data.add(String.valueOf(convexHull.getPolygonArea(points)));
             
             headers.add("Average Saccade Velocity");
-            data.add(avgSaccadeVelocity(inputFile));
+            data.add(avgSaccadeVelocity(inputFile, outputFile));
             
             headers.add("Average Blink Rate per Minute");
             data.add(blinkRate(inputFile));
@@ -331,15 +330,20 @@ public class fixation {
 		return line[9] + "";
 	}
 	
-	public static String avgSaccadeVelocity(String inputFile) throws IOException 
+	public static String avgSaccadeVelocity(String inputFile, String outputFile) throws IOException 
 	{
 		File file = new File(inputFile);
 		FileReader fileReader = new FileReader(file);
 		CSVReader csvReader = new CSVReader(fileReader);
+		FileWriter fileWriter = new FileWriter(new File (outputFile.replace("graphFXDResults.csv", "saccadeVelocity.csv")));
+        CSVWriter csvWriter = new CSVWriter(fileWriter);
 		Iterator<String[]> iter = csvReader.iterator();
 		String[] rowA = new String[0];
 		String[] rowB = new String[0];
 		double totalSaccadeVelocity = 0;
+		
+		csvWriter.writeNext(new String[] {"saccade velocity"});
+		csvWriter.writeNext(new String[] {"" + 0});
 		
 		//skips header row
 		iter.next();
@@ -350,10 +354,13 @@ public class fixation {
 			rowB = iter.next();
 			
 			//column 50 is SACCADE_DIR and column 4 is the timestamp
-			totalSaccadeVelocity += Double.valueOf(rowB[49])/Math.abs(Double.valueOf(rowA[3]) - Double.valueOf(rowB[3]));
+			double saccadeVelocity = Double.valueOf(rowB[49])/Math.abs(Double.valueOf(rowA[3]) - Double.valueOf(rowB[3]));
+			csvWriter.writeNext(new String[] {"" + saccadeVelocity});
+			totalSaccadeVelocity += saccadeVelocity;
 			rowA = rowB; 
 		}
 		
+		csvWriter.close();
 		csvReader.close();
 		return (totalSaccadeVelocity/Double.valueOf(rowB[9])) + "";
 	}
@@ -387,7 +394,6 @@ public class fixation {
 		//returns avg blinks per minute
 		return (totalBlinks/minutes) + "";
 	}
-	
 
 	public static double getScanpathDuration(ArrayList<Double> allFixationDurations, ArrayList<Double> allSaccadeDurations) {
 		double fixationDuration = descriptiveStats.getSumOfDoubles(allFixationDurations);
