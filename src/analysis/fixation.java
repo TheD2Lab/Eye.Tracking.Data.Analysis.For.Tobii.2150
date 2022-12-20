@@ -269,6 +269,9 @@ public class fixation {
             
             headers.add("Average Saccade Velocity");
             data.add(avgSaccadeVelocity(inputFile));
+            
+            headers.add("Average Blink Rate per Minute");
+            data.add(blinkRate(inputFile));
 
             outputCSVWriter.writeNext(headers.toArray(new String[headers.size()]));
             outputCSVWriter.writeNext(data.toArray(new String[data.size()]));
@@ -339,19 +342,45 @@ public class fixation {
 		double totalSaccadeVelocity = 0;
 		
 		rowA = iter.next();
+		
 		while (iter.hasNext())
 		{
 			rowB = iter.next();
 			
-			//column 48 is SACCADE_MAG and column 3 is the timestamp
+			//column 49 is SACCADE_MAG and column 4 is the timestamp
 			totalSaccadeVelocity += Double.valueOf(rowB[48])/Math.abs(Double.valueOf(rowA[3]) - Double.valueOf(rowB[3]));
 			rowA = rowB; 
 		}
 		
 		csvReader.close();
-		
 		return (totalSaccadeVelocity/Double.valueOf(rowB[9])) + "";
+	}
 	
+	public static String blinkRate(String inputFile) throws IOException
+	{
+		File file = new File(inputFile);
+		FileReader fileReader = new FileReader(file);
+		CSVReader csvReader = new CSVReader(fileReader);
+		Iterator<String[]> iter = csvReader.iterator();
+		String[] row = new String[0];
+		int minutes = 1; 
+		int totalBlinks = 0;
+			
+		while (iter.hasNext())
+		{
+			row = iter.next();
+			
+			if(Double.valueOf(row[3]) > minutes)
+			{
+				//column 31 is BKPMIN which is number of blinks per minute
+				totalBlinks += Integer.valueOf(row[30]);
+				minutes++;
+			}
+		}
+		
+		csvReader.close();
+		//returns avg blinks per minute
+		return (totalBlinks/minutes) + "";
 	}
 	
 
