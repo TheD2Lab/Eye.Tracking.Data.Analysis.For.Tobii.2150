@@ -200,8 +200,8 @@ public class main {
 	 */
 	private static void findFolderPath(String[]filePaths)
 	{
-		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use");
-		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use");
+		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use", "/data/");
+		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use", "/data/");
 		String outputPath = folderChooser("Choose a directory to save your file");
 
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
@@ -260,7 +260,7 @@ public class main {
 		
 		//checks what button has been selected and generates the required files 
 		btn.addActionListener(e -> {
-			String inputFile = fileChooser("Please select which file you would like to parse out");
+			String inputFile = fileChooser("Please select which file you would like to parse out", "/results/" + outputFolder.substring(outputFolder.lastIndexOf("\\") + 1) + "/modifiedFiles/");
 			p.removeAll();
 			p.repaint();
 			
@@ -340,11 +340,12 @@ public class main {
 	 * UI for users to select the file they want to use
 	 * 
 	 * @param	dialogTitle		title of the window
+	 * @param 	directory		directory to choose file from relative to project directory		
 	 */
-	private static String fileChooser(String dialogTitle)
+	private static String fileChooser(String dialogTitle, String directory)
 	{
 		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
+		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + directory);
 
 		//ensures that only CSV files will be able to be selected
 		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
@@ -395,8 +396,8 @@ public class main {
 	}
 	
 	private static String[] addDataMetrics(String[] inputFiles, String outputPath) {
-		String[] outputFiles = new String[] {outputPath + "\\modifiedDataFiles\\gaze.csv", outputPath + "\\modifiedDataFiles\\fixation.csv"};
-		File dataFolder = new File(outputPath + "\\modifiedDataFiles");
+		String[] outputFiles = new String[] {outputPath + "\\modifiedFiles\\gaze.csv", outputPath + "\\modifiedFiles\\fixation.csv"};
+		File dataFolder = new File(outputPath + "\\modifiedFiles");
 		
 		// Create a folder to store modified data files if it doesn't already exist
 		if(!dataFolder.exists()) {
@@ -426,7 +427,7 @@ public class main {
 				while (iter.hasNext()) {
 					String[] currRow = iter.next();
 					row = new ArrayList<String>(Arrays.asList(currRow));
-					row.add(Double.toString(Double.valueOf(currRow[49])/Math.abs(Double.valueOf(prevRow[3]) - Double.valueOf(currRow[3]))));
+					row.add(Double.toString(Double.valueOf(currRow[57])/Math.abs(Double.valueOf(currRow[3]) - Double.valueOf(prevRow[3]))));
 					writer.writeNext(row.toArray(new String[row.size()]));
 					prevRow = currRow;
 				}

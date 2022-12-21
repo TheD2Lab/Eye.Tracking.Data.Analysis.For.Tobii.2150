@@ -353,8 +353,8 @@ public class fixation {
 		{
 			rowB = iter.next();
 			
-			//column 50 is SACCADE_DIR and column 4 is the timestamp
-			double saccadeVelocity = Double.valueOf(rowB[49])/Math.abs(Double.valueOf(rowA[3]) - Double.valueOf(rowB[3]));
+			//column 57 is SACCADE_DIR and column 4 is the timestamp
+			double saccadeVelocity = Double.valueOf(rowB[57])/Math.abs(Double.valueOf(rowB[3]) - Double.valueOf(rowA[3]));
 			csvWriter.writeNext(new String[] {"" + saccadeVelocity});
 			totalSaccadeVelocity += saccadeVelocity;
 			rowA = rowB; 
