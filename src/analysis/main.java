@@ -30,6 +30,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -63,8 +64,9 @@ public class main {
 		String[] paths = new String[3];
 		
 		findFolderPath(paths);
-		String inputGazePath = paths[0];
-		String inputFixationPath = paths[1];
+		String[] modifiedData = addDataMetrics(new String[] {paths[0], paths[1]}, paths[2]);
+		String inputGazePath = modifiedData[0];
+		String inputFixationPath = modifiedData[1];
 		String outputFolderPath = paths[2];
 		
 		//create the system log
@@ -157,7 +159,7 @@ public class main {
 		Iterator<String[]> iterGZD = csvReaderGZD.iterator();
 		String[] rowFXD= new String[0];
 		String[] rowGZD = new String[0];
-    	String[]results = new String[120];
+    	String[] results = new String[122];
         try
         {
         	while(iterFXD.hasNext())
@@ -387,7 +389,52 @@ public class main {
 		}
 		return "";
 	}
+	
+	private static String[] addDataMetrics(String[] inputFiles, String outputPath) {
+		String[] outputFiles = new String[] {outputPath + "\\modifiedDataFiles\\gaze.csv", outputPath + "\\modifiedDataFiles\\fixation.csv"};
+		File dataFolder = new File(outputPath + "\\modifiedDataFiles");
+		
+		// Create a folder to store modified data files if it doesn't already exist
+		if(!dataFolder.exists()) {
+			boolean folderCreated = dataFolder.mkdir();
+			if(!folderCreated)
+				System.err.println("Unable to create modified data files folder.");
+		}
+		
+		try {
+			for (int i = 0; i < inputFiles.length; i++) {
+				CSVReader reader = new CSVReader(new FileReader(new File(inputFiles[i])));
+				CSVWriter writer = new CSVWriter(new FileWriter(new File(outputFiles[i])));
+				Iterator<String[]> iter = reader.iterator();
+				
+				// Write the headers to the file
+				ArrayList<String> headers = new ArrayList<String>(Arrays.asList(iter.next()));
+				headers.add("SACCADE_VEL");
+				writer.writeNext(headers.toArray(new String[headers.size()]));
+				
+				// Write the first row to the file
+				String[] prevRow = iter.next();
+				ArrayList<String> row = new ArrayList<String>(Arrays.asList(prevRow));
+				row.add("" + 0);
+				writer.writeNext(row.toArray(new String[row.size()]));
+				
+				
+				while (iter.hasNext()) {
+					String[] currRow = iter.next();
+					row = new ArrayList<String>(Arrays.asList(currRow));
+					row.add(Double.toString(Double.valueOf(currRow[49])/Math.abs(Double.valueOf(prevRow[3]) - Double.valueOf(currRow[3]))));
+					writer.writeNext(row.toArray(new String[row.size()]));
+					prevRow = currRow;
+				}
+				
+				reader.close();
+				writer.close();
+			}
+		}
+		catch (Exception e) {
+			System.err.println(e);
+		}
 
-
-
+		return outputFiles;
+	}
 }
