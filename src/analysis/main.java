@@ -89,9 +89,7 @@ public class main {
 		
 		String aoiResults = "\\aoiResults.csv";
 		String aoiOutput = outputFolderPath + aoiResults;
-		
-		//combining all result files
-		mergingCSVFiles(inputFixationPath, inputGazePath, outputFolderPath+ "\\combine.csv");
+	
 		 
 		// Analyze graph related data
 		fixation.processFixation(inputFixationPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -103,6 +101,10 @@ public class main {
 		gazeAnalytics.csvToARFF(graphFixationOutput);
 		gazeAnalytics.csvToARFF(graphEventOutput);
 		gazeAnalytics.csvToARFF(graphGazeOutput);
+		
+		//combining all result files
+		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "\\combineResults.csv");
+		gazeAnalytics.csvToARFF(outputFolderPath + "\\combineResults.csv");
 
 		// Analyze AOI data
 		AOI.processAOIs(inputGazePath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -146,34 +148,35 @@ public class main {
 	 * 
 	 * @param	filePaths	an array where all the file paths will be stored
 	 */
-	private static void mergingCSVFiles(String FXD, String GZD, String outputFile) throws IOException
+	private static void mergingResultFiles(String FXD, String EVD, String GZD, String outputFile) throws IOException
 	{
  		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
         CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
         
         FileReader fileReaderFXD = new FileReader(FXD);
         CSVReader csvReaderFXD = new CSVReader(fileReaderFXD);
+        FileReader fileReaderEVD = new FileReader(EVD);
+        CSVReader csvReaderEVD = new CSVReader(fileReaderEVD);
         FileReader fileReaderGZD = new FileReader(GZD);
         CSVReader csvReaderGZD = new CSVReader(fileReaderGZD);
 		Iterator<String[]> iterFXD = csvReaderFXD.iterator();
+		Iterator<String[]> iterEVD = csvReaderEVD.iterator();
 		Iterator<String[]> iterGZD = csvReaderGZD.iterator();
 		String[] rowFXD= new String[0];
+		String[] rowEVD = new String[0];
 		String[] rowGZD = new String[0];
-    	String[] results = new String[122];
         try
         {
         	while(iterFXD.hasNext())
         	{
         		rowGZD = iterGZD.next();
+        		rowEVD = iterEVD.next();
         		rowFXD = iterFXD.next();
+            	String[]results = new String[rowGZD.length + rowEVD.length + rowFXD.length];
             	System.arraycopy(rowGZD, 0, results, 0, rowGZD.length);
-            	System.arraycopy(rowFXD, 0, results, rowGZD.length, rowFXD.length);
+            	System.arraycopy(rowEVD, 0, results, rowGZD.length, rowEVD.length);
+            	System.arraycopy(rowFXD, 0, results, rowEVD.length + rowGZD.length, rowFXD.length);
             	outputCSVWriter.writeNext(results);
-        	}
-        	
-        	while(iterGZD.hasNext())
-        	{
-        		outputCSVWriter.writeNext(iterGZD.next());
         	}
 
         }
@@ -186,6 +189,7 @@ public class main {
         {
         	outputCSVWriter.close();
         	csvReaderFXD.close();
+        	csvReaderEVD.close();
         	csvReaderGZD.close();
         }
 	}
