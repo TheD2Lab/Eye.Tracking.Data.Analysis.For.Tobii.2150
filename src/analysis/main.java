@@ -429,7 +429,10 @@ public class main {
 					row = new ArrayList<String>(Arrays.asList(currRow));
 					row.add(Double.toString(Double.valueOf(currRow[57])/Math.abs(Double.valueOf(currRow[3]) - Double.valueOf(prevRow[3]))));
 					writer.writeNext(row.toArray(new String[row.size()]));
-					prevRow = currRow;
+					
+					// Check to make sure the current row is a fixation before we switch
+					if (Double.valueOf(currRow[57]) != 0)
+						prevRow = currRow;
 				}
 				
 				reader.close();
