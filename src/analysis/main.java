@@ -57,9 +57,10 @@ import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 
-public class main {
-
-	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
+public class main 
+{
+	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException 
+	{
 		//find the folder and input file paths
 		String[] paths = new String[3];
 		
@@ -260,7 +261,7 @@ public class main {
 		
 		//checks what button has been selected and generates the required files 
 		btn.addActionListener(e -> {
-			String inputFile = fileChooser("Please select which file you would like to parse out", "/results/" + outputFolder.substring(outputFolder.lastIndexOf("\\") + 1) + "/modifiedFiles/");
+			String inputFile = fileChooser("Please select which file you would like to parse out", "/results/" + outputFolder.substring(outputFolder.lastIndexOf("\\") + 1) + "/inputFiles/");
 			p.removeAll();
 			p.repaint();
 			
@@ -383,9 +384,7 @@ public class main {
 		if (returnValue == JFileChooser.APPROVE_OPTION) 
 		{
 			if (jfc.getSelectedFile().isDirectory()) 
-			{
 				return jfc.getSelectedFile().toString();
-			}
 		}
 		else
 		{
@@ -395,19 +394,30 @@ public class main {
 		return "";
 	}
 	
-	private static String[] addDataMetrics(String[] inputFiles, String outputPath) {
-		String[] outputFiles = new String[] {outputPath + "\\modifiedFiles\\gaze.csv", outputPath + "\\modifiedFiles\\fixation.csv"};
-		File dataFolder = new File(outputPath + "\\modifiedFiles");
+	/*
+	 * Modifies input files to contain a saccade velocity column and stores those files in a new folder
+	 * 
+	 * @param	inputFiles	Array of size 2 containing the path to the input fixation and gaze data files
+	 * @param	outputPath	String of the output path
+	 */
+	private static String[] addDataMetrics(String[] inputFiles, String dir) 
+	{
+		String[] outputFiles = new String[] {dir + "\\inputFiles\\all_gaze.csv", dir + "\\inputFiles\\fixation.csv"};
+		File folder = new File(dir + "\\inputFiles");
 		
-		// Create a folder to store modified data files if it doesn't already exist
-		if(!dataFolder.exists()) {
-			boolean folderCreated = dataFolder.mkdir();
+		// Create a folder to store the input files if it doesn't already exist
+		if(!folder.exists()) 
+		{
+			boolean folderCreated = folder.mkdir();
 			if(!folderCreated)
 				System.err.println("Unable to create modified data files folder.");
 		}
 		
-		try {
-			for (int i = 0; i < inputFiles.length; i++) {
+		// Clone the input files and create a new column SACCADE_VEL
+		try 
+		{
+			for (int i = 0; i < inputFiles.length; i++) 
+			{
 				CSVReader reader = new CSVReader(new FileReader(new File(inputFiles[i])));
 				CSVWriter writer = new CSVWriter(new FileWriter(new File(outputFiles[i])));
 				Iterator<String[]> iter = reader.iterator();
@@ -424,7 +434,8 @@ public class main {
 				writer.writeNext(row.toArray(new String[row.size()]));
 				
 				
-				while (iter.hasNext()) {
+				while (iter.hasNext()) 
+				{
 					String[] currRow = iter.next();
 					row = new ArrayList<String>(Arrays.asList(currRow));
 					row.add(Double.toString(Double.valueOf(currRow[57])/Math.abs(Double.valueOf(currRow[3]) - Double.valueOf(prevRow[3]))));
@@ -439,8 +450,10 @@ public class main {
 				writer.close();
 			}
 		}
-		catch (Exception e) {
+		catch (Exception e) 
+		{
 			System.err.println(e);
+			System.exit(0);
 		}
 
 		return outputFiles;
