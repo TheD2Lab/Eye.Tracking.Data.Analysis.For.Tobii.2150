@@ -346,7 +346,7 @@ public class fixation {
 		{
 			row = iter.next();
 			
-			//column 61 is SACCADE_VEL and column 4 is the timestamp
+			//column 61 is SACCADE_VEL
 			double saccadeVelocity = Double.valueOf(row[60]);
 			totalSaccadeVelocity += saccadeVelocity;
 		}
