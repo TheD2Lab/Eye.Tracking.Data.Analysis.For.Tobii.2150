@@ -30,10 +30,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -59,6 +61,8 @@ import weka.core.converters.CSVLoader;
 public class main {
 
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
+		
+		
 		//find the folder and input file paths
 		String[] paths = new String[3];
 		
@@ -105,6 +109,7 @@ public class main {
 		// Analyze AOI data
 		AOI.processAOIs(inputGazePath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		
+		
 		//User Interface for selecting type of gaze analytics
 		JFrame f = new JFrame("Would you like to select a window");
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -136,6 +141,7 @@ public class main {
 				System.exit(0);
 			}
 		});
+		
 	}
 
 
@@ -236,17 +242,20 @@ public class main {
 		JRadioButton continuousWindowButton = new JRadioButton("Continuous Window");
 		JRadioButton cumulativeWindowButton = new JRadioButton("Cumulative Window");
 		JRadioButton overlappingWindowButton = new JRadioButton("Overlapping Window");
+		JRadioButton eventWindowButton = new JRadioButton("Event Window");
 		
 		//Adds all the JRadioButton to a layout
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(continuousWindowButton);
 		bg.add(cumulativeWindowButton);
 		bg.add(overlappingWindowButton);
+		bg.add(eventWindowButton);
 		
 		//adds the buttons to a panel
 		p.add(continuousWindowButton);
 		p.add(cumulativeWindowButton);
 		p.add(overlappingWindowButton);
+		p.add(eventWindowButton);
 		
 		JButton btn = new JButton("OK");
 		p.add(btn);
@@ -254,12 +263,12 @@ public class main {
 		
 		//checks what button has been selected and generates the required files 
 		btn.addActionListener(e -> {
-			String inputFile = fileChooser("Please select which file you would like to parse out");
 			p.removeAll();
 			p.repaint();
 			
 			if(continuousWindowButton.isSelected()||cumulativeWindowButton.isSelected())
 			{
+				String inputFile = fileChooser("Please select which file you would like to parse out");
 				JTextField windowSizeInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size: ");
 				p.add(windowSizeLabel);
@@ -298,6 +307,7 @@ public class main {
 			}
 			else if(overlappingWindowButton.isSelected())
 			{
+				String inputFile = fileChooser("Please select which file you would like to parse out");
 				JTextField windowSizeInput = new JTextField("", 5);
 				JTextField overlappingInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size: ");
@@ -324,6 +334,67 @@ public class main {
 
 				});
 
+			}
+			else if(eventWindowButton.isSelected())
+			{
+				String baselineFilePath = fileChooser("Please select your baselineFile");
+				String inputFilePath = fileChooser("Please select your gaze/fixation file");
+				
+				
+				try 
+				{
+					FileReader baselineFR = new FileReader(baselineFilePath);
+					CSVReader baselineCR = new CSVReader(baselineFR);	
+					FileReader inputFR = new FileReader(inputFilePath);
+					CSVReader inputCR = new CSVReader(inputFR);	
+					String[] baselineHeader = baselineCR.readNext();
+					String[]inputHeader = inputCR.readNext();
+					 JLabel bLabel = new JLabel("Please pick the baseline value you would want to compare");
+					 JLabel iLabel = new JLabel("Please pick the gaze/fixation value you would want to compare");
+					 JLabel dLabel = new JLabel("Maxium Duration of the snapshot: ");
+					 JTextField maxDurInput = new JTextField("", 5);
+					
+					 JComboBox<String> baselineCB = new JComboBox<String>(baselineHeader);
+					 JComboBox<String> inputCB = new JComboBox<String>(inputHeader);
+					 baselineCB.setMaximumSize(baselineCB.getPreferredSize());
+					 baselineCB.setMaximumSize(baselineCB.getPreferredSize());
+					 inputCB.setMaximumSize(inputCB.getPreferredSize());
+					 inputCB.setMaximumSize(inputCB.getPreferredSize());
+					 
+					 p.add(bLabel);
+					 p.add(baselineCB);
+					 p.add(iLabel);
+					 p.add(inputCB);
+					 p.add(dLabel);
+					 p.add(maxDurInput);
+					 
+					 JButton eventBtn = new JButton("OK");
+					 p.add(eventBtn);
+					 p.revalidate();
+					 
+					 eventBtn.addActionListener(et -> {
+							try 
+							{
+								gazeAnalytics.eventWindow(inputFilePath, outputFolder, baselineFilePath, Arrays.asList(baselineHeader).indexOf(baselineCB.getSelectedItem()), Arrays.asList(inputHeader).indexOf(inputCB.getSelectedItem()), Integer.valueOf(maxDurInput.getText()));
+							} 
+							catch (NumberFormatException | IOException e1) 
+							{
+								 systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
+							}
+							System.exit(0);
+
+						});
+
+				} 
+				catch (IOException | CsvValidationException e1) 
+				{
+					 systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "Unable to find selected baseline or input files" + e1);
+					 System.exit(0);
+				}
+			    
+				
+			
+				 
 			}
 		});
 	}

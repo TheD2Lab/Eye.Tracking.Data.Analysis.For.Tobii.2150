@@ -82,13 +82,13 @@ public class gazeAnalytics {
 	
 	public static void eventWindow(String inputFilePath, String outputFolderPath, String baselineFilePath, int baselineHeaderIndex, int inputHeaderIndex, int maxDur) throws IOException
 	{
-		baselineFilePath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies\\graphGZDResults.csv";
-		outputFolderPath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies";
-		inputFilePath = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\User 1_all_gaze.csv";
-		baselineHeaderIndex = 1;
-		inputHeaderIndex = 31;
+//		baselineFilePath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies\\graphGZDResults.csv";
+//		outputFolderPath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies";
+//		inputFilePath = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\User 1_all_gaze.csv";
+//		baselineHeaderIndex = 1;
+//		inputHeaderIndex = 31;
 		//Seconds
-		maxDur = 3;
+//		maxDur = 3;
 		int index = 0;
 		double baseline = -1;
 		String outputFile = outputFolderPath + "\\event_" + index + ".csv";
