@@ -115,8 +115,7 @@ public class gazeAnalytics {
         }
         catch (Exception e)
         {
-        	System.out.println(e);
-    		//systemLogger.writeToSystemLog(Level.SEVERE, gazeAnalytics.class.getName(), "Error with event window baseline reading " + outputFile + "\n" + e.toString());
+    		systemLogger.writeToSystemLog(Level.SEVERE, gazeAnalytics.class.getName(), "Error with event window baseline reading " + outputFile + "\n" + e.toString());
     		System.exit(0);
         }
         finally
