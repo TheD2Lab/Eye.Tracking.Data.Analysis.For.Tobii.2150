@@ -339,20 +339,26 @@ public class fixation {
 		String[] row = new String[0];
 		double totalSaccadeVelocity = 0;
 		
-		//skips header row
-		iter.next();
+		// Locate the saccade velocity index
+		String[] headers = iter.next();
+		int sacVel = -1;
+		
+		for (int i = 0; i < headers.length; i++)
+		{
+			if (headers[i].equals("SACCADE_VEL"))
+				sacVel = i;
+				
+		}
 		
 		while (iter.hasNext())
 		{
-			row = iter.next();
-			
-			//column 61 is SACCADE_VEL
-			double saccadeVelocity = Double.valueOf(row[60]);
+			row = iter.next();			
+			double saccadeVelocity = Double.valueOf(row[sacVel]);
 			totalSaccadeVelocity += saccadeVelocity;
 		}
 		
 		csvReader.close();
-		return (totalSaccadeVelocity/Double.valueOf(row[9])) + "";
+		return (totalSaccadeVelocity/Double.valueOf(getFixationCount(inputFile)) + "");
 	}
 	
 	public static String blinkRate(String inputFile) throws IOException

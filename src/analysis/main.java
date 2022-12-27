@@ -433,16 +433,35 @@ public class main
 				row.add("" + 0);
 				writer.writeNext(row.toArray(new String[row.size()]));
 				
+				// Find the indexes of time and saccade direction
+				int time = -1;
+				int sacDir = -1;
+				
+				for (int j = 0; j < headers.size(); j++) 
+				{
+					if (time == -1 && headers.get(j).contains("TIME"))
+						time = j;
+					if (headers.get(j).contains("SACCADE_DIR"))
+						sacDir = j;
+				}
+				
+				if (time == -1 || sacDir == -1)
+				{
+					JOptionPane.showMessageDialog(null, "Data file does not contain time column or saccade direction column", "Error Message", JOptionPane.ERROR_MESSAGE);
+					System.exit(0);
+				}
+				
+				
 				
 				while (iter.hasNext()) 
 				{
 					String[] currRow = iter.next();
 					row = new ArrayList<String>(Arrays.asList(currRow));
-					row.add(Double.toString(Double.valueOf(currRow[57])/Math.abs(Double.valueOf(currRow[3]) - Double.valueOf(prevRow[3]))));
+					row.add(Double.toString(Double.valueOf(currRow[sacDir])/Math.abs(Double.valueOf(currRow[time]) - Double.valueOf(prevRow[time]))));
 					writer.writeNext(row.toArray(new String[row.size()]));
 					
 					// Check to make sure the current row is a fixation before we switch
-					if (Double.valueOf(currRow[57]) != 0)
+					if (Double.valueOf(currRow[sacDir]) != 0)
 						prevRow = currRow;
 				}
 				
