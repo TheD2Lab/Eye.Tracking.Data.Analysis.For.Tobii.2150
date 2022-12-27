@@ -61,17 +61,18 @@ import weka.core.converters.CSVLoader;
 import java.util.Arrays;
 
 
-public class main {
+public class main 
+{
+	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException 
+	{
 
-	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
-
-		/*
 		//find the folder and input file paths
 		String[] paths = new String[3];
 
 		findFolderPath(paths);
-		String inputGazePath = paths[0];
-		String inputFixationPath = paths[1];
+		String[] modifiedData = addDataMetrics(new String[] {paths[0], paths[1]}, paths[2]);
+		String inputGazePath = modifiedData[0];
+		String inputFixationPath = modifiedData[1];
 		String outputFolderPath = paths[2];
 
 		//create the system log
@@ -98,6 +99,7 @@ public class main {
 		//combining all result files
 		mergingCSVFiles(inputFixationPath, inputGazePath, outputFolderPath+ "\\combine.csv");
 
+
 		// Analyze graph related data
 		fixation.processFixation(inputFixationPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		event.processEvent(inputGazePath, graphEventOutput);
@@ -108,6 +110,10 @@ public class main {
 		gazeAnalytics.csvToARFF(graphFixationOutput);
 		gazeAnalytics.csvToARFF(graphEventOutput);
 		gazeAnalytics.csvToARFF(graphGazeOutput);
+		
+		//combining all result files
+		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "\\combineResults.csv");
+		gazeAnalytics.csvToARFF(outputFolderPath + "\\combineResults.csv");
 
 		// Analyze AOI data
 		AOI.processAOIs(inputGazePath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -154,48 +160,53 @@ public class main {
 	 * 
 	 * @param	filePaths	an array where all the file paths will be stored
 	 */
-	private static void mergingCSVFiles(String FXD, String GZD, String outputFile) throws IOException
+	private static void mergingResultFiles(String FXD, String EVD, String GZD, String outputFile) throws IOException
 	{
-		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
-		CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
 
-		FileReader fileReaderFXD = new FileReader(FXD);
-		CSVReader csvReaderFXD = new CSVReader(fileReaderFXD);
-		FileReader fileReaderGZD = new FileReader(GZD);
-		CSVReader csvReaderGZD = new CSVReader(fileReaderGZD);
+ 		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
+        CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
+        
+        FileReader fileReaderFXD = new FileReader(FXD);
+        CSVReader csvReaderFXD = new CSVReader(fileReaderFXD);
+        FileReader fileReaderEVD = new FileReader(EVD);
+        CSVReader csvReaderEVD = new CSVReader(fileReaderEVD);
+        FileReader fileReaderGZD = new FileReader(GZD);
+        CSVReader csvReaderGZD = new CSVReader(fileReaderGZD);
+
 		Iterator<String[]> iterFXD = csvReaderFXD.iterator();
+		Iterator<String[]> iterEVD = csvReaderEVD.iterator();
 		Iterator<String[]> iterGZD = csvReaderGZD.iterator();
 		String[] rowFXD= new String[0];
+		String[] rowEVD = new String[0];
 		String[] rowGZD = new String[0];
-		String[]results = new String[120];
-		try
-		{
-			while(iterFXD.hasNext())
-			{
-				rowGZD = iterGZD.next();
-				rowFXD = iterFXD.next();
-				System.arraycopy(rowGZD, 0, results, 0, rowGZD.length);
-				System.arraycopy(rowFXD, 0, results, rowGZD.length, rowFXD.length);
-				outputCSVWriter.writeNext(results);
-			}
 
-			while(iterGZD.hasNext())
-			{
-				outputCSVWriter.writeNext(iterGZD.next());
-			}
+        try
+        {
+        	while(iterFXD.hasNext())
+        	{
+        		rowGZD = iterGZD.next();
+        		rowEVD = iterEVD.next();
+        		rowFXD = iterFXD.next();
+            	String[]results = new String[rowGZD.length + rowEVD.length + rowFXD.length];
+            	System.arraycopy(rowGZD, 0, results, 0, rowGZD.length);
+            	System.arraycopy(rowEVD, 0, results, rowGZD.length, rowEVD.length);
+            	System.arraycopy(rowFXD, 0, results, rowEVD.length + rowGZD.length, rowFXD.length);
+            	outputCSVWriter.writeNext(results);
+        	}
 
-		}
-		catch(Exception e)
-		{
-			System.out.println(e);
-			System.exit(0);
-		}
-		finally
-		{
-			outputCSVWriter.close();
-			csvReaderFXD.close();
-			csvReaderGZD.close();
-		}
+        }
+        catch(Exception e)
+        {
+        	System.out.println(e);
+        	System.exit(0);
+        }
+        finally
+        {
+        	outputCSVWriter.close();
+        	csvReaderFXD.close();
+        	csvReaderEVD.close();
+        	csvReaderGZD.close();
+        }
 	}
 	/*
 	 * find all the paths for the input files and the output folder location
@@ -204,8 +215,8 @@ public class main {
 	 */
 	private static void findFolderPath(String[]filePaths)
 	{
-		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use");
-		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use");
+		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use", "/data/");
+		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use", "/data/");
 		String outputPath = folderChooser("Choose a directory to save your file");
 
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
@@ -498,11 +509,12 @@ public class main {
 	 * UI for users to select the file they want to use
 	 * 
 	 * @param	dialogTitle		title of the window
+	 * @param 	directory		directory to choose file from relative to project directory		
 	 */
-	private static String fileChooser(String dialogTitle)
+	private static String fileChooser(String dialogTitle, String directory)
 	{
 		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/data/");
+		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + directory);
 
 		//ensures that only CSV files will be able to be selected
 		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
@@ -540,9 +552,7 @@ public class main {
 		if (returnValue == JFileChooser.APPROVE_OPTION) 
 		{
 			if (jfc.getSelectedFile().isDirectory()) 
-			{
 				return jfc.getSelectedFile().toString();
-			}
 		}
 		else
 		{
@@ -551,7 +561,69 @@ public class main {
 		}
 		return "";
 	}
+	
+	/*
+	 * Modifies input files to contain a saccade velocity column and stores those files in a new folder
+	 * 
+	 * @param	inputFiles	Array of size 2 containing the path to the input fixation and gaze data files
+	 * @param	outputPath	String of the output path
+	 */
+	private static String[] addDataMetrics(String[] inputFiles, String dir) 
+	{
+		String[] outputFiles = new String[] {dir + "\\inputFiles\\all_gaze.csv", dir + "\\inputFiles\\fixation.csv"};
+		File folder = new File(dir + "\\inputFiles");
+		
+		// Create a folder to store the input files if it doesn't already exist
+		if(!folder.exists()) 
+		{
+			boolean folderCreated = folder.mkdir();
+			if(!folderCreated)
+				System.err.println("Unable to create modified data files folder.");
+		}
+		
+		// Clone the input files and create a new column SACCADE_VEL
+		try 
+		{
+			for (int i = 0; i < inputFiles.length; i++) 
+			{
+				CSVReader reader = new CSVReader(new FileReader(new File(inputFiles[i])));
+				CSVWriter writer = new CSVWriter(new FileWriter(new File(outputFiles[i])));
+				Iterator<String[]> iter = reader.iterator();
+				
+				// Write the headers to the file
+				ArrayList<String> headers = new ArrayList<String>(Arrays.asList(iter.next()));
+				headers.add("SACCADE_VEL");
+				writer.writeNext(headers.toArray(new String[headers.size()]));
+				
+				// Write the first row to the file
+				String[] prevRow = iter.next();
+				ArrayList<String> row = new ArrayList<String>(Arrays.asList(prevRow));
+				row.add("" + 0);
+				writer.writeNext(row.toArray(new String[row.size()]));
+				
+				
+				while (iter.hasNext()) 
+				{
+					String[] currRow = iter.next();
+					row = new ArrayList<String>(Arrays.asList(currRow));
+					row.add(Double.toString(Double.valueOf(currRow[57])/Math.abs(Double.valueOf(currRow[3]) - Double.valueOf(prevRow[3]))));
+					writer.writeNext(row.toArray(new String[row.size()]));
+					
+					// Check to make sure the current row is a fixation before we switch
+					if (Double.valueOf(currRow[57]) != 0)
+						prevRow = currRow;
+				}
+				
+				reader.close();
+				writer.close();
+			}
+		}
+		catch (Exception e) 
+		{
+			System.err.println(e);
+			System.exit(0);
+		}
 
-
-
+		return outputFiles;
+	}
 }

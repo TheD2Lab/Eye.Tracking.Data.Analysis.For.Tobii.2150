@@ -335,34 +335,24 @@ public class fixation {
 		File file = new File(inputFile);
 		FileReader fileReader = new FileReader(file);
 		CSVReader csvReader = new CSVReader(fileReader);
-		FileWriter fileWriter = new FileWriter(new File (outputFile.replace("graphFXDResults.csv", "saccadeVelocity.csv")));
-        CSVWriter csvWriter = new CSVWriter(fileWriter);
 		Iterator<String[]> iter = csvReader.iterator();
-		String[] rowA = new String[0];
-		String[] rowB = new String[0];
+		String[] row = new String[0];
 		double totalSaccadeVelocity = 0;
-		
-		csvWriter.writeNext(new String[] {"saccade velocity"});
-		csvWriter.writeNext(new String[] {"" + 0});
 		
 		//skips header row
 		iter.next();
-		rowA = iter.next();
 		
 		while (iter.hasNext())
 		{
-			rowB = iter.next();
+			row = iter.next();
 			
-			//column 50 is SACCADE_DIR and column 4 is the timestamp
-			double saccadeVelocity = Double.valueOf(rowB[49])/Math.abs(Double.valueOf(rowA[3]) - Double.valueOf(rowB[3]));
-			csvWriter.writeNext(new String[] {"" + saccadeVelocity});
+			//column 61 is SACCADE_VEL
+			double saccadeVelocity = Double.valueOf(row[60]);
 			totalSaccadeVelocity += saccadeVelocity;
-			rowA = rowB; 
 		}
 		
-		csvWriter.close();
 		csvReader.close();
-		return (totalSaccadeVelocity/Double.valueOf(rowB[9])) + "";
+		return (totalSaccadeVelocity/Double.valueOf(row[9])) + "";
 	}
 	
 	public static String blinkRate(String inputFile) throws IOException
