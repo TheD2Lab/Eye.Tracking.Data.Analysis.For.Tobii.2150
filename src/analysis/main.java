@@ -211,8 +211,8 @@ public class main
 	 */
 	private static void findFolderPath(String[]filePaths)
 	{
-		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use");
-		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use");
+		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use", "/data/");
+		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use", "/data/");
 		String outputPath = folderChooser("Choose a directory to save your file");
 
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
@@ -248,6 +248,8 @@ public class main
 	 */
 	private static void gazeAnalyticsOptions(JPanel p, String outputFolderPath)
 	{
+		String dir = "/results/" + outputFolderPath.substring(outputFolderPath.lastIndexOf("\\") + 1) + "/inputFiles/";
+		
 		//All the gaze analytics options
 		p.removeAll();
 
@@ -285,7 +287,7 @@ public class main
 
 			if(continuousWindowButton.isSelected()||cumulativeWindowButton.isSelected())
 			{
-				String inputFile = fileChooser("Please select which file you would like to parse out");
+				String inputFile = fileChooser("Please select which file you would like to parse out", dir);
 				JTextField windowSizeInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size: ");
 				p.add(windowSizeLabel);
@@ -324,7 +326,7 @@ public class main
 			}
 			else if(overlappingWindowButton.isSelected())
 			{
-				String inputFile = fileChooser("Please select which file you would like to parse out");
+				String inputFile = fileChooser("Please select which file you would like to parse out", dir);
 				JTextField windowSizeInput = new JTextField("", 5);
 				JTextField overlappingInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size: ");
@@ -354,7 +356,7 @@ public class main
 			}
 			else if(eventWindowButton.isSelected())
 			{
-				String gazepointFilePath = fileChooser("Please select your gaze/fixation file");
+				String gazepointFilePath = fileChooser("Please select your gaze/fixation file", dir);
 				String baselineFilePath = outputFolderPath + "//baselineFile.csv";
 				try {
 					createBaselineFile(gazepointFilePath,outputFolderPath );
@@ -504,10 +506,10 @@ public class main
 	 * @param	dialogTitle		title of the window
 	 * @param 	directory		directory to choose file from relative to project directory		
 	 */
-	private static String fileChooser(String dialogTitle)
+	private static String fileChooser(String dialogTitle, String directory)
 	{
 		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir")  + "/data/");
+		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir")  + directory);
 
 		//ensures that only CSV files will be able to be selected
 		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
@@ -563,7 +565,8 @@ public class main
 	 */
 	private static String[] addDataMetrics(String[] inputFiles, String dir) 
 	{
-		String[] outputFiles = new String[] {dir + "\\inputFiles\\all_gaze.csv", dir + "\\inputFiles\\fixation.csv"};
+		String name = dir.substring(dir.lastIndexOf("\\"));
+		String[] outputFiles = new String[] {dir + "\\inputFiles\\" + name + "_all_gaze.csv", dir + "\\inputFiles\\" + name + "_fixation.csv"};
 		File folder = new File(dir + "\\inputFiles");
 		
 		// Create a folder to store the input files if it doesn't already exist
