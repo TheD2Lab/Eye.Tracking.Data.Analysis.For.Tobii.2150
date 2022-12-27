@@ -80,12 +80,21 @@ public class gazeAnalytics {
 		}
 	}
 	
-	public static void eventWindow(String inputFilePath, String outputFolderPath, String baselineFilePath, int baselineHeaderIndex, int inputHeaderIndex, int maximumDuration) throws IOException
+	public static void eventWindow(String inputFilePath, String outputFolderPath, String baselineFilePath, int baselineHeaderIndex, int inputHeaderIndex, int maxDur) throws IOException
 	{
+//		baselineFilePath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies\\graphGZDResults.csv";
+//		outputFolderPath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies";
+//		inputFilePath = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\User 1_all_gaze.csv";
+//		baselineHeaderIndex = 1;
+//		inputHeaderIndex = 31;
+		//Seconds
+//		maxDur = 3;
 		int index = 0;
 		double baseline = -1;
 		String outputFile = outputFolderPath + "\\event_" + index + ".csv";
 		String [] header;
+		double startTime = 0; 
+		int timeIndex = -1;
 		
 		
 		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
@@ -120,6 +129,14 @@ public class gazeAnalytics {
         	//header
         	String[]nextLine = inputCSVReader.readNext();
         	header = nextLine;
+            for(int i = 0; i < header.length; i++)
+            {
+            	if(header[i].contains("TIME("))
+            	{
+            		timeIndex = i;
+            	}
+            }
+        	
         	outputCSVWriter.writeNext(header);
         	
         	boolean eventStart = false;
@@ -127,7 +144,8 @@ public class gazeAnalytics {
         	{
         		if(eventStart)
         		{
-	        		if(Double.valueOf(nextLine[inputHeaderIndex]) > baseline)
+        			//checks if it is greater than the baseline and the duration is within the accepted range
+	        		if(Double.valueOf(nextLine[inputHeaderIndex]) > baseline && !(Double.valueOf(nextLine[timeIndex]) - startTime > maxDur))
 	        		{
 	        			outputCSVWriter.writeNext(nextLine);
 	        		}
@@ -148,12 +166,14 @@ public class gazeAnalytics {
 	        		{
 	        			outputCSVWriter.writeNext(nextLine);
 	        			eventStart = true;
+	        			startTime = Double.valueOf(nextLine[timeIndex]);
 	        		}
         		}
         	}
         }
         catch(Exception e)
         {
+        	System.out.println(e + "H");
     		systemLogger.writeToSystemLog(Level.SEVERE, gazeAnalytics.class.getName(), "Error with event window  " + outputFile + "\n" + e.toString());
     		System.exit(0);
         }

@@ -33,6 +33,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -341,15 +342,8 @@ public class fixation {
 		
 		// Locate the saccade velocity index
 		String[] headers = iter.next();
-		int sacVel = -1;
-		
-		for (int i = 0; i < headers.length; i++)
-		{
-			if (headers[i].equals("SACCADE_VEL"))
-				sacVel = i;
+		int sacVel = Arrays.asList(headers).indexOf("SACCADE_VEL");
 				
-		}
-		
 		while (iter.hasNext())
 		{
 			row = iter.next();			
