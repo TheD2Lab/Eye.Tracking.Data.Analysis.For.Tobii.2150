@@ -33,6 +33,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -339,15 +340,17 @@ public class fixation {
 		String[] row = new String[0];
 		double totalSaccadeVelocity = 0;
 		
-		//skips header row
-		iter.next();
 		
+		//header row
+		row = iter.next();
+		int saccadeVelIndex = Arrays.asList(row).indexOf("SACCADE_VEL");
+				
 		while (iter.hasNext())
 		{
 			row = iter.next();
 			
 			//column 61 is SACCADE_VEL
-			double saccadeVelocity = Double.valueOf(row[60]);
+			double saccadeVelocity = Double.valueOf(row[saccadeVelIndex]);
 			totalSaccadeVelocity += saccadeVelocity;
 		}
 		

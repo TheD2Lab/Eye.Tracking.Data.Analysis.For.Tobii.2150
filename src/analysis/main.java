@@ -96,10 +96,6 @@ public class main
 		String aoiResults = "\\aoiResults.csv";
 		String aoiOutput = outputFolderPath + aoiResults;
 
-		//combining all result files
-		mergingCSVFiles(inputFixationPath, inputGazePath, outputFolderPath+ "\\combine.csv");
-
-
 		// Analyze graph related data
 		fixation.processFixation(inputFixationPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		event.processEvent(inputGazePath, graphEventOutput);
@@ -113,7 +109,7 @@ public class main
 		
 		//combining all result files
 		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "\\combineResults.csv");
-		gazeAnalytics.csvToARFF(outputFolderPath + "\\combineResults.csv");
+		//gazeAnalytics.csvToARFF(outputFolderPath + "\\combineResults.csv");
 
 		// Analyze AOI data
 		AOI.processAOIs(inputGazePath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -150,7 +146,7 @@ public class main
 				System.exit(0);
 			}
 		});
-		*/
+		
 
 	}
 
@@ -215,8 +211,8 @@ public class main
 	 */
 	private static void findFolderPath(String[]filePaths)
 	{
-		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use", "/data/");
-		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use", "/data/");
+		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use");
+		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use");
 		String outputPath = folderChooser("Choose a directory to save your file");
 
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
@@ -367,8 +363,6 @@ public class main
 					e2.printStackTrace();
 				}
 	
-
-
 				try 
 				{
 					FileReader baselineFR = new FileReader(baselineFilePath);
@@ -447,6 +441,7 @@ public class main
 			Double[]data = new Double[dataLength];
 			Arrays.fill(data, new Double(0));
 			int temp = 0;
+			int numOfRows = 0;
 
 			while((nextLine = csvReader.readNext()) != null) 
 			{
@@ -463,10 +458,8 @@ public class main
 						temp++;
 					}
 				}
-				else
-				{
-					break;
-				}
+				numOfRows++;
+
 
 			}
 			
@@ -477,7 +470,7 @@ public class main
 				{
 					continue;
 				}
-				data[i] = data[i]/dataLength;
+				data[i] = data[i]/numOfRows;
 			}
 			
 			//converts the double array into a string
@@ -511,10 +504,10 @@ public class main
 	 * @param	dialogTitle		title of the window
 	 * @param 	directory		directory to choose file from relative to project directory		
 	 */
-	private static String fileChooser(String dialogTitle, String directory)
+	private static String fileChooser(String dialogTitle)
 	{
 		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + directory);
+		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir")  + "/data/");
 
 		//ensures that only CSV files will be able to be selected
 		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
@@ -592,6 +585,7 @@ public class main
 				
 				// Write the headers to the file
 				ArrayList<String> headers = new ArrayList<String>(Arrays.asList(iter.next()));
+				int saccadeDirIndex = headers.indexOf("SACCADE_DIR");
 				headers.add("SACCADE_VEL");
 				writer.writeNext(headers.toArray(new String[headers.size()]));
 				
@@ -606,11 +600,11 @@ public class main
 				{
 					String[] currRow = iter.next();
 					row = new ArrayList<String>(Arrays.asList(currRow));
-					row.add(Double.toString(Double.valueOf(currRow[57])/Math.abs(Double.valueOf(currRow[3]) - Double.valueOf(prevRow[3]))));
+					row.add(Double.toString(Double.valueOf(currRow[saccadeDirIndex])/Math.abs(Double.valueOf(currRow[3]) - Double.valueOf(prevRow[3]))));
 					writer.writeNext(row.toArray(new String[row.size()]));
 					
 					// Check to make sure the current row is a fixation before we switch
-					if (Double.valueOf(currRow[57]) != 0)
+					if (Double.valueOf(currRow[saccadeDirIndex]) != 0)
 						prevRow = currRow;
 				}
 				
