@@ -3,3 +3,4 @@
 /results/
 /bin/analysis
 /bin/wekaext
+*.class
