@@ -74,7 +74,7 @@ public class main
 		String inputGazePath = modifiedData[0];
 		String inputFixationPath = modifiedData[1];
 		String outputFolderPath = paths[2];
-
+		
 		//create the system log
 		systemLogger.createSystemLog(outputFolderPath);
 

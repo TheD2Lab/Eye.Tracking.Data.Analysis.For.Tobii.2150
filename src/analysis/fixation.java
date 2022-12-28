@@ -342,7 +342,7 @@ public class fixation {
 		
 		// Locate the saccade velocity index
 		String[] headers = iter.next();
-		int sacVel = Arrays.asList(headers).indexOf("SACCADE_VEL");
+		int sacVel = Arrays.asList(headers).indexOf("SACCADE_DIR");
 				
 		while (iter.hasNext())
 		{
