@@ -25,13 +25,13 @@ public class gazeAnalytics {
 		
 		int endTime = windowSize;
 		int initialTime = 0;
-		String outputFile = outputFolder + "\\continuous_" + endTime + ".csv";
+		String outputFile = outputFolder + "/continuous_" + endTime + ".csv";
 		try {
 			while(snapshot(inputFile,outputFile,initialTime,endTime))
 			{
 				initialTime += windowSize;
 				endTime += windowSize;
-				outputFile = outputFolder + "\\continuous_" + endTime + ".csv";
+				outputFile = outputFolder + "/continuous_" + endTime + ".csv";
 			}
 		} 
 		catch (IOException e) 
@@ -45,13 +45,13 @@ public class gazeAnalytics {
 	{
 		int endTime = windowSize;
 		int initialTime = 0;
-		String outputFile = outputFolder + "\\cumulative_" + endTime + ".csv";
+		String outputFile = outputFolder + "/cumulative_" + endTime + ".csv";
 		try 
 		{
 			while(snapshot(inputFile,outputFile,initialTime,endTime))
 			{
 				endTime += windowSize;
-				outputFile = outputFolder + "\\cumulative_" + endTime + ".csv";
+				outputFile = outputFolder + "/cumulative_" + endTime + ".csv";
 			}
 		} 
 		catch (IOException e) 
@@ -64,13 +64,13 @@ public class gazeAnalytics {
 	{
 		int endTime = windowSize;
 		int initialTime = 0;
-		String outputFile = outputFolder + "\\overlap_" + endTime + ".csv";
+		String outputFile = outputFolder + "/overlap_" + endTime + ".csv";
 		try {
 			while(snapshot(inputFile,outputFile,initialTime,endTime))
 			{
 				initialTime = endTime - overlap;
 				endTime += windowSize;
-				outputFile = outputFolder + "\\overlap_" + endTime + ".csv";
+				outputFile = outputFolder + "/overlap_" + endTime + ".csv";
 				
 			}
 		} 
@@ -91,7 +91,7 @@ public class gazeAnalytics {
 //		maxDur = 3;
 		int index = 0;
 		double baseline = -1;
-		String outputFile = outputFolderPath + "\\event_" + index + ".csv";
+		String outputFile = outputFolderPath + "/event_" + index + ".csv";
 		String [] header;
 		double startTime = 0; 
 		int timeIndex = -1;

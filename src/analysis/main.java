@@ -59,7 +59,7 @@ import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import java.util.Arrays;
-
+import java.awt.*;
 
 public class main 
 {
@@ -71,35 +71,36 @@ public class main
 
 		findFolderPath(paths);
 		String[] modifiedData = addDataMetrics(new String[] {paths[0], paths[1]}, paths[2]);
-		String inputGazePath = modifiedData[0];
-		String inputFixationPath = modifiedData[1];
+		String gazepointGZDPath = modifiedData[0];
+		String gazepointFXDPath = modifiedData[1];
 		String outputFolderPath = paths[2];
 
 		//create the system log
 		systemLogger.createSystemLog(outputFolderPath);
 
 		// Resolution of monitor
-		final int SCREEN_WIDTH = 1024;
-		final int SCREEN_HEIGHT = 768;
+		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		final int SCREEN_WIDTH = (int) size.getWidth();
+		final int SCREEN_HEIGHT = (int) size.getHeight();
 
 		//output file paths
-		String graphFixationResults = "\\graphFXDResults.csv";
+		String graphFixationResults = "/graphFXDResults.csv";
 		String graphFixationOutput = outputFolderPath + graphFixationResults;
 
-		String graphEventResults = "\\graphEVDResults.csv";
+		String graphEventResults = "/graphEVDResults.csv";
 		String graphEventOutput = outputFolderPath + graphEventResults;
 
-		String graphGazeResults = "\\graphGZDResults.csv";
+		String graphGazeResults = "/graphGZDResults.csv";
 		String graphGazeOutput = outputFolderPath + graphGazeResults;
 
 
-		String aoiResults = "\\aoiResults.csv";
+		String aoiResults = "/aoiResults.csv";
 		String aoiOutput = outputFolderPath + aoiResults;
 
 		// Analyze graph related data
-		fixation.processFixation(inputFixationPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
-		event.processEvent(inputGazePath, graphEventOutput);
-		gaze.processGaze(inputGazePath, graphGazeOutput);
+		fixation.processFixation(gazepointFXDPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+		event.processEvent(gazepointGZDPath, graphEventOutput);
+		gaze.processGaze(gazepointGZDPath, graphGazeOutput);
 
 
 		// Gaze Analytics 
@@ -108,11 +109,11 @@ public class main
 		gazeAnalytics.csvToARFF(graphGazeOutput);
 		
 		//combining all result files
-		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "\\combineResults.csv");
+		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
 		//gazeAnalytics.csvToARFF(outputFolderPath + "\\combineResults.csv");
 
 		// Analyze AOI data
-		AOI.processAOIs(inputGazePath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 
 		//User Interface for selecting type of gaze analytics
@@ -211,8 +212,8 @@ public class main
 	 */
 	private static void findFolderPath(String[]filePaths)
 	{
-		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use", "/data/");
-		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use", "/data/");
+		String gazepointGZDPath = fileChooser("Select the gaze .csv file you would like to use", "/data/");
+		String gazepointFXDPath = fileChooser("Select the fixation .csv file you would like to use", "/data/");
 		String outputPath = folderChooser("Choose a directory to save your file");
 
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
@@ -231,8 +232,8 @@ public class main
 
 		outputPath += "\\" + participant;
 
-		filePaths[0] = inputGazePath;
-		filePaths[1] = inputFixationPath;
+		filePaths[0] = gazepointGZDPath;
+		filePaths[1] = gazepointFXDPath;
 		filePaths[2] =  outputPath;
 
 	}
@@ -358,11 +359,13 @@ public class main
 			{
 				String gazepointFilePath = fileChooser("Please select your gaze/fixation file", dir);
 				String baselineFilePath = outputFolderPath + "//baselineFile.csv";
+
 				try {
 					createBaselineFile(gazepointFilePath,outputFolderPath );
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
+					System.err.println("Unable to create baseline file: " + e2);
+					systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "Unable to create baseline file for the event snapshot");
+					System.exit(0);
 				}
 	
 				try 
