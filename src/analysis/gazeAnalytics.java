@@ -15,8 +15,11 @@ import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 
+/*
+ * Output files based on the gaze calculations that are done
+ */
 public class gazeAnalytics {
-//String inputFile, String outputFile, int timelength
+
 	public static void continuousWindow(String inputFile, String outputFolder, int windowSize)
 	{
 		
@@ -24,7 +27,7 @@ public class gazeAnalytics {
 		int initialTime = 0;
 		String outputFile = outputFolder + "\\continuous_" + endTime + ".csv";
 		try {
-			while(window(inputFile,outputFile,initialTime,endTime))
+			while(snapshot(inputFile,outputFile,initialTime,endTime))
 			{
 				initialTime += windowSize;
 				endTime += windowSize;
@@ -45,7 +48,7 @@ public class gazeAnalytics {
 		String outputFile = outputFolder + "\\cumulative_" + endTime + ".csv";
 		try 
 		{
-			while(window(inputFile,outputFile,initialTime,endTime))
+			while(snapshot(inputFile,outputFile,initialTime,endTime))
 			{
 				endTime += windowSize;
 				outputFile = outputFolder + "\\cumulative_" + endTime + ".csv";
@@ -63,7 +66,7 @@ public class gazeAnalytics {
 		int initialTime = 0;
 		String outputFile = outputFolder + "\\overlap_" + endTime + ".csv";
 		try {
-			while(window(inputFile,outputFile,initialTime,endTime))
+			while(snapshot(inputFile,outputFile,initialTime,endTime))
 			{
 				initialTime = endTime - overlap;
 				endTime += windowSize;
@@ -77,12 +80,21 @@ public class gazeAnalytics {
 		}
 	}
 	
-	public static void eventWindow(String inputFilePath, String outputFolderPath, String baselineFilePath, int baselineHeaderIndex, int inputHeaderIndex, int maximumDuration) throws IOException
+	public static void eventWindow(String inputFilePath, String outputFolderPath, String baselineFilePath, int baselineHeaderIndex, int inputHeaderIndex, int maxDur) throws IOException
 	{
+//		baselineFilePath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies\\graphGZDResults.csv";
+//		outputFolderPath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies";
+//		inputFilePath = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\User 1_all_gaze.csv";
+//		baselineHeaderIndex = 1;
+//		inputHeaderIndex = 31;
+		//Seconds
+//		maxDur = 3;
 		int index = 0;
 		double baseline = -1;
 		String outputFile = outputFolderPath + "\\event_" + index + ".csv";
 		String [] header;
+		double startTime = 0; 
+		int timeIndex = -1;
 		
 		
 		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
@@ -117,6 +129,14 @@ public class gazeAnalytics {
         	//header
         	String[]nextLine = inputCSVReader.readNext();
         	header = nextLine;
+            for(int i = 0; i < header.length; i++)
+            {
+            	if(header[i].contains("TIME("))
+            	{
+            		timeIndex = i;
+            	}
+            }
+        	
         	outputCSVWriter.writeNext(header);
         	
         	boolean eventStart = false;
@@ -124,7 +144,8 @@ public class gazeAnalytics {
         	{
         		if(eventStart)
         		{
-	        		if(Double.valueOf(nextLine[inputHeaderIndex]) > baseline)
+        			//checks if it is greater than the baseline and the duration is within the accepted range
+	        		if(Double.valueOf(nextLine[inputHeaderIndex]) > baseline && !(Double.valueOf(nextLine[timeIndex]) - startTime > maxDur))
 	        		{
 	        			outputCSVWriter.writeNext(nextLine);
 	        		}
@@ -145,12 +166,14 @@ public class gazeAnalytics {
 	        		{
 	        			outputCSVWriter.writeNext(nextLine);
 	        			eventStart = true;
+	        			startTime = Double.valueOf(nextLine[timeIndex]);
 	        		}
         		}
         	}
         }
         catch(Exception e)
         {
+        	System.out.println(e + "H");
     		systemLogger.writeToSystemLog(Level.SEVERE, gazeAnalytics.class.getName(), "Error with event window  " + outputFile + "\n" + e.toString());
     		System.exit(0);
         }
@@ -164,30 +187,7 @@ public class gazeAnalytics {
 
 	}
 	
-	private static int findHeaderIndex(CSVReader reader, String header)
-	{
-		String[] headerArray;
-		try 
-		{
-			headerArray = reader.readNext();
-			for(int i = 0; i < headerArray.length; i++)
-	        {
-	           	 if(headerArray[i].equals(header))
-	           	 {
-	           		 return i;
-	           	 }
-	        }
-		} 
-		catch (CsvValidationException | IOException e) 
-		{
-    		systemLogger.writeToSystemLog(Level.SEVERE, gazeAnalytics.class.getName(), "unable to find index \n" + e.toString());
-    		System.exit(0);
-
-		}
-        return -1;
-	}
-	
-	private static boolean window(String inputFile, String outputFile, int start, int end) throws IOException
+	private static boolean snapshot(String inputFile, String outputFile, int start, int end) throws IOException
 	{
 		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
         CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);

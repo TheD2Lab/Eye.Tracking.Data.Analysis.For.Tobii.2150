@@ -33,6 +33,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -56,7 +57,6 @@ public class fixation {
         FileWriter outputFileWriter = new FileWriter(new File (outputFile));
         CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
         try {
-
         	 FileReader fileReader = new FileReader(inputFile);
              CSVReader csvReader = new CSVReader(fileReader);
              String[]nextLine = csvReader.readNext();
@@ -266,6 +266,12 @@ public class fixation {
 
             headers.add("convex hull area");
             data.add(String.valueOf(convexHull.getPolygonArea(points)));
+            
+            headers.add("Average Saccade Velocity");
+            data.add(avgSaccadeVelocity(inputFile, outputFile));
+            
+            headers.add("Average Blink Rate per Minute");
+            data.add(blinkRate(inputFile));
 
             outputCSVWriter.writeNext(headers.toArray(new String[headers.size()]));
             outputCSVWriter.writeNext(data.toArray(new String[data.size()]));
@@ -324,7 +330,60 @@ public class fixation {
 		// Return the 9th column of the last row, which is the fixation ID
 		return line[9] + "";
 	}
-
+	
+	public static String avgSaccadeVelocity(String inputFile, String outputFile) throws IOException 
+	{
+		File file = new File(inputFile);
+		FileReader fileReader = new FileReader(file);
+		CSVReader csvReader = new CSVReader(fileReader);
+		Iterator<String[]> iter = csvReader.iterator();
+		String[] row = new String[0];
+		double totalSaccadeVelocity = 0;
+		
+		// Locate the saccade velocity index
+		String[] headers = iter.next();
+		int sacVel = Arrays.asList(headers).indexOf("SACCADE_VEL");
+				
+		while (iter.hasNext())
+		{
+			row = iter.next();			
+			double saccadeVelocity = Double.valueOf(row[sacVel]);
+			totalSaccadeVelocity += saccadeVelocity;
+		}
+		
+		csvReader.close();
+		return (totalSaccadeVelocity/Double.valueOf(getFixationCount(inputFile)) + "");
+	}
+	
+	public static String blinkRate(String inputFile) throws IOException
+	{
+		File file = new File(inputFile);
+		FileReader fileReader = new FileReader(file);
+		CSVReader csvReader = new CSVReader(fileReader);
+		Iterator<String[]> iter = csvReader.iterator();
+		String[] row = new String[0];
+		int minutes = 1; 
+		int totalBlinks = 0;
+		
+		//skips header row
+		iter.next();
+			
+		while (iter.hasNext())
+		{
+			row = iter.next();
+			
+			if(Double.valueOf(row[3]) > minutes)
+			{
+				//column 31 is BKPMIN which is number of blinks per minute
+				totalBlinks += Integer.valueOf(row[30]);
+				minutes++;
+			}
+		}
+		
+		csvReader.close();
+		//returns avg blinks per minute
+		return (totalBlinks/minutes) + "";
+	}
 
 	public static double getScanpathDuration(ArrayList<Double> allFixationDurations, ArrayList<Double> allSaccadeDurations) {
 		double fixationDuration = descriptiveStats.getSumOfDoubles(allFixationDurations);
