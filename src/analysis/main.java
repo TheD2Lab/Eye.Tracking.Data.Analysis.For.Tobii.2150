@@ -588,12 +588,14 @@ public class main
 				
 				// Write the headers to the file
 				ArrayList<String> headers = new ArrayList<String>(Arrays.asList(iter.next()));
-				int saccadeDirIndex = headers.indexOf("SACCADE_DIR");
+				int validityIndex = headers.indexOf("FPOGV");
+				int fixationID = headers.indexOf("FPOGID");
 				headers.add("SACCADE_VEL");
 				writer.writeNext(headers.toArray(new String[headers.size()]));
 				
 				// Write the first row to the file
 				String[] prevRow = iter.next();
+				
 				ArrayList<String> row = new ArrayList<String>(Arrays.asList(prevRow));
 				row.add("" + 0);
 				writer.writeNext(row.toArray(new String[row.size()]));
@@ -606,7 +608,7 @@ public class main
 				{
 					if (time == -1 && headers.get(j).contains("TIME"))
 						time = j;
-					if (headers.get(j).contains("SACCADE_DIR"))
+					if (headers.get(j).equals("SACCADE_DIR"))
 						sacDir = j;
 				}
 				
@@ -625,9 +627,18 @@ public class main
 					row.add(Double.toString(Double.valueOf(currRow[sacDir])/Math.abs(Double.valueOf(currRow[time]) - Double.valueOf(prevRow[time]))));
 					writer.writeNext(row.toArray(new String[row.size()]));
 					
-					// Check to make sure the current row is a fixation before we switch
+					// Check to make sure the current row is a fixation
 					if (Double.valueOf(currRow[sacDir]) != 0)
 						prevRow = currRow;
+					
+					// For the very first fixation, find the last valid point
+					if (Double.valueOf(currRow[fixationID]) == 1)
+					{
+						if (Integer.valueOf(currRow[validityIndex]) == 1)
+							prevRow = currRow;
+						System.out.println(prevRow[time]);
+					}
+						
 				}
 				
 				reader.close();
