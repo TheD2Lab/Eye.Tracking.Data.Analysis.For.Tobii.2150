@@ -29,6 +29,7 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -124,28 +125,27 @@ public class convexHull {
         Stack<Point2D.Double> stack = new Stack<>();
         stack.push(sorted.get(0));
         stack.push(sorted.get(1));
+	        for (int i = 2; i < sorted.size(); i++) {
+	        	Point2D.Double head = sorted.get(i);
+	        	Point2D.Double middle = stack.pop();
+	        	Point2D.Double tail = stack.peek();
 
-        for (int i = 2; i < sorted.size(); i++) {
+	            Turn turn = getTurn(tail, middle, head);
 
-        	Point2D.Double head = sorted.get(i);
-        	Point2D.Double middle = stack.pop();
-        	Point2D.Double tail = stack.peek();
-
-            Turn turn = getTurn(tail, middle, head);
-
-            switch(turn) {
-                case COUNTER_CLOCKWISE:
-                    stack.push(middle);
-                    stack.push(head);
-                    break;
-                case CLOCKWISE:
-                    i--;
-                    break;
-                case COLLINEAR:
-                    stack.push(head);
-                    break;
-            }
-        }
+	            switch(turn) {
+	                case COUNTER_CLOCKWISE:
+	                    stack.push(middle);
+	                    stack.push(head);
+	                    break;
+	                case CLOCKWISE:
+	                    i--;
+	                    break;
+	                case COLLINEAR:
+	                    stack.push(head);
+	                    break;
+	            }
+	        }
+     
 
         // close the hull
         stack.push(sorted.get(0));
@@ -170,7 +170,7 @@ public class convexHull {
 
         	Point2D.Double temp = points.get(i);
 
-            if(temp.y < lowest.y || (temp.y == lowest.y && temp.x < lowest.x)) {
+            if((temp.y < lowest.y && temp.y >= 0)|| (temp.y == lowest.y && temp.x < lowest.x && temp.x >= 0)) {
                 lowest = temp;
             }
         }

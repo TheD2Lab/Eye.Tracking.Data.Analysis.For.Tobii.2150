@@ -59,48 +59,62 @@ import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import java.util.Arrays;
-import java.awt.*;
 
+
+<<<<<<< HEAD
+public class main {
+
+	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException {
+
+		/*
+=======
 public class main 
 {
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException 
 	{
-
+>>>>>>> gazepoint
 		//find the folder and input file paths
 		String[] paths = new String[3];
 
 		findFolderPath(paths);
 		String[] modifiedData = addDataMetrics(new String[] {paths[0], paths[1]}, paths[2]);
-		String gazepointGZDPath = modifiedData[0];
-		String gazepointFXDPath = modifiedData[1];
+		String inputGazePath = modifiedData[0];
+		String inputFixationPath = modifiedData[1];
 		String outputFolderPath = paths[2];
-		
+
 		//create the system log
 		systemLogger.createSystemLog(outputFolderPath);
 
 		// Resolution of monitor
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-		final int SCREEN_WIDTH = (int) size.getWidth();
-		final int SCREEN_HEIGHT = (int) size.getHeight();
+		final int SCREEN_WIDTH = 1024;
+		final int SCREEN_HEIGHT = 768;
 
 		//output file paths
-		String graphFixationResults = "/graphFXDResults.csv";
+		String graphFixationResults = "\\graphFXDResults.csv";
 		String graphFixationOutput = outputFolderPath + graphFixationResults;
 
-		String graphEventResults = "/graphEVDResults.csv";
+		String graphEventResults = "\\graphEVDResults.csv";
 		String graphEventOutput = outputFolderPath + graphEventResults;
 
-		String graphGazeResults = "/graphGZDResults.csv";
+		String graphGazeResults = "\\graphGZDResults.csv";
 		String graphGazeOutput = outputFolderPath + graphGazeResults;
 
 
-		String aoiResults = "/aoiResults.csv";
+		String aoiResults = "\\aoiResults.csv";
 		String aoiOutput = outputFolderPath + aoiResults;
+<<<<<<< HEAD
 
+		//combining all result files
+		mergingCSVFiles(inputFixationPath, inputGazePath, outputFolderPath+ "\\combine.csv");
+
+=======
+	
+		 
+>>>>>>> gazepoint
 		// Analyze graph related data
-		fixation.processFixation(gazepointFXDPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
-		event.processEvent(gazepointGZDPath, graphEventOutput);
-		gaze.processGaze(gazepointGZDPath, graphGazeOutput);
+		fixation.processFixation(inputFixationPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+		event.processEvent(inputGazePath, graphEventOutput);
+		gaze.processGaze(inputGazePath, graphGazeOutput);
 
 
 		// Gaze Analytics 
@@ -109,11 +123,11 @@ public class main
 		gazeAnalytics.csvToARFF(graphGazeOutput);
 		
 		//combining all result files
-		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
-		//gazeAnalytics.csvToARFF(outputFolderPath + "\\combineResults.csv");
+		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "\\combineResults.csv");
+		gazeAnalytics.csvToARFF(outputFolderPath + "\\combineResults.csv");
 
 		// Analyze AOI data
-		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+		AOI.processAOIs(inputGazePath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 
 		//User Interface for selecting type of gaze analytics
@@ -147,7 +161,7 @@ public class main
 				System.exit(0);
 			}
 		});
-		
+		*/
 
 	}
 
@@ -159,7 +173,15 @@ public class main
 	 */
 	private static void mergingResultFiles(String FXD, String EVD, String GZD, String outputFile) throws IOException
 	{
+<<<<<<< HEAD
+		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
+		CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
 
+		FileReader fileReaderFXD = new FileReader(FXD);
+		CSVReader csvReaderFXD = new CSVReader(fileReaderFXD);
+		FileReader fileReaderGZD = new FileReader(GZD);
+		CSVReader csvReaderGZD = new CSVReader(fileReaderGZD);
+=======
  		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
         CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
         
@@ -169,14 +191,44 @@ public class main
         CSVReader csvReaderEVD = new CSVReader(fileReaderEVD);
         FileReader fileReaderGZD = new FileReader(GZD);
         CSVReader csvReaderGZD = new CSVReader(fileReaderGZD);
-
+>>>>>>> gazepoint
 		Iterator<String[]> iterFXD = csvReaderFXD.iterator();
 		Iterator<String[]> iterEVD = csvReaderEVD.iterator();
 		Iterator<String[]> iterGZD = csvReaderGZD.iterator();
 		String[] rowFXD= new String[0];
 		String[] rowEVD = new String[0];
 		String[] rowGZD = new String[0];
+<<<<<<< HEAD
+		String[]results = new String[120];
+		try
+		{
+			while(iterFXD.hasNext())
+			{
+				rowGZD = iterGZD.next();
+				rowFXD = iterFXD.next();
+				System.arraycopy(rowGZD, 0, results, 0, rowGZD.length);
+				System.arraycopy(rowFXD, 0, results, rowGZD.length, rowFXD.length);
+				outputCSVWriter.writeNext(results);
+			}
 
+			while(iterGZD.hasNext())
+			{
+				outputCSVWriter.writeNext(iterGZD.next());
+			}
+
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+			System.exit(0);
+		}
+		finally
+		{
+			outputCSVWriter.close();
+			csvReaderFXD.close();
+			csvReaderGZD.close();
+		}
+=======
         try
         {
         	while(iterFXD.hasNext())
@@ -204,6 +256,7 @@ public class main
         	csvReaderEVD.close();
         	csvReaderGZD.close();
         }
+>>>>>>> gazepoint
 	}
 	/*
 	 * find all the paths for the input files and the output folder location
@@ -212,8 +265,8 @@ public class main
 	 */
 	private static void findFolderPath(String[]filePaths)
 	{
-		String gazepointGZDPath = fileChooser("Select the gaze .csv file you would like to use", "/data/");
-		String gazepointFXDPath = fileChooser("Select the fixation .csv file you would like to use", "/data/");
+		String inputGazePath = fileChooser("Select the gaze .csv file you would like to use", "/data/");
+		String inputFixationPath = fileChooser("Select the fixation .csv file you would like to use", "/data/");
 		String outputPath = folderChooser("Choose a directory to save your file");
 
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
@@ -232,8 +285,8 @@ public class main
 
 		outputPath += "\\" + participant;
 
-		filePaths[0] = gazepointGZDPath;
-		filePaths[1] = gazepointFXDPath;
+		filePaths[0] = inputGazePath;
+		filePaths[1] = inputFixationPath;
 		filePaths[2] =  outputPath;
 
 	}
@@ -249,8 +302,6 @@ public class main
 	 */
 	private static void gazeAnalyticsOptions(JPanel p, String outputFolderPath)
 	{
-		String dir = "/results/" + outputFolderPath.substring(outputFolderPath.lastIndexOf("\\") + 1) + "/inputFiles/";
-		
 		//All the gaze analytics options
 		p.removeAll();
 
@@ -283,12 +334,16 @@ public class main
 
 		//checks what button has been selected and generates the required files 
 		btn.addActionListener(e -> {
+<<<<<<< HEAD
+=======
+			String inputFile = fileChooser("Please select which file you would like to parse out", "/results/" + outputFolder.substring(outputFolder.lastIndexOf("\\") + 1) + "/inputFiles/");
+>>>>>>> gazepoint
 			p.removeAll();
 			p.repaint();
 
 			if(continuousWindowButton.isSelected()||cumulativeWindowButton.isSelected())
 			{
-				String inputFile = fileChooser("Please select which file you would like to parse out", dir);
+				String inputFile = fileChooser("Please select which file you would like to parse out");
 				JTextField windowSizeInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size: ");
 				p.add(windowSizeLabel);
@@ -327,7 +382,7 @@ public class main
 			}
 			else if(overlappingWindowButton.isSelected())
 			{
-				String inputFile = fileChooser("Please select which file you would like to parse out", dir);
+				String inputFile = fileChooser("Please select which file you would like to parse out");
 				JTextField windowSizeInput = new JTextField("", 5);
 				JTextField overlappingInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size: ");
@@ -357,17 +412,17 @@ public class main
 			}
 			else if(eventWindowButton.isSelected())
 			{
-				String gazepointFilePath = fileChooser("Please select your gaze/fixation file", dir);
+				String gazepointFilePath = fileChooser("Please select your gaze/fixation file");
 				String baselineFilePath = outputFolderPath + "//baselineFile.csv";
-
 				try {
 					createBaselineFile(gazepointFilePath,outputFolderPath );
 				} catch (IOException e2) {
-					System.err.println("Unable to create baseline file: " + e2);
-					systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "Unable to create baseline file for the event snapshot");
-					System.exit(0);
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
 				}
 	
+
+
 				try 
 				{
 					FileReader baselineFR = new FileReader(baselineFilePath);
@@ -446,7 +501,6 @@ public class main
 			Double[]data = new Double[dataLength];
 			Arrays.fill(data, new Double(0));
 			int temp = 0;
-			int numOfRows = 0;
 
 			while((nextLine = csvReader.readNext()) != null) 
 			{
@@ -463,8 +517,10 @@ public class main
 						temp++;
 					}
 				}
-				numOfRows++;
-
+				else
+				{
+					break;
+				}
 
 			}
 			
@@ -475,7 +531,7 @@ public class main
 				{
 					continue;
 				}
-				data[i] = data[i]/numOfRows;
+				data[i] = data[i]/dataLength;
 			}
 			
 			//converts the double array into a string
@@ -512,7 +568,7 @@ public class main
 	private static String fileChooser(String dialogTitle, String directory)
 	{
 		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir")  + directory);
+		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + directory);
 
 		//ensures that only CSV files will be able to be selected
 		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
@@ -568,8 +624,7 @@ public class main
 	 */
 	private static String[] addDataMetrics(String[] inputFiles, String dir) 
 	{
-		String name = dir.substring(dir.lastIndexOf("\\"));
-		String[] outputFiles = new String[] {dir + "\\inputFiles\\" + name + "_all_gaze.csv", dir + "\\inputFiles\\" + name + "_fixation.csv"};
+		String[] outputFiles = new String[] {dir + "\\inputFiles\\all_gaze.csv", dir + "\\inputFiles\\fixation.csv"};
 		File folder = new File(dir + "\\inputFiles");
 		
 		// Create a folder to store the input files if it doesn't already exist
@@ -591,57 +646,26 @@ public class main
 				
 				// Write the headers to the file
 				ArrayList<String> headers = new ArrayList<String>(Arrays.asList(iter.next()));
-				int validityIndex = headers.indexOf("FPOGV");
-				int fixationID = headers.indexOf("FPOGID");
 				headers.add("SACCADE_VEL");
 				writer.writeNext(headers.toArray(new String[headers.size()]));
 				
 				// Write the first row to the file
 				String[] prevRow = iter.next();
-				
 				ArrayList<String> row = new ArrayList<String>(Arrays.asList(prevRow));
 				row.add("" + 0);
 				writer.writeNext(row.toArray(new String[row.size()]));
-				
-				// Find the indexes of time and saccade direction
-				int time = -1;
-				int sacDir = -1;
-				
-				for (int j = 0; j < headers.size(); j++) 
-				{
-					if (time == -1 && headers.get(j).contains("TIME"))
-						time = j;
-					if (headers.get(j).equals("SACCADE_DIR"))
-						sacDir = j;
-				}
-				
-				if (time == -1 || sacDir == -1)
-				{
-					JOptionPane.showMessageDialog(null, "Data file does not contain time column or saccade direction column", "Error Message", JOptionPane.ERROR_MESSAGE);
-					System.exit(0);
-				}
-				
 				
 				
 				while (iter.hasNext()) 
 				{
 					String[] currRow = iter.next();
 					row = new ArrayList<String>(Arrays.asList(currRow));
-					row.add(Double.toString(Double.valueOf(currRow[sacDir])/Math.abs(Double.valueOf(currRow[time]) - Double.valueOf(prevRow[time]))));
+					row.add(Double.toString(Double.valueOf(currRow[57])/Math.abs(Double.valueOf(currRow[3]) - Double.valueOf(prevRow[3]))));
 					writer.writeNext(row.toArray(new String[row.size()]));
 					
-					// Check to make sure the current row is a fixation
-					if (Double.valueOf(currRow[sacDir]) != 0)
+					// Check to make sure the current row is a fixation before we switch
+					if (Double.valueOf(currRow[57]) != 0)
 						prevRow = currRow;
-					
-					// For the very first fixation, find the last valid point
-					if (Double.valueOf(currRow[fixationID]) == 1)
-					{
-						if (Integer.valueOf(currRow[validityIndex]) == 1)
-							prevRow = currRow;
-						System.out.println(prevRow[time]);
-					}
-						
 				}
 				
 				reader.close();
