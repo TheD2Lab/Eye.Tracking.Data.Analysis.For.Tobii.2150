@@ -148,7 +148,7 @@ public class gazeAnalytics {
 	        			csvToARFF(outputFile);
 	        			eventStart = false;
 	        			index++;
-	        			outputFile = outputFolderPath + "\\event_" + index + ".csv";
+	        			outputFile = outputFolderPath + "/event_" + index + ".csv";
 	        			outputFileWriter = new FileWriter(new File (outputFile));
 	        	        outputCSVWriter = new CSVWriter(outputFileWriter);
 	        	        outputCSVWriter.writeNext(header);

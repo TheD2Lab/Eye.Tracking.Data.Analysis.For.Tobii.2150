@@ -113,7 +113,7 @@ public class main
 		
 		//combining all result files
 		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
-		gazeAnalytics.csvToARFF(outputFolderPath + "\\combineResults.csv");
+		gazeAnalytics.csvToARFF(outputFolderPath + "/combineResults.csv");
 
 		// Analyze AOI data
 		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -253,13 +253,13 @@ public class main
 	 */
 	private static void gazeAnalyticsOptions(JPanel p, String outputFolderPath)
 	{
-		String dir = "/results/" + outputFolderPath.substring(outputFolderPath.lastIndexOf("\\") + 1) + "/inputFiles/";
+		String dir = "/results/" + outputFolderPath.substring(outputFolderPath.lastIndexOf("/") + 1) + "/inputFiles/";
 		
 		//All the gaze analytics options
 		p.removeAll();
 
 		//create folder to put the anaylsis in
-		File snapshotFolder = new File(outputFolderPath + "\\SnapshotFolder");
+		File snapshotFolder = new File(outputFolderPath + "/SnapshotFolder");
 		snapshotFolder.mkdir();
 		String outputFolder = snapshotFolder.getPath();
 
@@ -435,7 +435,7 @@ public class main
 	 */
 	private static void createBaselineFile(String filePath, String outputFolder) throws IOException, CsvValidationException
 	{
-		FileWriter outputFileWriter = new FileWriter(new File (outputFolder + "//baselineFile.csv"));
+		FileWriter outputFileWriter = new FileWriter(new File (outputFolder + "/baselineFile.csv"));
 		CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
 		FileReader fileReader = new FileReader(filePath);
 		CSVReader csvReader = new CSVReader(fileReader);
@@ -573,8 +573,8 @@ public class main
 	private static String[] addDataMetrics(String[] inputFiles, String dir) 
 	{
 		String name = dir.substring(dir.lastIndexOf("\\"));
-		String[] outputFiles = new String[] {dir + "\\inputFiles\\" + name + "_all_gaze.csv", dir + "\\inputFiles\\" + name + "_fixation.csv"};
-		File folder = new File(dir + "\\inputFiles");
+		String[] outputFiles = new String[] {dir + "/inputFiles/" + name + "_all_gaze.csv", dir + "/inputFiles/" + name + "_fixation.csv"};
+		File folder = new File(dir + "/inputFiles");
 		
 		// Create a folder to store the input files if it doesn't already exist
 		if(!folder.exists()) 
