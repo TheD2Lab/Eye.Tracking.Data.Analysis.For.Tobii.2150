@@ -82,13 +82,6 @@ public class gazeAnalytics {
 	
 	public static void eventWindow(String inputFilePath, String outputFolderPath, String baselineFilePath, int baselineHeaderIndex, int inputHeaderIndex, int maxDur) throws IOException
 	{
-//		baselineFilePath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies\\graphGZDResults.csv";
-//		outputFolderPath = "C:\\Users\\kayla\\Desktop\\School\\Direct Studies";
-//		inputFilePath = "C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\User 1_all_gaze.csv";
-//		baselineHeaderIndex = 1;
-//		inputHeaderIndex = 31;
-		//Seconds
-//		maxDur = 3;
 		int index = 0;
 		double baseline = -1;
 		String outputFile = outputFolderPath + "/event_" + index + ".csv";
@@ -151,10 +144,11 @@ public class gazeAnalytics {
 	        		}
 	        		else
 	        		{
+	        			outputCSVWriter.close();
+	        			csvToARFF(outputFile);
 	        			eventStart = false;
 	        			index++;
 	        			outputFile = outputFolderPath + "\\event_" + index + ".csv";
-	        			outputCSVWriter.close();
 	        			outputFileWriter = new FileWriter(new File (outputFile));
 	        	        outputCSVWriter = new CSVWriter(outputFileWriter);
 	        	        outputCSVWriter.writeNext(header);
@@ -173,7 +167,7 @@ public class gazeAnalytics {
         }
         catch(Exception e)
         {
-        	System.out.println(e + "H");
+        	System.out.println("Error with event window  " + outputFile + "\n" + e.toString());
     		systemLogger.writeToSystemLog(Level.SEVERE, gazeAnalytics.class.getName(), "Error with event window  " + outputFile + "\n" + e.toString());
     		System.exit(0);
         }
@@ -275,6 +269,7 @@ public class gazeAnalytics {
 				saver.setInstances(data);
 				saver.setFile(arffFile);
 				saver.writeBatch();
+				System.out.println("Successfully converted CSV to ARFF " + outputARFFPath);
 				systemLogger.writeToSystemLog(Level.INFO, gazeAnalytics.class.getName(), "Successfully converted CSV to ARFF " + outputARFFPath);
 			}
 			else
@@ -284,11 +279,13 @@ public class gazeAnalytics {
 		}
 		catch(IOException e)
 		{
+			System.out.println("Error coverting CSV to ARFF " + outputARFFPath + "\n" + e.toString());
 			systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error coverting CSV to ARFF " + outputARFFPath + "\n" + e.toString());
 
 		}
 		catch(IllegalArgumentException ia)
 		{
+			System.out.println("Error coverting CSV to ARFF " + outputARFFPath + "\n" + ia.toString());
 			systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error coverting CSV to ARFF " + outputARFFPath + "\n" + ia.toString());
 
 		}

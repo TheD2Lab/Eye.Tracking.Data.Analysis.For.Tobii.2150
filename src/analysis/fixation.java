@@ -277,7 +277,7 @@ public class fixation {
             outputCSVWriter.writeNext(data.toArray(new String[data.size()]));
             outputCSVWriter.close();
             csvReader.close();
-            System.out.println();
+
             systemLogger.writeToSystemLog(Level.INFO, fixation.class.getName(), "done writing fixation data to " + outputFile);
 
 

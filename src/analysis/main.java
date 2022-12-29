@@ -51,6 +51,8 @@ import javax.swing.SpringLayout;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
@@ -66,6 +68,8 @@ public class main
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException 
 	{
 
+		//createBaselineFile("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\Kayla _all_gaze.csv", "C:\\Users\\kayla\\Documents\\temp");
+		
 		//find the folder and input file paths
 		String[] paths = new String[3];
 
@@ -78,10 +82,9 @@ public class main
 		//create the system log
 		systemLogger.createSystemLog(outputFolderPath);
 
-		// Resolution of monitor
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-		final int SCREEN_WIDTH = (int) size.getWidth();
-		final int SCREEN_HEIGHT = (int) size.getHeight();
+		// Resolution of monitor 
+		final int SCREEN_WIDTH = 1024;
+		final int SCREEN_HEIGHT = 768;
 
 		//output file paths
 		String graphFixationResults = "/graphFXDResults.csv";
@@ -110,43 +113,44 @@ public class main
 		
 		//combining all result files
 		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
-		//gazeAnalytics.csvToARFF(outputFolderPath + "\\combineResults.csv");
+		gazeAnalytics.csvToARFF(outputFolderPath + "\\combineResults.csv");
 
 		// Analyze AOI data
 		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 
 		//User Interface for selecting type of gaze analytics
-		JFrame f = new JFrame("Would you like to select a window");
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setVisible(true);
-		f.setSize(400,400);
+		JFrame mainFrame = new JFrame("Would you like to select a window");
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.setVisible(true);
+		mainFrame.setSize(400,400);
 
-		JPanel p = new JPanel();
+		JPanel mainPanel = new JPanel();
 		JRadioButton yesButton = new JRadioButton("Yes");
 		JRadioButton noButton = new JRadioButton("No");
 		ButtonGroup bg = new ButtonGroup();
 
 		bg.add(yesButton);
 		bg.add(noButton);
-		p.add(yesButton);
-		p.add(noButton);
-		f.add(p);
+		mainPanel.add(yesButton);
+		mainPanel.add(noButton);
+		mainFrame.add(mainPanel);
 
 		JButton btn = new JButton("OK");
-		p.add(btn);
+		mainPanel.add(btn);
 		btn.addActionListener(e -> {
 			if(yesButton.isSelected())
 			{
 				//removes all the objects from the panel
-				p.removeAll();
-				gazeAnalyticsOptions(p, outputFolderPath);
+				mainPanel.removeAll();
+				gazeAnalyticsOptions(mainPanel, outputFolderPath);
 			}
 			else if(noButton.isSelected())
 			{
 				System.exit(0);
 			}
 		});
+		
 		
 
 	}
@@ -170,15 +174,15 @@ public class main
         FileReader fileReaderGZD = new FileReader(GZD);
         CSVReader csvReaderGZD = new CSVReader(fileReaderGZD);
 
-		Iterator<String[]> iterFXD = csvReaderFXD.iterator();
-		Iterator<String[]> iterEVD = csvReaderEVD.iterator();
-		Iterator<String[]> iterGZD = csvReaderGZD.iterator();
-		String[] rowFXD= new String[0];
-		String[] rowEVD = new String[0];
-		String[] rowGZD = new String[0];
-
         try
         {
+    		Iterator<String[]> iterFXD = csvReaderFXD.iterator();
+    		Iterator<String[]> iterEVD = csvReaderEVD.iterator();
+    		Iterator<String[]> iterGZD = csvReaderGZD.iterator();
+    		String[] rowFXD= new String[0];
+    		String[] rowEVD = new String[0];
+    		String[] rowGZD = new String[0];
+
         	while(iterFXD.hasNext())
         	{
         		rowGZD = iterGZD.next();
@@ -195,7 +199,7 @@ public class main
         catch(Exception e)
         {
         	System.out.println(e);
-        	System.exit(0);
+			systemLogger.writeToSystemLog(Level.WARNING, main.class.getName(), "");
         }
         finally
         {
@@ -259,23 +263,23 @@ public class main
 		snapshotFolder.mkdir();
 		String outputFolder = snapshotFolder.getPath();
 
-		JRadioButton continuousWindowButton = new JRadioButton("Continuous Window");
-		JRadioButton cumulativeWindowButton = new JRadioButton("Cumulative Window");
-		JRadioButton overlappingWindowButton = new JRadioButton("Overlapping Window");
-		JRadioButton eventWindowButton = new JRadioButton("Event Window");
+		JRadioButton continuousSnapshotButton = new JRadioButton("Continuous Snapshot");
+		JRadioButton cumulativeSnapshotButton = new JRadioButton("Cumulative Snapshot");
+		JRadioButton overlappingSnapshotButton = new JRadioButton("Overlapping Snapshot");
+		JRadioButton eventAnalyticsButton = new JRadioButton("Event Analytics");
 
 		//Adds all the JRadioButton to a layout
 		ButtonGroup bg = new ButtonGroup();
-		bg.add(continuousWindowButton);
-		bg.add(cumulativeWindowButton);
-		bg.add(overlappingWindowButton);
-		bg.add(eventWindowButton);
+		bg.add(continuousSnapshotButton);
+		bg.add(cumulativeSnapshotButton);
+		bg.add(overlappingSnapshotButton);
+		bg.add(eventAnalyticsButton);
 
 		//adds the buttons to a panel
-		p.add(continuousWindowButton);
-		p.add(cumulativeWindowButton);
-		p.add(overlappingWindowButton);
-		p.add(eventWindowButton);
+		p.add(continuousSnapshotButton);
+		p.add(cumulativeSnapshotButton);
+		p.add(overlappingSnapshotButton);
+		p.add(eventAnalyticsButton);
 
 		JButton btn = new JButton("OK");
 		p.add(btn);
@@ -286,9 +290,9 @@ public class main
 			p.removeAll();
 			p.repaint();
 
-			if(continuousWindowButton.isSelected()||cumulativeWindowButton.isSelected())
+			if(continuousSnapshotButton.isSelected()||cumulativeSnapshotButton.isSelected())
 			{
-				String inputFile = fileChooser("Please select which file you would like to parse out", dir);
+				String gazepointFile = fileChooser("Please select which file you would like to parse out", dir);
 				JTextField windowSizeInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size: ");
 				p.add(windowSizeLabel);
@@ -298,11 +302,11 @@ public class main
 				p.revalidate();
 
 				contBtn.addActionListener(ev -> {
-					if(continuousWindowButton.isSelected())
+					if(continuousSnapshotButton.isSelected())
 					{
 						try 
 						{
-							gazeAnalytics.continuousWindow(inputFile, outputFolder,Integer.parseInt(windowSizeInput.getText()) );
+							gazeAnalytics.continuousWindow(gazepointFile, outputFolder,Integer.parseInt(windowSizeInput.getText()) );
 						} 
 						catch (NumberFormatException e1) 
 						{
@@ -314,7 +318,7 @@ public class main
 					{
 						try 
 						{
-							gazeAnalytics.cumulativeWindow(inputFile, outputFolder, Integer.parseInt(windowSizeInput.getText()));
+							gazeAnalytics.cumulativeWindow(gazepointFile, outputFolder, Integer.parseInt(windowSizeInput.getText()));
 						} 
 						catch (NumberFormatException e1) 
 						{
@@ -325,9 +329,9 @@ public class main
 				});
 
 			}
-			else if(overlappingWindowButton.isSelected())
+			else if(overlappingSnapshotButton.isSelected())
 			{
-				String inputFile = fileChooser("Please select which file you would like to parse out", dir);
+				String gazepointFile = fileChooser("Please select which file you would like to parse out", dir);
 				JTextField windowSizeInput = new JTextField("", 5);
 				JTextField overlappingInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size: ");
@@ -343,7 +347,7 @@ public class main
 				overlappingBtn.addActionListener(ev -> {
 					try 
 					{
-						gazeAnalytics.overlappingWindow(inputFile, outputFolder,Integer.parseInt(windowSizeInput.getText()), Integer.parseInt(overlappingInput.getText()) );
+						gazeAnalytics.overlappingWindow(gazepointFile, outputFolder,Integer.parseInt(windowSizeInput.getText()), Integer.parseInt(overlappingInput.getText()) );
 					} 
 					catch (NumberFormatException e1) 
 					{
@@ -355,14 +359,14 @@ public class main
 				});
 
 			}
-			else if(eventWindowButton.isSelected())
+			else if(eventAnalyticsButton.isSelected())
 			{
 				String gazepointFilePath = fileChooser("Please select your gaze/fixation file", dir);
-				String baselineFilePath = outputFolderPath + "//baselineFile.csv";
+				String baselineFilePath = outputFolderPath + "/baselineFile.csv";
 
 				try {
 					createBaselineFile(gazepointFilePath,outputFolderPath );
-				} catch (IOException e2) {
+				} catch (IOException | CsvValidationException e2) {
 					System.err.println("Unable to create baseline file: " + e2);
 					systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "Unable to create baseline file for the event snapshot");
 					System.exit(0);
@@ -372,27 +376,25 @@ public class main
 				{
 					FileReader baselineFR = new FileReader(baselineFilePath);
 					CSVReader baselineCR = new CSVReader(baselineFR);	
-					FileReader inputFR = new FileReader(gazepointFilePath);
-					CSVReader inputCR = new CSVReader(inputFR);	
+					FileReader gazepointFR = new FileReader(gazepointFilePath);
+					CSVReader gazepointCR = new CSVReader(gazepointFR);	
 					String[] baselineHeader = baselineCR.readNext();
-					String[]inputHeader = inputCR.readNext();
+					String[]header = gazepointCR.readNext();
 					JLabel bLabel = new JLabel("Please pick the baseline value you would want to compare");
-					JLabel iLabel = new JLabel("Please pick the gaze/fixation value you would want to compare");
-					JLabel dLabel = new JLabel("Maxium Duration of the snapshot: ");
+					JLabel gzptLabel = new JLabel("Please pick the gaze/fixation value you would want to compare");
+					JLabel durLabel = new JLabel("Maxium Duration of the snapshot: ");
 					JTextField maxDurInput = new JTextField("", 5);
 
 					JComboBox<String> baselineCB = new JComboBox<String>(baselineHeader);
-					JComboBox<String> inputCB = new JComboBox<String>(inputHeader);
+					JComboBox<String> gazepointCB = new JComboBox<String>(header);
 					baselineCB.setMaximumSize(baselineCB.getPreferredSize());
-					baselineCB.setMaximumSize(baselineCB.getPreferredSize());
-					inputCB.setMaximumSize(inputCB.getPreferredSize());
-					inputCB.setMaximumSize(inputCB.getPreferredSize());
+					gazepointCB.setMaximumSize(gazepointCB.getPreferredSize());
 
 					p.add(bLabel);
 					p.add(baselineCB);
-					p.add(iLabel);
-					p.add(inputCB);
-					p.add(dLabel);
+					p.add(gzptLabel);
+					p.add(gazepointCB);
+					p.add(durLabel);
 					p.add(maxDurInput);
 
 					JButton eventBtn = new JButton("OK");
@@ -402,7 +404,7 @@ public class main
 					eventBtn.addActionListener(et -> {
 						try 
 						{
-							gazeAnalytics.eventWindow(gazepointFilePath, outputFolder, baselineFilePath, Arrays.asList(baselineHeader).indexOf(baselineCB.getSelectedItem()), Arrays.asList(inputHeader).indexOf(inputCB.getSelectedItem()), Integer.valueOf(maxDurInput.getText()));
+							gazeAnalytics.eventWindow(gazepointFilePath, outputFolder, baselineFilePath, Arrays.asList(baselineHeader).indexOf(baselineCB.getSelectedItem()), Arrays.asList(header).indexOf(gazepointCB.getSelectedItem()), Integer.valueOf(maxDurInput.getText()));
 						} 
 						catch (NumberFormatException | IOException e1) 
 						{
@@ -431,22 +433,21 @@ public class main
 	 * grabs the first two minutes of the file and averages it
 	 * 
 	 */
-	private static void createBaselineFile(String filePath, String outputFolder) throws IOException
+	private static void createBaselineFile(String filePath, String outputFolder) throws IOException, CsvValidationException
 	{
 		FileWriter outputFileWriter = new FileWriter(new File (outputFolder + "//baselineFile.csv"));
 		CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
 		FileReader fileReader = new FileReader(filePath);
 		CSVReader csvReader = new CSVReader(fileReader);
-
+		String[]nextLine = csvReader.readNext();
+		outputCSVWriter.writeNext(nextLine); //header
+		int dataLength = nextLine.length;
+		Double[]data = new Double[dataLength];
+		Arrays.fill(data, new Double(0));
+		int numOfRows = 0;
 		try {
 
-			String[]nextLine = csvReader.readNext();
-			outputCSVWriter.writeNext(nextLine); //header
-			int dataLength = nextLine.length;
-			Double[]data = new Double[dataLength];
-			Arrays.fill(data, new Double(0));
-			int temp = 0;
-			int numOfRows = 0;
+
 
 			while((nextLine = csvReader.readNext()) != null) 
 			{
@@ -454,15 +455,17 @@ public class main
 				{
 					for(int i=0; i<nextLine.length; i++)
 					{
-						if(i==1 || nextLine[i] == null || nextLine[i].equals("") || nextLine[i].equals(" ")) //skips Media Name and AOI
+						if(nextLine[i].isBlank() || !NumberUtils.isNumber(nextLine[i])) //skips Media Name and AOI
 						{
+							if(i==12)
+							{
+								System.out.println(nextLine.toString());
+							}
 							data[i] =  null;
 							continue;
 						}
 						data[i] += Double.valueOf(nextLine[i]);
-						temp++;
 					}
-					Arrays.fill(data, new Double(0));
 				}
 				numOfRows++;
 
