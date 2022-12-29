@@ -454,7 +454,7 @@ public class main
 				{
 					for(int i=0; i<nextLine.length; i++)
 					{
-						if(i==1 || nextLine[i] == null || nextLine[i].equals("")) //skips Media Name and AOI
+						if(i==1 || nextLine[i] == null || nextLine[i].equals("") || nextLine[i].equals(" ")) //skips Media Name and AOI
 						{
 							data[i] =  null;
 							continue;
@@ -462,6 +462,7 @@ public class main
 						data[i] += Double.valueOf(nextLine[i]);
 						temp++;
 					}
+					Arrays.fill(data, new Double(0));
 				}
 				numOfRows++;
 

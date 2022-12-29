@@ -129,7 +129,7 @@ public class convexHull {
 	        	Point2D.Double head = sorted.get(i);
 	        	Point2D.Double middle = stack.pop();
 	        	Point2D.Double tail = stack.peek();
-
+	        	
 	            Turn turn = getTurn(tail, middle, head);
 
 	            switch(turn) {
