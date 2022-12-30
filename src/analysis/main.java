@@ -579,7 +579,8 @@ public class main
 				System.err.println("Unable to create modified data files folder.");
 		}
 		
-		// Clone the input files and create a new column SACCADE_VEL
+		// Parse through the input files and remove any entries that are off screen or invalid
+		// then calculate the saccade velocity and append it as a new column
 		try 
 		{
 			for (int i = 0; i < inputFiles.length; i++) 
@@ -590,10 +591,32 @@ public class main
 				
 				// Write the headers to the file
 				ArrayList<String> headers = new ArrayList<String>(Arrays.asList(iter.next()));
-				int validityIndex = headers.indexOf("FPOGV");
-				int fixationID = headers.indexOf("FPOGID");
 				headers.add("SACCADE_VEL");
 				writer.writeNext(headers.toArray(new String[headers.size()]));
+				
+				// Find the indexes of the all required data fields
+				int validityIndex = headers.indexOf("FPOGV");
+				int fixationID = headers.indexOf("FPOGID");
+				int sacDirIndex = headers.indexOf("SACCADE_DIR");
+				int xIndex = headers.indexOf("FPOGX");
+				int yIndex = headers.indexOf("FPOGY");
+				int timeIndex = -1;
+				
+				// Two columns contain time and the name of the time column is dynamic, therefore search for it
+				for (int j = 0; j < headers.size(); j++) 
+				{
+					if (timeIndex == -1 && headers.get(j).contains("TIME"))
+					{
+						timeIndex = j;
+						break;
+					}
+				}
+				
+				if (timeIndex == -1 || sacDirIndex == -1)
+				{
+					JOptionPane.showMessageDialog(null, "Data file does not contain required columns", "Error Message", JOptionPane.ERROR_MESSAGE);
+					System.exit(0);
+				}
 				
 				// Write the first row to the file
 				String[] prevRow = iter.next();
@@ -602,35 +625,15 @@ public class main
 				row.add("" + 0);
 				writer.writeNext(row.toArray(new String[row.size()]));
 				
-				// Find the indexes of time and saccade direction
-				int time = -1;
-				int sacDir = -1;
-				
-				for (int j = 0; j < headers.size(); j++) 
-				{
-					if (time == -1 && headers.get(j).contains("TIME"))
-						time = j;
-					if (headers.get(j).equals("SACCADE_DIR"))
-						sacDir = j;
-				}
-				
-				if (time == -1 || sacDir == -1)
-				{
-					JOptionPane.showMessageDialog(null, "Data file does not contain time column or saccade direction column", "Error Message", JOptionPane.ERROR_MESSAGE);
-					System.exit(0);
-				}
-				
-				
-				
 				while (iter.hasNext()) 
 				{
 					String[] currRow = iter.next();
 					row = new ArrayList<String>(Arrays.asList(currRow));
-					row.add(Double.toString(Double.valueOf(currRow[sacDir])/Math.abs(Double.valueOf(currRow[time]) - Double.valueOf(prevRow[time]))));
+					row.add(Double.toString(Double.valueOf(currRow[sacDirIndex])/Math.abs(Double.valueOf(currRow[timeIndex]) - Double.valueOf(prevRow[timeIndex]))));
 					writer.writeNext(row.toArray(new String[row.size()]));
 					
 					// Check to make sure the current row is a fixation
-					if (Double.valueOf(currRow[sacDir]) != 0)
+					if (Double.valueOf(currRow[sacDirIndex]) != 0)
 						prevRow = currRow;
 					
 					// For the very first fixation, find the last valid point
@@ -638,7 +641,7 @@ public class main
 					{
 						if (Integer.valueOf(currRow[validityIndex]) == 1)
 							prevRow = currRow;
-						System.out.println(prevRow[time]);
+						System.out.println(prevRow[timeIndex]);
 					}
 						
 				}
