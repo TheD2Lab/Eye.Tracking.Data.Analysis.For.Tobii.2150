@@ -83,17 +83,17 @@ public class main
 		final int SCREEN_HEIGHT = 768;
 
 		//output file paths
-		String graphFixationResults = "\\graphFXDResults.csv";
+		String graphFixationResults = "/graphFXDResults.csv";
 		String graphFixationOutput = outputFolderPath + graphFixationResults;
 
-		String graphEventResults = "\\graphEVDResults.csv";
+		String graphEventResults = "/graphEVDResults.csv";
 		String graphEventOutput = outputFolderPath + graphEventResults;
 
-		String graphGazeResults = "\\graphGZDResults.csv";
+		String graphGazeResults = "/graphGZDResults.csv";
 		String graphGazeOutput = outputFolderPath + graphGazeResults;
 
 
-		String aoiResults = "\\aoiResults.csv";
+		String aoiResults = "/aoiResults.csv";
 		String aoiOutput = outputFolderPath + aoiResults;
 
 		// Analyze graph related data
@@ -108,7 +108,7 @@ public class main
 		gazeAnalytics.csvToARFF(graphGazeOutput);
 		
 		//combining all result files
-		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "\\combineResults.csv");
+		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
 		//gazeAnalytics.csvToARFF(outputFolderPath + "\\combineResults.csv");
 
 		// Analyze AOI data
@@ -216,7 +216,7 @@ public class main
 		String outputPath = folderChooser("Choose a directory to save your file");
 
 		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
-		File participantFolder = new File(outputPath + "\\" + participant);
+		File participantFolder = new File(outputPath + "/" + participant);
 
 		//creates the folder only if it doesn't exists already
 		if(!participantFolder.exists())
@@ -229,7 +229,7 @@ public class main
 			}
 		}
 
-		outputPath += "\\" + participant;
+		outputPath += "/" + participant;
 
 		filePaths[0] = inputGazePath;
 		filePaths[1] = inputFixationPath;
@@ -566,12 +566,11 @@ public class main
 	 */
 	private static String[] processData(String[] inputFiles, String dir) 
 	{
-		String name = dir.substring(dir.lastIndexOf("\\"));
-		String dirPrefix = dir + "\\inputFiles\\" + name;
-		String[] outputFiles = new String[] {dirPrefix+ "_all_gaze.csv", dirPrefix + "_fixation.csv"};
+		String name = dir.substring(dir.lastIndexOf("/"));
+		String[] outputFiles = new String[] {dir + "/inputFiles/" + name + "_all_gaze.csv", dir + "/inputFiles/" + name + "_fixation.csv"};
+		File folder = new File(dir + "/inputFiles");
 		
 		// Create a folder to store the input files if it doesn't already exist
-		File folder = new File(dir + "\\inputFiles");
 		if(!folder.exists()) 
 		{
 			boolean folderCreated = folder.mkdir();
