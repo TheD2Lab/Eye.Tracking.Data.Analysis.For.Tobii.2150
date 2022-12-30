@@ -24,6 +24,7 @@ package analysis;
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import java.awt.geom.Point2D;
 import java.io.File;
 
 import java.io.FileNotFoundException;
@@ -558,7 +559,7 @@ public class main
 	}
 	
 	/*
-	 * Modifies input files to contain a saccade velocity column and stores those files in a new folder
+	 * Modifies input data files by cleansing the data and calculating the saccade velocity as an additional column
 	 * 
 	 * @param	inputFiles	Array of size 2 containing the path to the all_gaze and fixation data files
 	 * @param	outputPath	String of the output path
@@ -566,8 +567,9 @@ public class main
 	 */
 	private static String[] processData(String[] inputFiles, String dir) 
 	{
-		String name = dir.substring(dir.lastIndexOf("/"));
-		String[] outputFiles = new String[] {dir + "/inputFiles/" + name + "_all_gaze.csv", dir + "/inputFiles/" + name + "_fixation.csv"};
+		String participantName = dir.substring(dir.lastIndexOf("/"));
+		String dirPrefix = dir + "/inputFiles/" + participantName;
+		String[] outputFiles = new String[] {dirPrefix + "_all_gaze.csv", dirPrefix + "_fixation.csv"};
 		File folder = new File(dir + "/inputFiles");
 		
 		// Create a folder to store the input files if it doesn't already exist
@@ -601,10 +603,11 @@ public class main
 				int yIndex = headers.indexOf("FPOGY");
 				int timeIndex = -1;
 				
-				// Two columns contain time and the name of the time column is dynamic, therefore search for it
+				// Two columns contain "TIME" and the name of the time column is dynamic, therefore search for it
 				for (int j = 0; j < headers.size(); j++) 
 				{
-					if (timeIndex == -1 && headers.get(j).contains("TIME"))
+					String header = headers.get(j);
+					if (header.contains("TIME") && !header.contains("TIMETICK"))
 					{
 						timeIndex = j;
 						break;
@@ -617,34 +620,33 @@ public class main
 					System.exit(0);
 				}
 				
-				// Write the first row to the file
-				String[] prevRow = iter.next();
-				
-				ArrayList<String> row = new ArrayList<String>(Arrays.asList(prevRow));
-				row.add("" + 0);
-				writer.writeNext(row.toArray(new String[row.size()]));
+				String[] prevRow = new String[0];
 				
 				while (iter.hasNext()) 
 				{
 					String[] currRow = iter.next();
-					row = new ArrayList<String>(Arrays.asList(currRow));
-					row.add(Double.toString(Double.valueOf(currRow[sacDirIndex])/Math.abs(Double.valueOf(currRow[timeIndex]) - Double.valueOf(prevRow[timeIndex]))));
-					writer.writeNext(row.toArray(new String[row.size()]));
+					double x = Double.valueOf(currRow[xIndex]);
+					double y = Double.valueOf(currRow[yIndex]);
+					boolean valid = Integer.valueOf(currRow[validityIndex]) == 1 ? true : false;
+					boolean onScreen = (x <= 1.0 && x >= 0 && y <= 1.0 && y >= 0) ? true : false;
 					
-					// Check to make sure the current row is a fixation
-					if (Double.valueOf(currRow[sacDirIndex]) != 0)
-						prevRow = currRow;
-					
-					// For the very first fixation, find the last valid point
-					if (Double.valueOf(currRow[fixationID]) == 1)
+					if (valid && onScreen)
 					{
-						if (Integer.valueOf(currRow[validityIndex]) == 1)
-							prevRow = currRow;
-						System.out.println(prevRow[timeIndex]);
-					}
+						ArrayList<String> row = new ArrayList<String>(Arrays.asList(prevRow));
 						
+						// If the previous row has not yet been assigned, the velocity of the curernt row is 0
+						if (prevRow.length == 0)
+							row.add("" + 0);
+						else
+							row.add(Double.toString(Double.valueOf(currRow[sacDirIndex])/Math.abs(Double.valueOf(currRow[timeIndex]) - Double.valueOf(prevRow[timeIndex]))));
+						
+						writer.writeNext(row.toArray(new String[row.size()]));
+						
+						// Check to make sure the current row is a fixation
+						if (Double.valueOf(currRow[sacDirIndex]) != 0)
+							prevRow = currRow;
+					}
 				}
-				
 				reader.close();
 				writer.close();
 			}
