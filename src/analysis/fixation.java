@@ -314,21 +314,25 @@ public class fixation {
         return points;
 	}
 
-	public static String getFixationCount(String inputFile) throws IOException {
+	public static String getFixationCount(String inputFile) throws IOException 
+	{
 		File file = new File(inputFile);
 		FileReader fileReader = new FileReader(file);
 		CSVReader csvReader = new CSVReader(fileReader);
 		Iterator<String[]> iter = csvReader.iterator();
 		String[] line = new String[0];
+		int count = -1;
 		
 		// Iterate through each entry until you reach the last
+		// Since every entry is a valid fixation, count the amount of entries
 		while (iter.hasNext())
-			line = iter.next();
+		{
+			count++;
+			iter.next();
+		}
 		
 		csvReader.close();
-		
-		// Return the 9th column of the last row, which is the fixation ID
-		return line[9] + "";
+		return count + "";
 	}
 	
 	public static String avgSaccadeVelocity(String inputFile, String outputFile) throws IOException 
@@ -365,8 +369,8 @@ public class fixation {
 		int minutes = 1; 
 		int totalBlinks = 0;
 		
-		//skips header row
-		iter.next();
+		// Find the index of the blink rate
+		int blinkIndex = Arrays.asList(iter.next()).indexOf("BKPMIN");
 			
 		while (iter.hasNext())
 		{
@@ -374,8 +378,7 @@ public class fixation {
 			
 			if(Double.valueOf(row[3]) > minutes)
 			{
-				//column 31 is BKPMIN which is number of blinks per minute
-				totalBlinks += Integer.valueOf(row[30]);
+				totalBlinks += Integer.valueOf(row[blinkIndex]);
 				minutes++;
 			}
 		}

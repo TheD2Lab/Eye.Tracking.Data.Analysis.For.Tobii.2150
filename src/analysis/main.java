@@ -70,7 +70,7 @@ public class main
 		String[] paths = new String[3];
 
 		findFolderPath(paths);
-		String[] modifiedData = addDataMetrics(new String[] {paths[0], paths[1]}, paths[2]);
+		String[] modifiedData = processData(new String[] {paths[0], paths[1]}, paths[2]);
 		String inputGazePath = modifiedData[0];
 		String inputFixationPath = modifiedData[1];
 		String outputFolderPath = paths[2];
@@ -560,16 +560,18 @@ public class main
 	/*
 	 * Modifies input files to contain a saccade velocity column and stores those files in a new folder
 	 * 
-	 * @param	inputFiles	Array of size 2 containing the path to the input fixation and gaze data files
+	 * @param	inputFiles	Array of size 2 containing the path to the all_gaze and fixation data files
 	 * @param	outputPath	String of the output path
+	 * @return	Array of size 2 containing the path to the cleansed data files
 	 */
-	private static String[] addDataMetrics(String[] inputFiles, String dir) 
+	private static String[] processData(String[] inputFiles, String dir) 
 	{
 		String name = dir.substring(dir.lastIndexOf("\\"));
-		String[] outputFiles = new String[] {dir + "\\inputFiles\\" + name + "_all_gaze.csv", dir + "\\inputFiles\\" + name + "_fixation.csv"};
-		File folder = new File(dir + "\\inputFiles");
+		String dirPrefix = dir + "\\inputFiles\\" + name;
+		String[] outputFiles = new String[] {dirPrefix+ "_all_gaze.csv", dirPrefix + "_fixation.csv"};
 		
 		// Create a folder to store the input files if it doesn't already exist
+		File folder = new File(dir + "\\inputFiles");
 		if(!folder.exists()) 
 		{
 			boolean folderCreated = folder.mkdir();
