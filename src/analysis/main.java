@@ -620,7 +620,11 @@ public class main
 					System.exit(0);
 				}
 				
-				String[] prevRow = new String[0];
+				String[] prevRow = iter.next();
+				
+				ArrayList<String> row = new ArrayList<String>(Arrays.asList(prevRow));
+				row.add("" + 0);
+				writer.writeNext(row.toArray(new String[row.size()]));
 				
 				while (iter.hasNext()) 
 				{
@@ -630,23 +634,24 @@ public class main
 					boolean valid = Integer.valueOf(currRow[validityIndex]) == 1 ? true : false;
 					boolean onScreen = (x <= 1.0 && x >= 0 && y <= 1.0 && y >= 0) ? true : false;
 					
+					row = new ArrayList<String>(Arrays.asList(currRow));
+					row.add(Double.toString(Double.valueOf(currRow[sacDirIndex])/Math.abs(Double.valueOf(currRow[timeIndex]) - Double.valueOf(prevRow[timeIndex]))));
+					
 					if (valid && onScreen)
-					{
-						ArrayList<String> row = new ArrayList<String>(Arrays.asList(prevRow));
-						
-						// If the previous row has not yet been assigned, the velocity of the curernt row is 0
-						if (prevRow.length == 0)
-							row.add("" + 0);
-						else
-							row.add(Double.toString(Double.valueOf(currRow[sacDirIndex])/Math.abs(Double.valueOf(currRow[timeIndex]) - Double.valueOf(prevRow[timeIndex]))));
-						
 						writer.writeNext(row.toArray(new String[row.size()]));
-						
-						// Check to make sure the current row is a fixation
-						if (Double.valueOf(currRow[sacDirIndex]) != 0)
+					
+					// Check to make sure the current row is a fixation
+					if (Double.valueOf(currRow[sacDirIndex]) != 0)
+						prevRow = currRow;
+					
+					// For the very first fixation, find the last valid point
+					if (Double.valueOf(currRow[fixationID]) == 1)
+					{
+						if (Integer.valueOf(currRow[validityIndex]) == 1)
 							prevRow = currRow;
 					}
 				}
+				
 				reader.close();
 				writer.close();
 			}
