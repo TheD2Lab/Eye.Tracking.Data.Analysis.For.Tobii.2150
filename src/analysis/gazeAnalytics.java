@@ -137,10 +137,15 @@ public class gazeAnalytics {
         	{
         		if(eventStart)
         		{
-        			//checks if it is greater than the baseline and the duration is within the accepted range
-	        		if(Double.valueOf(nextLine[inputHeaderIndex]) > baseline && !(Double.valueOf(nextLine[timeIndex]) - startTime > maxDur))
+        			//checks if it is greater than the baseline or the duration is within the accepted range
+	        		if(Double.valueOf(nextLine[inputHeaderIndex]) > baseline || !(Double.valueOf(nextLine[timeIndex]) - startTime > maxDur))
 	        		{
 	        			outputCSVWriter.writeNext(nextLine);
+	        			//restarts the time every time an event is discovered
+	        			if(Double.valueOf(nextLine[inputHeaderIndex]) > baseline)
+	        			{
+	        				startTime = Double.valueOf(nextLine[timeIndex]);
+	        			}
 	        		}
 	        		else
 	        		{

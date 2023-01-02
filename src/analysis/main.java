@@ -120,7 +120,7 @@ public class main
 
 
 		//User Interface for selecting type of gaze analytics
-		JFrame mainFrame = new JFrame("Would you like to select a window");
+		JFrame mainFrame = new JFrame("Would you like the program to output snapshots of the gaze/fixation data output");
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setVisible(true);
 		mainFrame.setSize(400,400);
@@ -382,7 +382,7 @@ public class main
 					String[]header = gazepointCR.readNext();
 					JLabel bLabel = new JLabel("Please pick the baseline value you would want to compare");
 					JLabel gzptLabel = new JLabel("Please pick the gaze/fixation value you would want to compare");
-					JLabel durLabel = new JLabel("Maxium Duration of the snapshot: ");
+					JLabel durLabel = new JLabel("Maxium Duration of an event (seconds): ");
 					JTextField maxDurInput = new JTextField("", 5);
 
 					JComboBox<String> baselineCB = new JComboBox<String>(baselineHeader);
