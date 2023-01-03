@@ -1,9 +1,10 @@
 Abstract
 ==================
-The purpose of this codebase is to provide an eye gaze analysis tool that is compatible with Gazepoint's GP3 Desktop and GP3HD V2 eyetrackers.
+The purpose of this codebase is to provide an eye gaze analysis tool that utilizes machine learning algorithms to predict the fatigue level of participants. The codebase is compatible with Gazepoint's GP3 Desktop and GP3HD V2 eyetrackers and uses the WEKA software collection for its data mining procedures.
 
 Setup
 ==================
+- You will need to setup an eyetracker from Gazepoint and a monitor that is up to 24". Follow the directions as listed by your Gazepoint eyetracker to setup your experiment enviroment. This codebase was developed using the GP3 Desktop and GP3HD V2 eyetrackers, other eyetrackers may not work correctly.
 - Ensure that you have all the required libraries installed. These libraries are necessary for the program to run properly, and they should be located in the **libs** folder. If for some reason they are not present, you will need to download them and attach them to the program manually.
 Required libraries:
     - arpack_combined.jar
