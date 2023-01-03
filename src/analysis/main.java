@@ -248,7 +248,7 @@ public class main
 	 */
 	private static void gazeAnalyticsOptions(JPanel p, String outputFolderPath)
 	{
-		String dir = "/results/" + outputFolderPath.substring(outputFolderPath.lastIndexOf("\\") + 1) + "/inputFiles/";
+		String dir = "/results/" + outputFolderPath.substring(outputFolderPath.lastIndexOf("/") + 1) + "/inputFiles/";
 		
 		//All the gaze analytics options
 		p.removeAll();
