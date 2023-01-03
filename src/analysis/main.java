@@ -65,7 +65,6 @@ public class main
 {
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException 
 	{
-
 		//find the folder and input file paths
 		String[] paths = new String[3];
 
