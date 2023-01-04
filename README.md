@@ -1,23 +1,24 @@
-Abstract
-==================
+
+# Abstract
+
 The purpose of this codebase is to provide an eye gaze analysis tool that utilizes machine learning algorithms to predict the fatigue level of participants. The codebase is compatible with Gazepoint's GP3 Desktop and GP3HD V2 eyetrackers and uses the WEKA software collection for its data mining procedures.
 
-Setup
-==================
+# Setup
+
 - You will need to setup an eyetracker from Gazepoint and a monitor that is up to 24". Follow the directions as listed by your Gazepoint eyetracker to setup your experiment enviroment. This codebase was developed using the GP3 Desktop and GP3HD V2 eyetrackers, other eyetrackers may not work correctly.
 - Ensure that you have all the required libraries installed. These libraries are necessary for the program to run properly, and they should be located in the **libs** folder. If for some reason they are not present, you will need to download them and attach them to the program manually.
 Required libraries:
-    - arpack_combined.jar
-    - common-lang3.jar
-    - commons-math3-3.6.1.jar
-    - core.jar
-    - mt.jar
-    - opencsv-5.7.0.jar
-    - weka.jar
+    - [arpack_combined.jar](https://weka.sourceforge.io/packageMetaData/)
+    - [common-lang3.jar](https://commons.apache.org/proper/commons-lang/download_lang.cgi)
+    - [commons-math3-3.6.1.jar](https://commons.apache.org/proper/commons-math/download_math.cgi)
+    - [core.jar](https://weka.sourceforge.io/packageMetaData/)
+    - [mt.jar](https://weka.sourceforge.io/packageMetaData/)
+    - [opencsv-5.7.0.jar](https://opencsv.sourceforge.net/)
+    - [weka.jar](https://waikato.github.io/weka-wiki/downloading_weka/)
 - **Please note that the screen size is hard-coded into the main.java file.** If the screen size of the monitor that the experiment was conducted on differs from the size specified in the code, it is necessary to edit the code to reflect the correct screen size. Failure to do so may result in incorrect calculations.
 
-How To Use The Repository
-==============================
+# How To Use The Repository
+
 1. Clone the repository to your local machine using git or your preferred version control system.
 2. Ensure that you have all the required libraries installed and run the program
 3. A prompt will appear asking you to select the gaze file you want the program to analyze 
@@ -34,70 +35,73 @@ How To Use The Repository
 9. If you choose the last option, Event Analytics, the program will ask you which gaze or fixation file you would like to analyze. The program will create a baseline file based on the first two minutes and then ask you to pick a baseline value and a value from the file you inputted to compare 
     to each other, as well as a maximum duration of an event.
 
-Analysis
-==================
-    Inputs: 
-        Gaze and Fixation raw data files
-    Output: 
-        FXD analysis including: 
-            total number of fixations; 
-            sum of all fixation duration; 
-            mean duration; 
-            median duration;
-            StDev of durations; 
-            Min. duration;
-            Max. duration;  
-            total number of saccades; 
-            sum of all saccade length; 
-            mean saccade length;
-            median saccade length; 
-            StDev of saccade lengths;
-            min saccade length; 
-            max saccade length; 
-            sum of all saccade durations;
-            mean saccade duration;
-            median saccade duration; 
-            StDev of saccade durations; 
-            Min. saccade duration;
-            Max. saccade duration; 
-            scanpath duration; 
-            fixation to saccade ratio; 
-            sum of all absolute degrees; 
-            mean absolute degree; 
-            median absolute degree; 
-            StDev of absolute degrees; 
-            min absolute degree; 
-            max absolute degree; 
-            sum of all relative degrees; 
-            mean relative degree; 
-            median relative degree; 
-            StDev of relative degrees; 
-            min relative degree; 
-            max relative degree; 
-        EVD analysis including:
-            total number of L mouse clicks
-        GZD analysis including:
-            average pupil size of left eye;
-            average pupil size of right eye;
-            average pupil size of both eyes.
-        AOIResults
-            Convex Hull Area
-            Fixation Count
-            Total Duration 
-            Mean Duration
-            Median Duration 
-            StDev of Duration 
-            Min Duration
-            Max Duration
-        System Log
-            a text file that outlines what was successfully created or any errors that was encountered
-        InputFiles Folder: Updated Fixation and Gaze file
-            included the saccade velocity in both files
-        Snapshot Folder (If yes was selected)
-            contains all the snapshot files
+# Analysis
 
-Limitations
-==================
-1. There are currently some sections of the codebase that rely on hard-coded locations that are specific to the paid version of Gazepoint. To ensure that the program functions correctly, it is important to avoid modifying the Gazepoint files in any way.
+## Inputs: 
+
+    Gaze and Fixation raw data files
+
+## Output: 
+
+    FXD analysis including: 
+        total number of fixations; 
+        sum of all fixation duration; 
+        mean duration; 
+        median duration;
+        StDev of durations; 
+        Min. duration;
+        Max. duration;  
+        total number of saccades; 
+        sum of all saccade length; 
+        mean saccade length;
+        median saccade length; 
+        StDev of saccade lengths;
+        min saccade length; 
+        max saccade length; 
+        sum of all saccade durations;
+        mean saccade duration;
+        median saccade duration; 
+        StDev of saccade durations; 
+        Min. saccade duration;
+        Max. saccade duration; 
+        scanpath duration; 
+        fixation to saccade ratio; 
+        sum of all absolute degrees; 
+        mean absolute degree; 
+        median absolute degree; 
+        StDev of absolute degrees; 
+        min absolute degree; 
+        max absolute degree; 
+        sum of all relative degrees; 
+        mean relative degree; 
+        median relative degree; 
+        StDev of relative degrees; 
+        min relative degree; 
+        max relative degree; 
+    EVD analysis including:
+        total number of L mouse clicks
+    GZD analysis including:
+        average pupil size of left eye;
+        average pupil size of right eye;
+        average pupil size of both eyes.
+    AOIResults
+        Convex Hull Area
+        Fixation Count
+        Total Duration 
+        Mean Duration
+        Median Duration 
+        StDev of Duration 
+        Min Duration
+        Max Duration
+    System Log
+        a text file that outlines what was successfully created or any errors that was encountered
+    InputFiles Folder: Updated Fixation and Gaze file
+        included the saccade velocity in both files
+    Snapshot Folder (If yes was selected)
+        contains all the snapshot files
+
+# Limitations
+
+1. Several sections of the codebase rely on the existence of data columns in the raw data files. To ensure that the program functions correctly, select all the possible columns when exporting data from the Gazepoint Analysis software.
 2. The program will create a folder for the participant regardless of whether the program executes successfully.
 3. If the names and location selected for the files match those of an existing file, the existing file will be automatically overwritten.
