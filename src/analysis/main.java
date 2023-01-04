@@ -104,6 +104,7 @@ public class main
 		fixation.processFixation(gazepointFXDPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		event.processEvent(gazepointGZDPath, graphEventOutput);
 		gaze.processGaze(gazepointGZDPath, graphGazeOutput);
+		createBaselineFile(gazepointGZDPath, outputFolderPath);
 
 
 		// Gaze Analytics 
@@ -361,16 +362,8 @@ public class main
 			}
 			else if(eventAnalyticsButton.isSelected())
 			{
-				String gazepointFilePath = fileChooser("Please select your gaze/fixation file", dir);
-				String baselineFilePath = outputFolderPath + "/baselineFile.csv";
-
-				try {
-					createBaselineFile(gazepointFilePath,outputFolderPath );
-				} catch (IOException | CsvValidationException e2) {
-					System.err.println("Unable to create baseline file: " + e2);
-					systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "Unable to create baseline file for the event snapshot");
-					System.exit(0);
-				}
+				String gazepointFilePath = fileChooser("Please select your gaze file", dir);
+				String baselineFilePath = outputFolderPath + "/baseline.csv";
 	
 				try 
 				{
@@ -435,64 +428,23 @@ public class main
 	 */
 	private static void createBaselineFile(String filePath, String outputFolder) throws IOException, CsvValidationException
 	{
-		FileWriter outputFileWriter = new FileWriter(new File (outputFolder + "/baselineFile.csv"));
+		FileWriter outputFileWriter = new FileWriter(new File (outputFolder + "/baselineModifiedFile.csv"));
 		CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
 		FileReader fileReader = new FileReader(filePath);
 		CSVReader csvReader = new CSVReader(fileReader);
-		String[]nextLine = csvReader.readNext();
-		outputCSVWriter.writeNext(nextLine); //header
-		int dataLength = nextLine.length;
-		Double[]data = new Double[dataLength];
-		Arrays.fill(data, new Double(0));
-		int numOfRows = 0;
-		try {
-
-
-
-			while((nextLine = csvReader.readNext()) != null) 
-			{
-				if(Double.valueOf(nextLine[3]) < 120) //two minutes
-				{
-					for(int i=0; i<nextLine.length; i++)
-					{
-						if(nextLine[i].isBlank() || !NumberUtils.isNumber(nextLine[i])) //skips Media Name and AOI
-						{
-							if(i==12)
-							{
-								System.out.println(nextLine.toString());
-							}
-							data[i] =  null;
-							continue;
-						}
-						data[i] += Double.valueOf(nextLine[i]);
-					}
-				}
-				numOfRows++;
-
-
-			}
+		String[]nextLine = csvReader.readNext();//header
+		outputCSVWriter.writeNext(nextLine);
+		
+		try 
+		{
 			
-			//averages all the number
-			for(int i=0; i<data.length; i++)
+			while((nextLine = csvReader.readNext()) != null)
 			{
-				if(data[i] == null)
+				if(Double.valueOf(nextLine[3]) <= 120) //two minutes
 				{
-					continue;
+					outputCSVWriter.writeNext(nextLine);
 				}
-				data[i] = data[i]/numOfRows;
 			}
-			
-			//converts the double array into a string
-			String[]strData = new String[data.length];
-			for(int i=0; i<data.length; i++)
-			{
-				if(data[i] == null)
-				{
-					continue;
-				}
-				strData[i] = String.valueOf(data[i]);
-			}
-			outputCSVWriter.writeNext(strData);
 		}
 		catch(Exception e)
 		{
@@ -504,6 +456,8 @@ public class main
 			csvReader.close();
 
 		}
+		gaze.processGaze(outputFolder + "/baselineModifiedFile.csv", outputFolder + "/baseline.csv");
+		gazeAnalytics.csvToARFF(outputFolder + "/baseline.csv");
 	}
 
 

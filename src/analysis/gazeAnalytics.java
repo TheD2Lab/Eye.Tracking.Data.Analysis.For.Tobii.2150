@@ -135,6 +135,12 @@ public class gazeAnalytics {
         	boolean eventStart = false;
         	while((nextLine = inputCSVReader.readNext())!= null)
         	{
+        		//skips the first two minutes
+        		if(Double.valueOf(nextLine[timeIndex]) <= 120) 
+        		{
+        			continue;
+        		}
+        		
         		if(eventStart)
         		{
         			//checks if it is greater than the baseline or the duration is within the accepted range
