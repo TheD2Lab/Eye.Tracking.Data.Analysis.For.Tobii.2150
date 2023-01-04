@@ -21,7 +21,7 @@ public class systemLogger {
 	{
 		try 
 		{
-			logFilePath = folderPath + "\\SystemLog.txt";
+			logFilePath = folderPath + "/SystemLog.txt";
 			File logFile = new File(logFilePath);
 			if(logFile.createNewFile())
 			{
