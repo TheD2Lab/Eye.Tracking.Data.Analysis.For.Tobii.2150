@@ -76,8 +76,8 @@ public class main
 
 		findFolderPath(paths);
 		String[] modifiedData = processData(new String[] {paths[0], paths[1]}, paths[2]);
-		String inputGazePath = modifiedData[0];
-		String inputFixationPath = modifiedData[1];
+		String gazepointGZDPath = modifiedData[0];
+		String gazepointFXDPath = modifiedData[1];
 		String outputFolderPath = paths[2];
 		
 		//create the system log
@@ -86,6 +86,15 @@ public class main
 		// Resolution of monitor 
 		final int SCREEN_WIDTH = 1024;
 		final int SCREEN_HEIGHT = 768;
+		
+		//      
+		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        
+		// width will store the width of the screen
+		int width = (int)size.getWidth();
+    
+		// height will store the height of the screen
+		int height = (int)size.getHeight();
 
 		//output file paths
 		String graphFixationResults = "/graphFXDResults.csv";
@@ -125,15 +134,17 @@ public class main
 		JFrame mainFrame = new JFrame("Would you like the program to output snapshots of the gaze/fixation data output");
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setVisible(true);
-		mainFrame.setSize(400,400);
+		mainFrame.setSize(width, height);
 
 		JPanel mainPanel = new JPanel();
+		Label qLabel = new Label("Would you like the program to output snapshots of the gaze/fixation data output");
 		JRadioButton yesButton = new JRadioButton("Yes");
 		JRadioButton noButton = new JRadioButton("No");
 		ButtonGroup bg = new ButtonGroup();
 
 		bg.add(yesButton);
 		bg.add(noButton);
+		mainPanel.add(qLabel);
 		mainPanel.add(yesButton);
 		mainPanel.add(noButton);
 		mainFrame.add(mainPanel);
