@@ -540,7 +540,7 @@ public class main
 	private static String[] processData(String[] inputFiles, String dir) 
 	{
 		String participantName = dir.substring(dir.lastIndexOf("/"));
-		String dirPrefix = dir + "/inputFiles/" + participantName;
+		String dirPrefix = dir + "/inputFiles/" + participantName + "_cleansed";
 		String[] outputFiles = new String[] {dirPrefix + "_all_gaze.csv", dirPrefix + "_fixation.csv"};
 		File folder = new File(dir + "/inputFiles");
 		
@@ -595,7 +595,7 @@ public class main
 				String[] prevRow = iter.next();
 				
 				ArrayList<String> row = new ArrayList<String>(Arrays.asList(prevRow));
-				row.add("" + 0);
+				row.add(0 + "");
 				writer.writeNext(row.toArray(new String[row.size()]));
 				
 				while (iter.hasNext()) 
@@ -607,14 +607,24 @@ public class main
 					boolean onScreen = (x <= 1.0 && x >= 0 && y <= 1.0 && y >= 0) ? true : false;
 					
 					row = new ArrayList<String>(Arrays.asList(currRow));
-					row.add(Double.toString(Double.valueOf(currRow[sacDirIndex])/Math.abs(Double.valueOf(currRow[timeIndex]) - Double.valueOf(prevRow[timeIndex]))));
+					
+					// Check to see if these are concurrent fixations
+					if (Integer.valueOf(prevRow[fixationID]) == (Integer.valueOf(currRow[fixationID]) - 1))
+						row.add(Double.toString(Double.valueOf(currRow[sacDirIndex])/Math.abs(Double.valueOf(currRow[timeIndex]) - Double.valueOf(prevRow[timeIndex]))));
+					else
+						row.add(0 + "");
 					
 					if (valid && onScreen)
+					{
 						writer.writeNext(row.toArray(new String[row.size()]));
-					
-					// Check to make sure the current row is a fixation
-					if (Double.valueOf(currRow[sacDirIndex]) != 0)
-						prevRow = currRow;
+						if (Double.valueOf(currRow[sacDirIndex]) != 0)
+							prevRow = currRow;
+					}
+//						writer.writeNext(row.toArray(new String[row.size()]));
+//					
+//					// Check to make sure the current row is a fixation
+//					if (Double.valueOf(currRow[sacDirIndex]) != 0)
+//						prevRow = currRow;
 					
 					// For the very first fixation, find the last valid point
 					if (Double.valueOf(currRow[fixationID]) == 1)
