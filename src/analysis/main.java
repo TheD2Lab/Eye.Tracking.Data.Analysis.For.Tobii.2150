@@ -25,6 +25,7 @@ package analysis;
  */
 
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 import java.io.FileNotFoundException;
@@ -37,8 +38,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -49,6 +53,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
@@ -68,7 +73,102 @@ public class main
 {
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException 
 	{
+		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		// width will store the width of the screen
+		int width = (int)size.getWidth();
+		// height will store the height of the screen
+		int height = (int)size.getHeight();
+		
+		JFrame mainFrame = new JFrame("");
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.setVisible(true);
+		mainFrame.setSize(width, height);
+		
+		JPanel panel = new JPanel(new GridBagLayout());
+		
+		BufferedImage myPicture = ImageIO.read(new File("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\sharksLogo.png"));
+		JLabel image = new JLabel(new ImageIcon(myPicture));
+		
+		JLabel title = new JLabel();
+		title.setFont(new Font("Verdana", Font.PLAIN, 30));
+		
+		JLabel gazeLabel = new JLabel("Location of gaze file: ");
+		JTextField gazeTextF = new JTextField("Location of gaze file:", 50);
+		JButton gazeBrowseBtn = new JButton("Browse");
+		//gazeTextF.setBorder(BorderFactory.createCompoundBorder(gazeTextF.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		gazeTextF.setBackground(Color.WHITE);
+		gazeTextF.setEditable(false);
+		gazeTextF.setPreferredSize(new Dimension(50, 30));
+		
+		JLabel fixationLabel = new JLabel("Location of fixation file: ");
+		JTextField fixationTextF = new JTextField("Location of fixation file:" , 50);
+		//fixationTextF.setBorder(BorderFactory.createCompoundBorder(gazeTextF.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		fixationTextF.setBackground(Color.WHITE);
+		JButton fixationBrowseBtn = new JButton("Browse");
+		fixationTextF.setEditable(false);
+		fixationTextF.setPreferredSize(new Dimension(50, 30));
+		
+		JLabel outputLabel = new JLabel("Location of output file: ");
+		JTextField outputTextF = new JTextField("Location of output file:", 50);
+		//outputTextF.setBorder(BorderFactory.createCompoundBorder(gazeTextF.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		outputTextF.setBackground(Color.WHITE);
+		JButton outputBrowseBtn = new JButton("Browse");
+		outputTextF.setEditable(false);
+		outputTextF.setPreferredSize(new Dimension(50, 30));
 
+		JPanel pPanel = new JPanel(new FlowLayout());
+		JLabel partLabel = new JLabel("Participant: ");
+		JTextField partTextF = new JTextField(15);
+		partTextF.setPreferredSize(new Dimension(50, 30));
+		partLabel.setFont(new Font("Verdana", Font.PLAIN, 20));
+		pPanel.add(partLabel);
+		pPanel.add(partTextF);
+		
+		
+		GridBagConstraints c = new GridBagConstraints();
+		
+		c.gridx = 0;//set the x location of the grid for the next component
+        c.gridy = 0;//set the y location of the grid for the next component
+        panel.add(image,c);
+        
+        c.gridy = 1;//change the y location
+        c.insets = new  Insets(40, 15, 15, 0);
+        panel.add(gazeTextF,c);
+        c.gridx = 1;
+        panel.add(gazeBrowseBtn,c);
+        
+        c.gridy = 2;//change the y location
+        c.gridx = 0;
+        c.insets = new  Insets(40, 15, 15, 0);
+        panel.add(fixationTextF,c);
+        c.gridx = 1;
+        panel.add(fixationBrowseBtn,c);
+        
+        c.gridy = 3;//change the y location
+        c.gridx = 0;
+        c.insets = new  Insets(40, 15, 15, 0);
+        panel.add(outputTextF,c);
+        c.gridx = 1;
+        panel.add(outputBrowseBtn,c);
+        
+        c.gridy = 4;//change the y location
+        c.gridx = 0;
+        c.insets = new  Insets(40, 15, 15, 0);
+        panel.add(pPanel,c);
+
+        c.gridy=5;
+        JButton submitBtn = new JButton("Submit");
+        panel.add(submitBtn, c);
+       
+        
+		
+		mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		mainFrame.add(panel);
+		mainFrame.setSize(width, height);
+		mainFrame.setLocationRelativeTo(null);
+		mainFrame.setVisible(true);
+
+		/*
 		//createBaselineFile("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\Kayla _all_gaze.csv", "C:\\Users\\kayla\\Documents\\temp");
 		
 		//find the folder and input file paths
@@ -163,6 +263,8 @@ public class main
 				System.exit(0);
 			}
 		});
+		
+		*/
 		
 		
 
