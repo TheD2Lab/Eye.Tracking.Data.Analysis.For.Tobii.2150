@@ -29,7 +29,8 @@ import java.util.ArrayList;
 
 public class saccade {
 
-	public static Double[] getAllSaccadeLength(ArrayList<Object> allCoordinates){
+	public static Double[] getAllSaccadeLength(ArrayList<Object> allCoordinates) {
+		ArrayList<Double> allSaccadeLengths = new ArrayList<Double>();
 		int objectSize = allCoordinates.size();
 		Double[] allLengths = new Double[(objectSize-1)];
 		for(int i=0; i<objectSize; i++){
@@ -37,12 +38,14 @@ public class saccade {
 
 			if(i+1<objectSize){
 				Double[] laterCoordinate = (Double[]) allCoordinates.get(i+1);
-				allLengths[i] = Math.sqrt(Math.pow((laterCoordinate[0] - earlyCoordinate[0]), 2) + Math.pow((laterCoordinate[1] - earlyCoordinate[1]), 2));
+				if (earlyCoordinate[2] == laterCoordinate[2] - 1)
+					allSaccadeLengths.add(Math.sqrt(Math.pow((laterCoordinate[0] - earlyCoordinate[0]), 2) + Math.pow((laterCoordinate[1] - earlyCoordinate[1]), 2)));
 			}
-
 		}
-
-		return allLengths;
+		
+		allLengths = new Double[allSaccadeLengths.size()];
+		return allSaccadeLengths.toArray(allLengths);
+		//return allLengths;
 	}
 
 	//the saccade duration is the duration between two fixations
@@ -54,14 +57,16 @@ public class saccade {
 		for (int i=0; (i+1)<saccadeDetails.size(); i++){
 			Double[] currentDetail = (Double[]) saccadeDetails.get(i);
 			Double[] subsequentDetail = (Double[]) saccadeDetails.get(i+1);
+			
+			if (currentDetail[2] == subsequentDetail[2] - 1) {
+				double currentTimestamp = currentDetail[0];
+				double currentFixationDuration = currentDetail[1];
+				double subsequentTimestamp = subsequentDetail[0];
 
-			double currentTimestamp = currentDetail[0];
-			double currentFixationDuration = currentDetail[1];
-			double subsequentTimestamp = subsequentDetail[0];
+				double eachSaccadeDuration = subsequentTimestamp - (currentTimestamp + currentFixationDuration);
 
-			double eachSaccadeDuration = subsequentTimestamp - (currentTimestamp + currentFixationDuration);
-
-			allSaccadeDurations.add(eachSaccadeDuration);
+				allSaccadeDurations.add(eachSaccadeDuration);
+			}
 		}
 		return allSaccadeDurations;
 	}

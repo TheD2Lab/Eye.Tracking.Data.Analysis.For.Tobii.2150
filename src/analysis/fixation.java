@@ -59,9 +59,11 @@ public class fixation {
         try {
         	 FileReader fileReader = new FileReader(inputFile);
              CSVReader csvReader = new CSVReader(fileReader);
-             String[]nextLine = csvReader.readNext();
+             String[] nextLine = csvReader.readNext();
+             String[] prevLine = null;
              int fixationValidityIndex = -1;
              int fixationDurationIndex = -1;
+             int fixationIDIndex = 1;
              int fixationXIndex = -1;
              int fixationYIndex = -1;
              int timestampIndex = -1;
@@ -83,11 +85,12 @@ public class fixation {
          		case "FPOGY":
          			fixationYIndex = i;
          			break;
+         		case "FPOGID":
+         			fixationIDIndex = i;
          		default:
          			break;
          		}
-         		if(nextLine[i].contains("TIME"))
-         		{
+         		if(nextLine[i].contains("TIME") && timestampIndex == -1) {
          			timestampIndex = i;
          		}
          	}
@@ -96,14 +99,10 @@ public class fixation {
 
             while((nextLine = csvReader.readNext()) != null) {
 
-            	if(!nextLine[fixationValidityIndex].equals("1"))
-            	{
-            		continue;
-            	}
                 //get each fixation's duration
                 String fixationDurationSeconds = nextLine[fixationDurationIndex];
-                double eachDuration = Double.valueOf(fixationDurationSeconds) * 1000;
-
+                double eachDuration = Double.valueOf(fixationDurationSeconds);
+                double fixationID = Double.valueOf(nextLine[fixationIDIndex]);
 
                 String [] lineArray = new String[10];
 
@@ -115,25 +114,23 @@ public class fixation {
 
                 Point2D.Double eachPoint = new Point2D.Double(x,y);
 
-                Double[] eachCoordinate = new Double[2];
+                Double[] eachCoordinate = new Double[3];
                 eachCoordinate[0] = x;
                 eachCoordinate[1] = y;
+                eachCoordinate[2] = fixationID;
 
                 //get timestamp of each fixation
-                double timestamp = Double.valueOf(nextLine[timestampIndex])* 1000;
-                Double[] eachSaccadeDetail = new Double[2];
+                double timestamp = Double.valueOf(nextLine[timestampIndex]);
+                Double[] eachSaccadeDetail = new Double[3];
                 eachSaccadeDetail[0] = timestamp;
                 eachSaccadeDetail[1] = eachDuration;
+                eachSaccadeDetail[2] = fixationID;
 
 
                 allFixationDurations.add(eachDuration);
-
                 allCoordinates.add(eachCoordinate);
-
                 allPoints.add(eachPoint);
-
                 saccadeDetails.add(eachSaccadeDetail);
-
             }
 
             ArrayList<String>headers = new ArrayList<>();
