@@ -86,13 +86,13 @@ public class main
 		
 		//tabbed pages
 		Panels pages = new Panels();
-		JPanel aquirePathsPanel=new JPanel();
-		aquirePathsPanel = pages.aquirePathsPage();
+		JPanel acquirePathsPanel=new JPanel();
+		acquirePathsPanel = pages.acquirePathsPage();
 		JPanel p2=new JPanel();  
 		JPanel p3=new JPanel();  
 		JTabbedPane tp=new JTabbedPane();  
 		tp.setBounds(50,50,200,200);  
-		tp.add("Data Analysis Page",aquirePathsPanel);  
+		tp.add("Data Analysis Page",acquirePathsPanel);  
 		tp.add("Machine Learning",p2);  
 		tp.add("Help",p3);    
 
@@ -103,13 +103,11 @@ public class main
 		while(pages.getGZDPath().equals("")) {Thread.sleep(2000);};
 		
 		String[] paths = {pages.getGZDPath(), pages.getFXDPath(), pages.getOutputPath()};
-		System.out.println("Got my paths");
 
 		String[] modifiedData = processData(new String[] {paths[0], paths[1]}, paths[2]);
 		String gazepointGZDPath = modifiedData[0];
 		String gazepointFXDPath = modifiedData[1];
 		String outputFolderPath = paths[2];
-		System.out.println("Data modified");
 
 		systemLogger.createSystemLog(outputFolderPath);
 		//create the system log

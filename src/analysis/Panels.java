@@ -49,7 +49,7 @@ public class Panels {
 	private JPanel panel=new JPanel(new GridBagLayout());
 
 
-	public  JPanel aquirePathsPage() throws IOException
+	public  JPanel acquirePathsPage() throws IOException
 	{	
 		BufferedImage myPicture = ImageIO.read(new File("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\sharksLogo.png"));
 		JLabel image = new JLabel(new ImageIcon(myPicture));
@@ -60,14 +60,12 @@ public class Panels {
 		JLabel gazeLabel = new JLabel("Location of gaze file: ");
 		JTextField gazeTextF = new JTextField("Location of gaze file: ", 50);
 		JButton gazeBrowseBtn = new JButton("Browse");
-		//gazeTextF.setBorder(BorderFactory.createCompoundBorder(gazeTextF.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		gazeTextF.setBackground(Color.WHITE);
 		gazeTextF.setEditable(false);
 		gazeTextF.setPreferredSize(new Dimension(50, 30));
 
 		JLabel fixationLabel = new JLabel("Location of fixation file: ");
 		JTextField fixationTextF = new JTextField("Location of fixation file: " , 50);
-		//fixationTextF.setBorder(BorderFactory.createCompoundBorder(gazeTextF.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		fixationTextF.setBackground(Color.WHITE);
 		JButton fixationBrowseBtn = new JButton("Browse");
 		fixationTextF.setEditable(false);
@@ -75,7 +73,6 @@ public class Panels {
 
 		JLabel outputLabel = new JLabel("Location of output file: ");
 		JTextField outputTextF = new JTextField("Location of output file: ", 50);
-		//outputTextF.setBorder(BorderFactory.createCompoundBorder(gazeTextF.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		outputTextF.setBackground(Color.WHITE);
 		JButton outputBrowseBtn = new JButton("Browse");
 		outputTextF.setEditable(false);
@@ -187,9 +184,7 @@ public class Panels {
 			}
 			
 			panel.removeAll();
-			panel.repaint();
-			System.out.println("Made it to the end");
-			
+			panel.repaint();			
 		});
 		
 
@@ -207,7 +202,7 @@ public class Panels {
 		GridBagConstraints c = new GridBagConstraints();
 		ButtonGroup bg = new ButtonGroup();
 		
-		JLabel qLabel = new JLabel("Would you like the program to output snapshots of the gaze/fixation data output");
+		JLabel qLabel = new JLabel("Would you like to output snapshots of the data?");
 		qLabel.setFont(new Font("Verdana", Font.PLAIN, 20));
 
 		JRadioButton yesBtn = new JRadioButton("Yes");
