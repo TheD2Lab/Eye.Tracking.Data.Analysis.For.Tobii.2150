@@ -85,6 +85,7 @@ public class gazeAnalytics {
 		int index = 0;
 		double baseline = -1;
 		String outputFile = outputFolderPath + "/event_" + index + ".csv";
+		String outputCalcFile = outputFolderPath + "/eventCalc_" + index + ".csv";
 		String [] header;
 		double startTime = 0; 
 		int timeIndex = -1;
@@ -157,9 +158,12 @@ public class gazeAnalytics {
 	        		{
 	        			outputCSVWriter.close();
 	        			csvToARFF(outputFile);
+	        			gaze.processGaze(outputFile, outputCalcFile);
+	        			csvToARFF(outputCalcFile);
 	        			eventStart = false;
 	        			index++;
 	        			outputFile = outputFolderPath + "/event_" + index + ".csv";
+	        			outputCalcFile = outputFolderPath + "/eventCalc_" + index + ".csv";
 	        			outputFileWriter = new FileWriter(new File (outputFile));
 	        	        outputCSVWriter = new CSVWriter(outputFileWriter);
 	        	        outputCSVWriter.writeNext(header);

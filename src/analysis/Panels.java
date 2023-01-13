@@ -59,7 +59,7 @@ public class Panels {
 	{	
 		
 
-		JLabel title = new JLabel();
+		JLabel title = new JLabel("D2 Lab Eye Tracking Data Analysis Tool");
 		title.setFont(new Font("Verdana", Font.PLAIN, 30));
 
 		JLabel gazeLabel = new JLabel("Location of gaze file: ");
@@ -97,30 +97,33 @@ public class Panels {
 		c.gridx = 0;//set the x location of the grid for the next component
 		c.gridy = 0;//set the y location of the grid for the next component
 		panel.add(image,c);
-
-		c.gridy = 1;//change the y location
+		
+		c.gridy = 1;
 		c.insets = new  Insets(40, 15, 15, 0);
+		panel.add(title,c);
+
+		c.gridy = 2;//change the y location
 		panel.add(gazeTextF,c);
 		c.gridx = 1;
 		panel.add(gazeBrowseBtn,c);
 
-		c.gridy = 2;//change the y location
+		c.gridy = 3;//change the y location
 		c.gridx = 0;
 		panel.add(fixationTextF,c);
 		c.gridx = 1;
 		panel.add(fixationBrowseBtn,c);
 
-		c.gridy = 3;//change the y location
+		c.gridy = 4;//change the y location
 		c.gridx = 0;
 		panel.add(outputTextF,c);
 		c.gridx = 1;
 		panel.add(outputBrowseBtn,c);
 
-		c.gridy = 4;//change the y location
+		c.gridy = 5;//change the y location
 		c.gridx = 0;
 		panel.add(pPanel,c);
 
-		c.gridy=5;
+		c.gridy=6;
 		JButton submitBtn = new JButton("Submit");
 		panel.add(submitBtn, c);
 
@@ -398,7 +401,7 @@ public class Panels {
 			{
 				String gazepointFile = fileChooser("Please select which file you would like to parse out", dir);
 				JTextField windowSizeInput = new JTextField("", 5);
-				JLabel windowSizeLabel = new JLabel("Window Size: ");
+				JLabel windowSizeLabel = new JLabel("Window Size(seconds): ");
 				
 				c.gridy = 1;
 				JPanel userInputPanel = new JPanel(new FlowLayout());
@@ -445,8 +448,8 @@ public class Panels {
 				String gazepointFile = fileChooser("Please select which file you would like to parse out", dir);
 				JTextField windowSizeInput = new JTextField("", 5);
 				JTextField overlappingInput = new JTextField("", 5);
-				JLabel windowSizeLabel = new JLabel("Window Size: ");
-				JLabel overlappingLabel = new JLabel("Overlapping Amount: ");
+				JLabel windowSizeLabel = new JLabel("Window Size(seconds): ");
+				JLabel overlappingLabel = new JLabel("Overlapping Amount(seconds): ");
 
 				JPanel userInputPanel0 = new JPanel(new FlowLayout());
 				JPanel userInputPanel1 = new JPanel(new FlowLayout());

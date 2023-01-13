@@ -27,6 +27,7 @@ package analysis;
 import java.awt.geom.Point2D;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 
 import java.io.FileNotFoundException;
@@ -53,6 +54,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.WindowConstants;
@@ -87,15 +89,32 @@ public class main
 		JPanel acquirePathsPanel=new JPanel();
 		acquirePathsPanel = pages.acquirePathsPage();
 		JPanel p2=new JPanel();  
-		JPanel p3=new JPanel();  
+		JPanel helpPgPanel =new JPanel();  
 		JTabbedPane tp=new JTabbedPane();  
+		
+		JTextArea ta=new JTextArea(200,150);
+		ta.setFont(new Font("Verdana", Font.PLAIN, 15));
+		ta.setAutoscrolls(false);
+		ta.setMargin(new Insets(20,900,20,20) );
+		BufferedReader in = new BufferedReader(new FileReader("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\src\\analysis\\helpPg.txt"));
+		String line = in.readLine();
+		while(line != null){
+		  ta.append(line + "\n");
+		  line = in.readLine();
+		}
+		helpPgPanel.add(ta);
+
+		
 		tp.setBounds(50,50,200,200);  
 		tp.add("Data Analysis Page",acquirePathsPanel);  
 		tp.add("Machine Learning",p2);  
-		tp.add("Help",p3);    
+		tp.add("Help",helpPgPanel);    
 
 		mainFrame.add(tp);    
 		mainFrame.setVisible(true);
+		
+		
+		
 		
 		//waits for the UI to finish
 		while(pages.getGZDPath().equals("")) {Thread.sleep(2000);};
