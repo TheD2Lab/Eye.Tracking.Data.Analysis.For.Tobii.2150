@@ -153,99 +153,6 @@ public class main
 		tp.setComponentAt(0, pages.dataAnlysisPage());
 		tp.repaint();
 		
-		
-		/*
-		//createBaselineFile("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\Kayla _all_gaze.csv", "C:\\Users\\kayla\\Documents\\temp");
-		
-		//find the folder and input file paths
-		String[] paths = new String[3];
-
-		findFolderPath(paths);
-		String[] modifiedData = processData(new String[] {paths[0], paths[1]}, paths[2]);
-		String gazepointGZDPath = modifiedData[0];
-		String gazepointFXDPath = modifiedData[1];
-		String outputFolderPath = paths[2];
-		
-		//create the system log
-		systemLogger.createSystemLog(outputFolderPath);
-
-		// Resolution of monitor 
-		final int SCREEN_WIDTH = 1024;
-		final int SCREEN_HEIGHT = 768;
-		
-
-		//output file paths
-		String graphFixationResults = "/graphFXDResults.csv";
-		String graphFixationOutput = outputFolderPath + graphFixationResults;
-
-		String graphEventResults = "/graphEVDResults.csv";
-		String graphEventOutput = outputFolderPath + graphEventResults;
-
-		String graphGazeResults = "/graphGZDResults.csv";
-		String graphGazeOutput = outputFolderPath + graphGazeResults;
-
-
-		String aoiResults = "/aoiResults.csv";
-		String aoiOutput = outputFolderPath + aoiResults;
-
-		// Analyze graph related data
-		fixation.processFixation(gazepointFXDPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
-		event.processEvent(gazepointGZDPath, graphEventOutput);
-		gaze.processGaze(gazepointGZDPath, graphGazeOutput);
-		createBaselineFile(gazepointGZDPath, outputFolderPath);
-
-
-		// Gaze Analytics 
-		gazeAnalytics.csvToARFF(graphFixationOutput);
-		gazeAnalytics.csvToARFF(graphEventOutput);
-		gazeAnalytics.csvToARFF(graphGazeOutput);
-		
-		//combining all result files
-		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
-		gazeAnalytics.csvToARFF(outputFolderPath + "/combineResults.csv");
-
-		// Analyze AOI data
-		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-
-		//User Interface for selecting type of gaze analytics
-		JFrame mainFrame = new JFrame("Would you like the program to output snapshots of the gaze/fixation data output");
-		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mainFrame.setVisible(true);
-		mainFrame.setSize(width, height);
-
-		JPanel mainPanel = new JPanel();
-		Label qLabel = new Label("Would you like the program to output snapshots of the gaze/fixation data output");
-		JRadioButton yesButton = new JRadioButton("Yes");
-		JRadioButton noButton = new JRadioButton("No");
-		ButtonGroup bg = new ButtonGroup();
-
-		bg.add(yesButton);
-		bg.add(noButton);
-		mainPanel.add(qLabel);
-		mainPanel.add(yesButton);
-		mainPanel.add(noButton);
-		mainFrame.add(mainPanel);
-
-		JButton btn = new JButton("OK");
-		mainPanel.add(btn);
-		btn.addActionListener(e -> {
-			if(yesButton.isSelected())
-			{
-				//removes all the objects from the panel
-				mainPanel.removeAll();
-				gazeAnalyticsOptions(mainPanel, outputFolderPath);
-			}
-			else if(noButton.isSelected())
-			{
-				System.exit(0);
-			}
-		});
-		
-		*/
-		
-		
-
 	}
 
 
@@ -386,6 +293,12 @@ public class main
 				int xIndex = headers.indexOf("FPOGX");
 				int yIndex = headers.indexOf("FPOGY");
 				int timeIndex = -1;
+	            int pupilLeftValidityIndex = headers.indexOf("LPMMV");
+	            int pupilRightValidityIndex = headers.indexOf("RPMMV");
+	            int pupilLeftDiameterIndex = headers.indexOf("LPMM");
+	            int pupilRightDiameterIndex = headers.indexOf("RPMM");
+				
+				
 				
 				// Two columns contain "TIME" and the name of the time column is dynamic, therefore search for it
 				for (int j = 0; j < headers.size(); j++) {
@@ -413,6 +326,24 @@ public class main
 					double y = Double.valueOf(currRow[yIndex]);
 					boolean valid = Integer.valueOf(currRow[validityIndex]) == 1 ? true : false;
 					boolean onScreen = (x <= 1.0 && x >= 0 && y <= 1.0 && y >= 0) ? true : false;
+			
+					//checks the pupils validity
+					boolean pupilLeftValid = Integer.valueOf(currRow[pupilLeftValidityIndex]) == 1 ? true : false;
+					boolean pupilRightValid = Integer.valueOf(currRow[pupilRightValidityIndex]) == 1 ? true : false;
+					boolean pupilsDimensionValid = false;
+                	double pupilLeft = Double.parseDouble(currRow[pupilLeftDiameterIndex]);
+                	double pupilRight = Double.parseDouble(currRow[pupilRightDiameterIndex]);
+                	
+                
+                	//checks if pupil sizes are possible (between 2mm to 8mm)
+                	if(pupilLeft >=2 && pupilLeft <=8 && pupilRight >=2 && pupilRight <=8)
+                	{
+                		//checks if the difference in size between the left and right is 1mm or less
+                		if(Math.abs(pupilRight - pupilLeft) <= 1)
+                		{
+                			pupilsDimensionValid = true;
+                		}
+                	}
 					
 					row = new ArrayList<String>(Arrays.asList(currRow));
 					
@@ -422,16 +353,11 @@ public class main
 					else
 						row.add(0 + "");
 					
-					if (valid && onScreen) {
+					if (valid && onScreen && pupilLeftValid && pupilRightValid && pupilsDimensionValid) {
 						writer.writeNext(row.toArray(new String[row.size()]));
 						if (Double.valueOf(currRow[sacDirIndex]) != 0)
 							prevRow = currRow;
 					}
-//						writer.writeNext(row.toArray(new String[row.size()]));
-//					
-//					// Check to make sure the current row is a fixation
-//					if (Double.valueOf(currRow[sacDirIndex]) != 0)
-//						prevRow = currRow;
 					
 					// For the very first fixation, find the last valid point
 					if (Double.valueOf(currRow[fixationID]) == 1) {
