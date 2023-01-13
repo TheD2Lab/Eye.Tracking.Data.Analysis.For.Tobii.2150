@@ -152,7 +152,7 @@ public class main
 		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		tp.setComponentAt(0, pages.dataAnlysisPage());
 		tp.repaint();
-		
+	
 	}
 
 
