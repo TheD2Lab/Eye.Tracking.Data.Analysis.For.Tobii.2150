@@ -47,12 +47,17 @@ public class Panels {
 	private  String gazepointFXDPath = "";
 	private  String outputPath = "";
 	private JPanel panel=new JPanel(new GridBagLayout());
-
-
+	private final BufferedImage myPicture;
+	private final JLabel image; 
+	
+	public Panels() throws IOException
+	{
+		myPicture = ImageIO.read(new File("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\sharksLogo.png"));
+		image = new JLabel(new ImageIcon(myPicture));
+	}
 	public  JPanel acquirePathsPage() throws IOException
 	{	
-		BufferedImage myPicture = ImageIO.read(new File("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\sharksLogo.png"));
-		JLabel image = new JLabel(new ImageIcon(myPicture));
+		
 
 		JLabel title = new JLabel();
 		title.setFont(new Font("Verdana", Font.PLAIN, 30));
@@ -196,8 +201,6 @@ public class Panels {
 	
 	public JPanel dataAnlysisPage() throws IOException
 	{
-		BufferedImage myPicture = ImageIO.read(new File("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\sharksLogo.png"));
-		JLabel image = new JLabel(new ImageIcon(myPicture));
 		
 		GridBagConstraints c = new GridBagConstraints();
 		ButtonGroup bg = new ButtonGroup();
@@ -335,10 +338,6 @@ public class Panels {
 		File snapshotFolder = new File(outputPath + "/SnapshotFolder");
 		snapshotFolder.mkdir();
 		String outputFolder = snapshotFolder.getPath();
-		
-		
-		BufferedImage myPicture = ImageIO.read(new File("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\sharksLogo.png"));
-		JLabel image = new JLabel(new ImageIcon(myPicture));
 		
 		GridBagConstraints c = new GridBagConstraints();
 		ButtonGroup bg = new ButtonGroup();

@@ -75,12 +75,10 @@ public class main
 {
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException, InterruptedException 
 	{
-		int screenWidth = -1;
-		int screenHeight = -1;
 		JFrame mainFrame = new JFrame("");
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-		screenWidth = (int)size.getWidth();
-		screenHeight = (int)size.getHeight();
+		int screenWidth = (int)size.getWidth();
+		int screenHeight = (int)size.getHeight();
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setSize(screenWidth, screenHeight);
 		
