@@ -355,16 +355,14 @@ public class main
 	 * @param	outputPath	String of the output path
 	 * @return	Array of size 2 containing the path to the cleansed data files
 	 */
-	private static String[] processData(String[] inputFiles, String dir) 
-	{
+	private static String[] processData(String[] inputFiles, String dir) {
 		String participantName = dir.substring(dir.lastIndexOf("/"));
-		String dirPrefix = dir + "/inputFiles/" + participantName;
+		String dirPrefix = dir + "/inputFiles/" + participantName + "_cleansed";
 		String[] outputFiles = new String[] {dirPrefix + "_all_gaze.csv", dirPrefix + "_fixation.csv"};
 		File folder = new File(dir + "/inputFiles");
 		
 		// Create a folder to store the input files if it doesn't already exist
-		if(!folder.exists()) 
-		{
+		if(!folder.exists()) {
 			boolean folderCreated = folder.mkdir();
 			if(!folderCreated)
 				System.err.println("Unable to create modified data files folder.");
@@ -372,10 +370,8 @@ public class main
 		
 		// Parse through the input files and remove any entries that are off screen or invalid
 		// then calculate the saccade velocity and append it as a new column
-		try 
-		{
-			for (int i = 0; i < inputFiles.length; i++) 
-			{
+		try {
+			for (int i = 0; i < inputFiles.length; i++) {
 				CSVReader reader = new CSVReader(new FileReader(new File(inputFiles[i])));
 				CSVWriter writer = new CSVWriter(new FileWriter(new File(outputFiles[i])));
 				Iterator<String[]> iter = reader.iterator();
@@ -394,18 +390,15 @@ public class main
 				int timeIndex = -1;
 				
 				// Two columns contain "TIME" and the name of the time column is dynamic, therefore search for it
-				for (int j = 0; j < headers.size(); j++) 
-				{
+				for (int j = 0; j < headers.size(); j++) {
 					String header = headers.get(j);
-					if (header.contains("TIME") && !header.contains("TIMETICK"))
-					{
+					if (header.contains("TIME") && !header.contains("TIMETICK")) {
 						timeIndex = j;
 						break;
 					}
 				}
 				
-				if (timeIndex == -1 || sacDirIndex == -1)
-				{
+				if (timeIndex == -1 || sacDirIndex == -1) {
 					JOptionPane.showMessageDialog(null, "Data file does not contain required columns", "Error Message", JOptionPane.ERROR_MESSAGE);
 					System.exit(0);
 				}
@@ -413,11 +406,10 @@ public class main
 				String[] prevRow = iter.next();
 				
 				ArrayList<String> row = new ArrayList<String>(Arrays.asList(prevRow));
-				row.add("" + 0);
+				row.add(0 + "");
 				writer.writeNext(row.toArray(new String[row.size()]));
 				
-				while (iter.hasNext()) 
-				{
+				while (iter.hasNext()) {
 					String[] currRow = iter.next();
 					double x = Double.valueOf(currRow[xIndex]);
 					double y = Double.valueOf(currRow[yIndex]);
@@ -425,18 +417,26 @@ public class main
 					boolean onScreen = (x <= 1.0 && x >= 0 && y <= 1.0 && y >= 0) ? true : false;
 					
 					row = new ArrayList<String>(Arrays.asList(currRow));
-					row.add(Double.toString(Double.valueOf(currRow[sacDirIndex])/Math.abs(Double.valueOf(currRow[timeIndex]) - Double.valueOf(prevRow[timeIndex]))));
 					
-					if (valid && onScreen)
+					// Check to see if these are concurrent fixations
+					if (Integer.valueOf(prevRow[fixationID]) == (Integer.valueOf(currRow[fixationID]) - 1))
+						row.add(Double.toString(Double.valueOf(currRow[sacDirIndex])/Math.abs(Double.valueOf(currRow[timeIndex]) - Double.valueOf(prevRow[timeIndex]))));
+					else
+						row.add(0 + "");
+					
+					if (valid && onScreen) {
 						writer.writeNext(row.toArray(new String[row.size()]));
-					
-					// Check to make sure the current row is a fixation
-					if (Double.valueOf(currRow[sacDirIndex]) != 0)
-						prevRow = currRow;
+						if (Double.valueOf(currRow[sacDirIndex]) != 0)
+							prevRow = currRow;
+					}
+//						writer.writeNext(row.toArray(new String[row.size()]));
+//					
+//					// Check to make sure the current row is a fixation
+//					if (Double.valueOf(currRow[sacDirIndex]) != 0)
+//						prevRow = currRow;
 					
 					// For the very first fixation, find the last valid point
-					if (Double.valueOf(currRow[fixationID]) == 1)
-					{
+					if (Double.valueOf(currRow[fixationID]) == 1) {
 						if (Integer.valueOf(currRow[validityIndex]) == 1)
 							prevRow = currRow;
 					}
@@ -446,8 +446,7 @@ public class main
 				writer.close();
 			}
 		}
-		catch (Exception e) 
-		{
+		catch (Exception e) {
 			System.err.println(e);
 			System.exit(0);
 		}
