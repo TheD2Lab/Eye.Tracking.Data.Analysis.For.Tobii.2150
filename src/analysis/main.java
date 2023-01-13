@@ -25,6 +25,7 @@ package analysis;
  */
 
 import java.awt.geom.Point2D;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -71,103 +72,65 @@ import java.awt.*;
 
 public class main 
 {
-	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException 
+	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException, InterruptedException 
 	{
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-		// width will store the width of the screen
-		int width = (int)size.getWidth();
-		// height will store the height of the screen
-		int height = (int)size.getHeight();
-		
-		JFrame mainFrame = new JFrame("");
-		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mainFrame.setVisible(true);
-		mainFrame.setSize(width, height);
-		
-		JPanel panel = new JPanel(new GridBagLayout());
-		
-		BufferedImage myPicture = ImageIO.read(new File("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\sharksLogo.png"));
-		JLabel image = new JLabel(new ImageIcon(myPicture));
-		
-		JLabel title = new JLabel();
-		title.setFont(new Font("Verdana", Font.PLAIN, 30));
-		
-		JLabel gazeLabel = new JLabel("Location of gaze file: ");
-		JTextField gazeTextF = new JTextField("Location of gaze file:", 50);
-		JButton gazeBrowseBtn = new JButton("Browse");
-		//gazeTextF.setBorder(BorderFactory.createCompoundBorder(gazeTextF.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		gazeTextF.setBackground(Color.WHITE);
-		gazeTextF.setEditable(false);
-		gazeTextF.setPreferredSize(new Dimension(50, 30));
-		
-		JLabel fixationLabel = new JLabel("Location of fixation file: ");
-		JTextField fixationTextF = new JTextField("Location of fixation file:" , 50);
-		//fixationTextF.setBorder(BorderFactory.createCompoundBorder(gazeTextF.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		fixationTextF.setBackground(Color.WHITE);
-		JButton fixationBrowseBtn = new JButton("Browse");
-		fixationTextF.setEditable(false);
-		fixationTextF.setPreferredSize(new Dimension(50, 30));
-		
-		JLabel outputLabel = new JLabel("Location of output file: ");
-		JTextField outputTextF = new JTextField("Location of output file:", 50);
-		//outputTextF.setBorder(BorderFactory.createCompoundBorder(gazeTextF.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		outputTextF.setBackground(Color.WHITE);
-		JButton outputBrowseBtn = new JButton("Browse");
-		outputTextF.setEditable(false);
-		outputTextF.setPreferredSize(new Dimension(50, 30));
+		UI uInterface = new UI();
+		uInterface.UISetUp();
+		uInterface.tabbedPage();
+		while(uInterface.getGZDPath().equals("")) {Thread.sleep(2000);};
+		String[] paths = {uInterface.getGZDPath(), uInterface.getFXDPath(), uInterface.getOutputPath()};
+		System.out.println("Got my paths");
 
-		JPanel pPanel = new JPanel(new FlowLayout());
-		JLabel partLabel = new JLabel("Participant: ");
-		JTextField partTextF = new JTextField(15);
-		partTextF.setPreferredSize(new Dimension(50, 30));
-		partLabel.setFont(new Font("Verdana", Font.PLAIN, 20));
-		pPanel.add(partLabel);
-		pPanel.add(partTextF);
-		
-		
-		GridBagConstraints c = new GridBagConstraints();
-		
-		c.gridx = 0;//set the x location of the grid for the next component
-        c.gridy = 0;//set the y location of the grid for the next component
-        panel.add(image,c);
-        
-        c.gridy = 1;//change the y location
-        c.insets = new  Insets(40, 15, 15, 0);
-        panel.add(gazeTextF,c);
-        c.gridx = 1;
-        panel.add(gazeBrowseBtn,c);
-        
-        c.gridy = 2;//change the y location
-        c.gridx = 0;
-        c.insets = new  Insets(40, 15, 15, 0);
-        panel.add(fixationTextF,c);
-        c.gridx = 1;
-        panel.add(fixationBrowseBtn,c);
-        
-        c.gridy = 3;//change the y location
-        c.gridx = 0;
-        c.insets = new  Insets(40, 15, 15, 0);
-        panel.add(outputTextF,c);
-        c.gridx = 1;
-        panel.add(outputBrowseBtn,c);
-        
-        c.gridy = 4;//change the y location
-        c.gridx = 0;
-        c.insets = new  Insets(40, 15, 15, 0);
-        panel.add(pPanel,c);
+		String[] modifiedData = processData(new String[] {paths[0], paths[1]}, paths[2]);
+		String gazepointGZDPath = modifiedData[0];
+		String gazepointFXDPath = modifiedData[1];
+		String outputFolderPath = paths[2];
+		System.out.println("Data modified");
 
-        c.gridy=5;
-        JButton submitBtn = new JButton("Submit");
-        panel.add(submitBtn, c);
-       
-        
-		
-		mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		mainFrame.add(panel);
-		mainFrame.setSize(width, height);
-		mainFrame.setLocationRelativeTo(null);
-		mainFrame.setVisible(true);
+		systemLogger.createSystemLog(outputFolderPath);
+		//create the system log
+		systemLogger.createSystemLog(outputFolderPath);
 
+		// Resolution of monitor 
+		final int SCREEN_WIDTH = 1024;
+		final int SCREEN_HEIGHT = 768;
+
+
+		//output file paths
+		String graphFixationResults = "/graphFXDResults.csv";
+		String graphFixationOutput = outputFolderPath + graphFixationResults;
+
+		String graphEventResults = "/graphEVDResults.csv";
+		String graphEventOutput = outputFolderPath + graphEventResults;
+
+		String graphGazeResults = "/graphGZDResults.csv";
+		String graphGazeOutput = outputFolderPath + graphGazeResults;
+
+
+		String aoiResults = "/aoiResults.csv";
+		String aoiOutput = outputFolderPath + aoiResults;
+
+		// Analyze graph related data
+		fixation.processFixation(gazepointFXDPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+		event.processEvent(gazepointGZDPath, graphEventOutput);
+		gaze.processGaze(gazepointGZDPath, graphGazeOutput);
+		createBaselineFile(gazepointGZDPath, outputFolderPath);
+
+
+		// Gaze Analytics 
+		gazeAnalytics.csvToARFF(graphFixationOutput);
+		gazeAnalytics.csvToARFF(graphEventOutput);
+		gazeAnalytics.csvToARFF(graphGazeOutput);
+
+		//combining all result files
+		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
+		gazeAnalytics.csvToARFF(outputFolderPath + "/combineResults.csv");
+
+		// Analyze AOI data
+		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+		System.exit(0);
+
+		
 		/*
 		//createBaselineFile("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\Kayla _all_gaze.csv", "C:\\Users\\kayla\\Documents\\temp");
 		
@@ -187,14 +150,6 @@ public class main
 		final int SCREEN_WIDTH = 1024;
 		final int SCREEN_HEIGHT = 768;
 		
-		//      
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-        
-		// width will store the width of the screen
-		int width = (int)size.getWidth();
-    
-		// height will store the height of the screen
-		int height = (int)size.getHeight();
 
 		//output file paths
 		String graphFixationResults = "/graphFXDResults.csv";
@@ -530,7 +485,7 @@ public class main
 
 
 
-
+				
 			}
 		});
 	}
@@ -575,63 +530,6 @@ public class main
 	}
 
 
-	/*
-	 * UI for users to select the file they want to use
-	 * 
-	 * @param	dialogTitle		title of the window
-	 * @param 	directory		directory to choose file from relative to project directory		
-	 */
-	private static String fileChooser(String dialogTitle, String directory)
-	{
-		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir")  + directory);
-
-		//ensures that only CSV files will be able to be selected
-		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
-		jfc.setDialogTitle(dialogTitle);
-		int returnValue = jfc.showOpenDialog(null);
-
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			File selectedFile = jfc.getSelectedFile();
-			return selectedFile.getAbsolutePath();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick a file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
-		}
-		return "";
-	}
-
-
-	/*
-	 * UI for users to select the folder they would want to use to place files in
-	 * 
-	 * @param	dialogTitle		title of the window
-	 */
-	private static String folderChooser(String dialogTitle)
-	{
-		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/results/");
-		jfc.setDialogTitle("Choose a directory to save your file: ");
-
-		//only directories can be selected
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int returnValue = jfc.showSaveDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			if (jfc.getSelectedFile().isDirectory()) 
-				return jfc.getSelectedFile().toString();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick a location to output the file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
-		}
-		return "";
-	}
-	
 	/*
 	 * Modifies input data files by cleansing the data and calculating the saccade velocity as an additional column
 	 * 
@@ -738,4 +636,66 @@ public class main
 
 		return outputFiles;
 	}
+
+	/*
+	 * UI for users to select the file they want to use
+	 * 
+	 * @param	dialogTitle		title of the window
+	 * @param 	directory		directory to choose file from relative to project directory		
+	 */
+	private static String fileChooser(String dialogTitle, String directory)
+	{
+		//Initializes the user to a set directory
+		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir")  + directory);
+
+		//ensures that only CSV files will be able to be selected
+		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
+		jfc.setDialogTitle(dialogTitle);
+		int returnValue = jfc.showOpenDialog(null);
+
+		if (returnValue == JFileChooser.APPROVE_OPTION) 
+		{
+			File selectedFile = jfc.getSelectedFile();
+			return selectedFile.getAbsolutePath();
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(null, "Must pick a file", "Error Message", JOptionPane.ERROR_MESSAGE);
+			System.exit(0);
+		}
+		return "";
+	}
+
+
+	/*
+	 * UI for users to select the folder they would want to use to place files in
+	 * 
+	 * @param	dialogTitle		title of the window
+	 */
+	private static String folderChooser(String dialogTitle)
+	{
+		//Initializes the user to a set directory
+		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/results/");
+		jfc.setDialogTitle("Choose a directory to save your file: ");
+
+		//only directories can be selected
+		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int returnValue = jfc.showSaveDialog(null);
+		if (returnValue == JFileChooser.APPROVE_OPTION) 
+		{
+			if (jfc.getSelectedFile().isDirectory()) 
+				return jfc.getSelectedFile().toString();
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(null, "Must pick a location to output the file", "Error Message", JOptionPane.ERROR_MESSAGE);
+			System.exit(0);
+		}
+		return "";
+	}
+
+
+
+	
+
 }
