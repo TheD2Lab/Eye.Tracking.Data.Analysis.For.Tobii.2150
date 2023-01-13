@@ -52,6 +52,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.WindowConstants;
@@ -74,11 +75,34 @@ public class main
 {
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException, InterruptedException 
 	{
-		UI uInterface = new UI();
-		uInterface.UISetUp();
-		uInterface.tabbedPage();
-		while(uInterface.getGZDPath().equals("")) {Thread.sleep(2000);};
-		String[] paths = {uInterface.getGZDPath(), uInterface.getFXDPath(), uInterface.getOutputPath()};
+		int screenWidth = -1;
+		int screenHeight = -1;
+		JFrame mainFrame = new JFrame("");
+		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		screenWidth = (int)size.getWidth();
+		screenHeight = (int)size.getHeight();
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.setSize(screenWidth, screenHeight);
+		
+		//tabbed pages
+		Panels pages = new Panels();
+		JPanel aquirePathsPanel=new JPanel();
+		aquirePathsPanel = pages.aquirePathsPage();
+		JPanel p2=new JPanel();  
+		JPanel p3=new JPanel();  
+		JTabbedPane tp=new JTabbedPane();  
+		tp.setBounds(50,50,200,200);  
+		tp.add("Data Analysis Page",aquirePathsPanel);  
+		tp.add("Machine Learning",p2);  
+		tp.add("Help",p3);    
+
+		mainFrame.add(tp);    
+		mainFrame.setVisible(true);
+		
+		//waits for the UI to finish
+		while(pages.getGZDPath().equals("")) {Thread.sleep(2000);};
+		
+		String[] paths = {pages.getGZDPath(), pages.getFXDPath(), pages.getOutputPath()};
 		System.out.println("Got my paths");
 
 		String[] modifiedData = processData(new String[] {paths[0], paths[1]}, paths[2]);
@@ -128,8 +152,9 @@ public class main
 
 		// Analyze AOI data
 		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
-		System.exit(0);
-
+		tp.setComponentAt(0, pages.dataAnlysisPage());
+		tp.repaint();
+		
 		
 		/*
 		//createBaselineFile("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\Kayla _all_gaze.csv", "C:\\Users\\kayla\\Documents\\temp");
@@ -279,216 +304,9 @@ public class main
         	csvReaderGZD.close();
         }
 	}
-	/*
-	 * find all the paths for the input files and the output folder location
-	 * 
-	 * @param	filePaths	an array where all the file paths will be stored
-	 */
-	private static void findFolderPath(String[]filePaths)
-	{
-		String gazepointGZDPath = fileChooser("Select the gaze .csv file you would like to use", "/data/");
-		String gazepointFXDPath = fileChooser("Select the fixation .csv file you would like to use", "/data/");
-		String outputPath = folderChooser("Choose a directory to save your file");
-
-		String participant = JOptionPane.showInputDialog(null, "Participant's Name", null , JOptionPane.INFORMATION_MESSAGE);
-		File participantFolder = new File(outputPath + "/" + participant);
-
-		//creates the folder only if it doesn't exists already
-		if(!participantFolder.exists())
-		{
-			boolean folderCreated = participantFolder.mkdir();
-			if(!folderCreated)
-			{
-				JOptionPane.showMessageDialog(null, "Unable to create participant's folder", "Error Message", JOptionPane.ERROR_MESSAGE);
-				System.exit(0);
-			}
-		}
-
-		outputPath += "/" + participant;
-
-		filePaths[0] = gazepointGZDPath;
-		filePaths[1] = gazepointFXDPath;
-		filePaths[2] =  outputPath;
-
-	}
 
 
 
-	/*
-	 * UI where the user will select which the type of gaze analytics that they will want to output
-	 * UI where the user will input the information needed for the program to output the desired files
-	 * 
-	 * @param	p				the panel the UI will be placed on
-	 * @param	outputfolder	the folder path where all the files will be placed in
-	 */
-	private static void gazeAnalyticsOptions(JPanel p, String outputFolderPath)
-	{
-		String dir = "/results/" + outputFolderPath.substring(outputFolderPath.lastIndexOf("/") + 1) + "/inputFiles/";
-		
-		//All the gaze analytics options
-		p.removeAll();
-
-		//create folder to put the anaylsis in
-		File snapshotFolder = new File(outputFolderPath + "/SnapshotFolder");
-		snapshotFolder.mkdir();
-		String outputFolder = snapshotFolder.getPath();
-
-		JRadioButton continuousSnapshotButton = new JRadioButton("Continuous Snapshot");
-		JRadioButton cumulativeSnapshotButton = new JRadioButton("Cumulative Snapshot");
-		JRadioButton overlappingSnapshotButton = new JRadioButton("Overlapping Snapshot");
-		JRadioButton eventAnalyticsButton = new JRadioButton("Event Analytics");
-
-		//Adds all the JRadioButton to a layout
-		ButtonGroup bg = new ButtonGroup();
-		bg.add(continuousSnapshotButton);
-		bg.add(cumulativeSnapshotButton);
-		bg.add(overlappingSnapshotButton);
-		bg.add(eventAnalyticsButton);
-
-		//adds the buttons to a panel
-		p.add(continuousSnapshotButton);
-		p.add(cumulativeSnapshotButton);
-		p.add(overlappingSnapshotButton);
-		p.add(eventAnalyticsButton);
-
-		JButton btn = new JButton("OK");
-		p.add(btn);
-		p.revalidate();
-
-		//checks what button has been selected and generates the required files 
-		btn.addActionListener(e -> {
-			p.removeAll();
-			p.repaint();
-
-			if(continuousSnapshotButton.isSelected()||cumulativeSnapshotButton.isSelected())
-			{
-				String gazepointFile = fileChooser("Please select which file you would like to parse out", dir);
-				JTextField windowSizeInput = new JTextField("", 5);
-				JLabel windowSizeLabel = new JLabel("Window Size: ");
-				p.add(windowSizeLabel);
-				p.add(windowSizeInput);
-				JButton contBtn = new JButton("OK");
-				p.add(contBtn);
-				p.revalidate();
-
-				contBtn.addActionListener(ev -> {
-					if(continuousSnapshotButton.isSelected())
-					{
-						try 
-						{
-							gazeAnalytics.continuousWindow(gazepointFile, outputFolder,Integer.parseInt(windowSizeInput.getText()) );
-						} 
-						catch (NumberFormatException e1) 
-						{
-							systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
-						}
-						System.exit(0);
-					}
-					else
-					{
-						try 
-						{
-							gazeAnalytics.cumulativeWindow(gazepointFile, outputFolder, Integer.parseInt(windowSizeInput.getText()));
-						} 
-						catch (NumberFormatException e1) 
-						{
-							systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
-						}
-						System.exit(0);
-					}
-				});
-
-			}
-			else if(overlappingSnapshotButton.isSelected())
-			{
-				String gazepointFile = fileChooser("Please select which file you would like to parse out", dir);
-				JTextField windowSizeInput = new JTextField("", 5);
-				JTextField overlappingInput = new JTextField("", 5);
-				JLabel windowSizeLabel = new JLabel("Window Size: ");
-				JLabel overlappingLabel = new JLabel("Overlapping Amount: ");
-
-				p.add(windowSizeLabel);
-				p.add(windowSizeInput);
-				p.add(overlappingLabel);
-				p.add(overlappingInput);
-				JButton overlappingBtn = new JButton("OK");
-				p.add(overlappingBtn);
-				p.revalidate();
-				overlappingBtn.addActionListener(ev -> {
-					try 
-					{
-						gazeAnalytics.overlappingWindow(gazepointFile, outputFolder,Integer.parseInt(windowSizeInput.getText()), Integer.parseInt(overlappingInput.getText()) );
-					} 
-					catch (NumberFormatException e1) 
-					{
-						systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
-					}
-					System.exit(0);
-
-
-				});
-
-			}
-			else if(eventAnalyticsButton.isSelected())
-			{
-				String gazepointFilePath = fileChooser("Please select your gaze file", dir);
-				String baselineFilePath = outputFolderPath + "/baseline.csv";
-	
-				try 
-				{
-					FileReader baselineFR = new FileReader(baselineFilePath);
-					CSVReader baselineCR = new CSVReader(baselineFR);	
-					FileReader gazepointFR = new FileReader(gazepointFilePath);
-					CSVReader gazepointCR = new CSVReader(gazepointFR);	
-					String[] baselineHeader = baselineCR.readNext();
-					String[]header = gazepointCR.readNext();
-					JLabel bLabel = new JLabel("Please pick the baseline value you would want to compare");
-					JLabel gzptLabel = new JLabel("Please pick the gaze/fixation value you would want to compare");
-					JLabel durLabel = new JLabel("Maxium Duration of an event (seconds): ");
-					JTextField maxDurInput = new JTextField("", 5);
-
-					JComboBox<String> baselineCB = new JComboBox<String>(baselineHeader);
-					JComboBox<String> gazepointCB = new JComboBox<String>(header);
-					baselineCB.setMaximumSize(baselineCB.getPreferredSize());
-					gazepointCB.setMaximumSize(gazepointCB.getPreferredSize());
-
-					p.add(bLabel);
-					p.add(baselineCB);
-					p.add(gzptLabel);
-					p.add(gazepointCB);
-					p.add(durLabel);
-					p.add(maxDurInput);
-
-					JButton eventBtn = new JButton("OK");
-					p.add(eventBtn);
-					p.revalidate();
-
-					eventBtn.addActionListener(et -> {
-						try 
-						{
-							gazeAnalytics.eventWindow(gazepointFilePath, outputFolder, baselineFilePath, Arrays.asList(baselineHeader).indexOf(baselineCB.getSelectedItem()), Arrays.asList(header).indexOf(gazepointCB.getSelectedItem()), Integer.valueOf(maxDurInput.getText()));
-						} 
-						catch (NumberFormatException | IOException e1) 
-						{
-							systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
-						}
-						System.exit(0);
-
-					});
-
-				} 
-				catch (IOException | CsvValidationException e1) 
-				{
-					systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "Unable to find selected baseline or input files" + e1);
-					System.exit(0);
-				}
-
-
-
-				
-			}
-		});
-	}
 
 	/*
 	 * create baseline file
