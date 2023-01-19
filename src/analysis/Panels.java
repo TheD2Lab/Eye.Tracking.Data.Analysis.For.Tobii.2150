@@ -201,63 +201,6 @@ public class Panels {
 	}
 
 	
-	
-	public JPanel dataAnlysisPage() throws IOException
-	{
-		
-		GridBagConstraints c = new GridBagConstraints();
-		ButtonGroup bg = new ButtonGroup();
-		
-		JLabel qLabel = new JLabel("Would you like to output snapshots of the data?");
-		qLabel.setFont(new Font("Verdana", Font.PLAIN, 20));
-
-		JRadioButton yesBtn = new JRadioButton("Yes");
-		JRadioButton noBtn = new JRadioButton("No");
-		
-		JButton btn = new JButton("OK");
-		JPanel btnPanel = new JPanel(new FlowLayout());
-		bg.add(yesBtn);
-		bg.add(noBtn);
-		btnPanel.add(yesBtn);
-		btnPanel.add(noBtn);
-
-		c.gridx = 0;//set the x location of the grid for the next component
-		c.gridy = 0;//set the y location of the grid for the next component
-		c.insets = new  Insets(40, 15, 15, 0);
-		panel.add(image,c);
-		
-		c.gridy = 1;//set the y location of the grid for the next component
-		panel.add(qLabel,c);
-		
-		c.gridx = 0;
-		c.gridy = 2;
-		panel.add(btnPanel,c);
-		
-		c.gridx = 0;
-		c.gridy = 3;
-		panel.add(btn,c);
-		
-		btn.addActionListener(e -> {
-			if(yesBtn.isSelected())
-			{
-				try {
-					panel.removeAll();
-					panel.revalidate();
-					gazeAnalyticsOptions();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-			else if(noBtn.isSelected())
-			{
-				System.exit(0);
-			}
-		});
-		
-		return panel;
-	}
-	
 	public  String getGZDPath()
 	{
 		return gazepointGZDPath;
@@ -329,7 +272,7 @@ public class Panels {
 	 * @param	p				the panel the UI will be placed on
 	 * @param	outputfolder	the folder path where all the files will be placed in
 	 */
-	private void gazeAnalyticsOptions() throws IOException
+	public JPanel gazeAnalyticsOptions() throws IOException
 	{
 		String dir = "/results/" + outputPath.substring(outputPath.lastIndexOf("/") + 1) + "/inputFiles/";
 		
@@ -354,18 +297,21 @@ public class Panels {
 		JRadioButton cumulativeSnapshotButton = new JRadioButton("Cumulative Snapshot");
 		JRadioButton overlappingSnapshotButton = new JRadioButton("Overlapping Snapshot");
 		JRadioButton eventAnalyticsButton = new JRadioButton("Event Analytics");
+		JRadioButton exitBtn = new JRadioButton("Exit");
 
 		//Adds all the JRadioButton to a layout
 		bg.add(continuousSnapshotButton);
 		bg.add(cumulativeSnapshotButton);
 		bg.add(overlappingSnapshotButton);
 		bg.add(eventAnalyticsButton);
+		bg.add(exitBtn);
 		
 		//Adds all the JRadioButton to a a flow layout
 		optionsPanel.add(continuousSnapshotButton);
 		optionsPanel.add(cumulativeSnapshotButton);
 		optionsPanel.add(overlappingSnapshotButton);
 		optionsPanel.add(eventAnalyticsButton);
+		optionsPanel.add(exitBtn);
 		
 		
 		
@@ -389,6 +335,11 @@ public class Panels {
 
 		//checks what button has been selected and generates the required files 
 		btn.addActionListener(e -> {
+			if(exitBtn.isSelected())
+			{
+				JOptionPane.showMessageDialog(null, "Exiting out of program", "Exit", JOptionPane.INFORMATION_MESSAGE);
+				System.exit(0);
+			}
 			panel.removeAll();
 			panel.repaint();
 
@@ -424,8 +375,10 @@ public class Panels {
 						} 
 						catch (NumberFormatException e1) 
 						{
+							JOptionPane.showMessageDialog(null, "User input was not a valid number. Unable to create gaze analytics files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
 							systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
 						}
+						JOptionPane.showMessageDialog(null, "Exiting out of program", "Exit", JOptionPane.INFORMATION_MESSAGE);
 						System.exit(0);
 					}
 					else
@@ -437,7 +390,9 @@ public class Panels {
 						catch (NumberFormatException e1) 
 						{
 							systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
+							JOptionPane.showMessageDialog(null, "User input was not a valid number. Unable to create gaze analytics files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
 						}
+						JOptionPane.showMessageDialog(null, "Exiting out of program", "Exit", JOptionPane.INFORMATION_MESSAGE);
 						System.exit(0);
 					}
 				});
@@ -476,6 +431,8 @@ public class Panels {
 					catch (NumberFormatException e1) 
 					{
 						systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
+						JOptionPane.showMessageDialog(null, "User input was not a valid number. Unable to create gaze analytics files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
+
 					}
 					System.exit(0);
 
@@ -538,6 +495,7 @@ public class Panels {
 						{
 							systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
 						}
+						JOptionPane.showMessageDialog(null, "Exiting out of program", "Exit", JOptionPane.INFORMATION_MESSAGE);
 						System.exit(0);
 
 					});
@@ -546,6 +504,7 @@ public class Panels {
 				catch (IOException | CsvValidationException e1) 
 				{
 					systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "Unable to find selected baseline or input files" + e1);
+					JOptionPane.showMessageDialog(null, "Unable to find selected baseline or input files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
 					System.exit(0);
 				}
 
@@ -554,6 +513,7 @@ public class Panels {
 				
 			}
 		});
+		return panel;
 	}
 
 	

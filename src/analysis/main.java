@@ -167,7 +167,7 @@ public class main
 
 		// Analyze AOI data
 		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
-		tp.setComponentAt(0, pages.dataAnlysisPage());
+		tp.setComponentAt(0, pages.gazeAnalyticsOptions());
 		tp.repaint();
 	
 	}
