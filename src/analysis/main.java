@@ -77,6 +77,10 @@ public class main
 {
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException, InterruptedException 
 	{
+		// Resolution of monitor 
+		final int SCREEN_WIDTH = 1920;
+		final int SCREEN_HEIGHT = 1080;
+				
 		JFrame mainFrame = new JFrame("");
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 		int screenWidth = (int)size.getWidth();
@@ -121,7 +125,7 @@ public class main
 		
 		String[] paths = {pages.getGZDPath(), pages.getFXDPath(), pages.getOutputPath()};
 
-		String[] modifiedData = processData(new String[] {paths[0], paths[1]}, paths[2]);
+		String[] modifiedData = processData(new String[] {paths[0], paths[1]}, paths[2], SCREEN_WIDTH, SCREEN_HEIGHT);
 		String gazepointGZDPath = modifiedData[0];
 		String gazepointFXDPath = modifiedData[1];
 		String outputFolderPath = paths[2];
@@ -129,11 +133,6 @@ public class main
 		systemLogger.createSystemLog(outputFolderPath);
 		//create the system log
 		systemLogger.createSystemLog(outputFolderPath);
-
-		// Resolution of monitor 
-		final int SCREEN_WIDTH = 1024;
-		final int SCREEN_HEIGHT = 768;
-
 
 		//output file paths
 		String graphFixationResults = "/graphFXDResults.csv";
@@ -277,7 +276,7 @@ public class main
 	 * @param	outputPath	String of the output path
 	 * @return	Array of size 2 containing the path to the cleansed data files
 	 */
-	private static String[] processData(String[] inputFiles, String dir) {
+	private static String[] processData(String[] inputFiles, String dir, int SCREEN_WIDTH, int SCREEN_HEIGHT) {
 		String participantName = dir.substring(dir.lastIndexOf("/"));
 		String dirPrefix = dir + "/inputFiles/" + participantName + "_cleansed";
 		String[] outputFiles = new String[] {dirPrefix + "_all_gaze.csv", dirPrefix + "_fixation.csv"};
@@ -301,6 +300,7 @@ public class main
 				// Write the headers to the file
 				ArrayList<String> headers = new ArrayList<String>(Arrays.asList(iter.next()));
 				headers.add("SACCADE_VEL");
+				headers.add("SACCADE_PV");
 				writer.writeNext(headers.toArray(new String[headers.size()]));
 				
 				// Find the indexes of the all required data fields
@@ -337,11 +337,12 @@ public class main
 				row.add(0 + "");
 				writer.writeNext(row.toArray(new String[row.size()]));
 				
+				ArrayList<Double[]> saccadePoints = new ArrayList<Double[]>();
+				
 				while (iter.hasNext()) {
 					String[] currRow = iter.next();
 					double x = Double.valueOf(currRow[xIndex]);
 					double y = Double.valueOf(currRow[yIndex]);
-					boolean valid = Integer.valueOf(currRow[validityIndex]) == 1 ? true : false;
 					boolean onScreen = (x <= 1.0 && x >= 0 && y <= 1.0 && y >= 0) ? true : false;
 			
 					//checks the pupils validity
@@ -369,11 +370,28 @@ public class main
 						row.add(Double.toString(Double.valueOf(currRow[sacDirIndex])/Math.abs(Double.valueOf(currRow[timeIndex]) - Double.valueOf(prevRow[timeIndex]))));
 					else
 						row.add(0 + "");
+										
+					if (Double.valueOf(currRow[validityIndex]) == 0) {
+						if (saccadePoints.size() == 0) {
+							double prevX = Double.parseDouble(prevRow[xIndex]) * SCREEN_WIDTH;
+							double prevY = Double.parseDouble(prevRow[yIndex]) * SCREEN_HEIGHT;
+							double prevTime = Double.parseDouble(prevRow[timeIndex]);
+							saccadePoints.add(new Double[] {prevX, prevY, prevTime});
+						}
+						
+						double currTime = Double.parseDouble(currRow[timeIndex]);
+						saccadePoints.add(new Double[] {x * SCREEN_WIDTH, y * SCREEN_HEIGHT, currTime});
+					}
 					
-					if (valid && onScreen && pupilLeftValid && pupilRightValid && pupilsDimensionValid) {
-						writer.writeNext(row.toArray(new String[row.size()]));
-						if (Double.valueOf(currRow[sacDirIndex]) != 0)
+					if (onScreen && pupilLeftValid && pupilRightValid && pupilsDimensionValid) {
+						if (Double.valueOf(currRow[sacDirIndex]) != 0) {
 							prevRow = currRow;
+							String peakVelocity = saccade.getPeakVelocity(saccadePoints) + "";
+							row.add(peakVelocity);
+							saccadePoints.clear();
+						}
+						
+						writer.writeNext(row.toArray(new String[row.size()]));
 					}
 					
 					// For the very first fixation, find the last valid point

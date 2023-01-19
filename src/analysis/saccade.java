@@ -70,4 +70,47 @@ public class saccade {
 		}
 		return allSaccadeDurations;
 	}
+	
+	/*
+	 * Returns the peak velocity of a given saccade calculated using a two point central difference algorithm.
+	 * 
+	 * @param	saccadePoints	A list of saccade data points, where each data point is a double array. 
+	 * 							[0] = X position
+	 * 							[1] = Y position
+	 * 							[2] = Time of data point
+	 * 
+	 * @return	The peak velocity of a saccade
+	 */
+	public static double getPeakVelocity(ArrayList<Double[]> saccadePoints) {
+		if (saccadePoints.size() == 0 || saccadePoints.size() == 1) {
+			return 0;
+		}
+		
+		double peakVelocity = 0;
+		double conversionRate = 0.0264583333;
+		
+		for (int i = 1; i < saccadePoints.size(); i++) {
+			Double[] currPoint = saccadePoints.get(i);
+			Double[] prevPoint = saccadePoints.get(i - 1);
+
+			double x1 = currPoint[0];
+			double y1 = currPoint[1];
+			double x2 = prevPoint[0];
+			double y2 = prevPoint[1];
+			
+			double distance = Math.sqrt(Math.pow(Math.abs(x1 - x2), 2) + Math.pow(Math.abs(y1 - y2), 2)) * conversionRate;
+			double timeDifference = Math.abs(currPoint[2] - prevPoint[2]);
+			double amplitude = Math.atan(distance/60);
+			
+			System.out.println(distance + " " + amplitude + " " + timeDifference);
+			
+			double velocity = amplitude/timeDifference;
+			
+			if (velocity > peakVelocity) {
+				peakVelocity = velocity;
+			}
+		}
+		
+		return peakVelocity;
+	}
 }
