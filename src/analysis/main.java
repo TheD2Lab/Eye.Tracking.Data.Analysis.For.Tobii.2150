@@ -96,7 +96,7 @@ public class main
 		ta.setFont(new Font("Verdana", Font.PLAIN, 15));
 		ta.setAutoscrolls(false);
 		ta.setMargin(new Insets(20,900,20,20) );
-		BufferedReader in = new BufferedReader(new FileReader("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\src\\analysis\\helpPg.txt"));
+		BufferedReader in = new BufferedReader(new FileReader("src/analysis/helpPg.txt"));
 		String line = in.readLine();
 		while(line != null){
 		  ta.append(line + "\n");

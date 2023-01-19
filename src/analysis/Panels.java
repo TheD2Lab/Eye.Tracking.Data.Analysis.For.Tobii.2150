@@ -52,14 +52,14 @@ public class Panels {
 	
 	public Panels() throws IOException
 	{
-		myPicture = ImageIO.read(new File("C:\\Users\\kayla\\Desktop\\Eye.Tracking.Data.Analysis.For.Tobii.2150\\data\\sharksLogo.png"));
+		myPicture = ImageIO.read(new File("data/d2logo.jpg"));
 		image = new JLabel(new ImageIcon(myPicture));
 	}
 	public  JPanel acquirePathsPage() throws IOException
 	{	
 		
 
-		JLabel title = new JLabel("D2 Lab Eye Tracking Data Analysis Tool");
+		JLabel title = new JLabel("D\u00B2 Lab Eye Tracking Data Analysis Tool");
 		title.setFont(new Font("Verdana", Font.PLAIN, 30));
 
 		JLabel gazeLabel = new JLabel("Location of gaze file: ");
@@ -99,7 +99,7 @@ public class Panels {
 		panel.add(image,c);
 		
 		c.gridy = 1;
-		c.insets = new  Insets(40, 15, 15, 0);
+		c.insets = new  Insets(10, 15, 15, 0);
 		panel.add(title,c);
 
 		c.gridy = 2;//change the y location
