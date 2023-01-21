@@ -100,9 +100,10 @@ public class saccade {
 			
 			double distance = Math.sqrt(Math.pow(Math.abs(x1 - x2), 2) + Math.pow(Math.abs(y1 - y2), 2)) * conversionRate;
 			double timeDifference = Math.abs(currPoint[2] - prevPoint[2]);
-			double amplitude = Math.atan(distance/60);
+			double amplitude = 180/Math.PI * Math.atan(distance/60);
 			
-			System.out.println(distance + " " + amplitude + " " + timeDifference);
+			//System.out.println(distance + " " + amplitude + " " + timeDifference);
+			System.out.println("Distance:" + distance);
 			
 			double velocity = amplitude/timeDifference;
 			

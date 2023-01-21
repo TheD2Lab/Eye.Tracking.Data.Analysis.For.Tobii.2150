@@ -301,6 +301,7 @@ public class main
 				ArrayList<String> headers = new ArrayList<String>(Arrays.asList(iter.next()));
 				headers.add("SACCADE_VEL");
 				headers.add("SACCADE_PV");
+				headers.add("SACCADE_AMPL");
 				writer.writeNext(headers.toArray(new String[headers.size()]));
 				
 				// Find the indexes of the all required data fields
@@ -314,6 +315,7 @@ public class main
 	            int pupilRightValidityIndex = headers.indexOf("RPMMV");
 	            int pupilLeftDiameterIndex = headers.indexOf("LPMM");
 	            int pupilRightDiameterIndex = headers.indexOf("RPMM");
+	            int saccadeAmplIndex = headers.indexOf("SACCADE_MAG");
 				
 				
 				
@@ -385,9 +387,11 @@ public class main
 					
 					if (onScreen && pupilLeftValid && pupilRightValid && pupilsDimensionValid) {
 						if (Double.valueOf(currRow[sacDirIndex]) != 0) {
+							String amplitude = 180/Math.PI * Math.atan((Double.parseDouble(currRow[saccadeAmplIndex]) * 0.0264583333)/60) + "";
 							prevRow = currRow;
 							String peakVelocity = saccade.getPeakVelocity(saccadePoints) + "";
 							row.add(peakVelocity);
+							row.add(amplitude);
 							saccadePoints.clear();
 						}
 						
