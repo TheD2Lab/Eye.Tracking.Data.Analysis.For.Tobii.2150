@@ -11,7 +11,7 @@ How to use the data analysis page
 		a)Continuous Snapshot: This option generates gaze data in a series of fixed, non-overlapping windows
 		b)Cumulative Snapshot: This option generates gaze data in a series of expanding windows that increases with every interval.
 		c)Overlapping Snapshot: This option generates gaze data in a series of fixed and overlapping windows
-		d)Event Analytics: his option generates a baseline file based on the first two minutes of the gaze data, and then compares it to the rest of the file. 
+		d)Event Analytics: This option generates a baseline file based on the first two minutes of the gaze data, and then compares it to the rest of the file. 
 		  If the data exceeds the baseline value, it will be counted as an event, and the program will continue to search for the next event within a specified 
 		  time period. If no event is found, the program will close at a specific period. If another event is found, the session window will continue searching
 	4) The prompt will then ask you to pick a file to use
