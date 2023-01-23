@@ -387,7 +387,7 @@ public class main
 					
 					if (onScreen && pupilLeftValid && pupilRightValid && pupilsDimensionValid) {
 						if (Double.valueOf(currRow[sacDirIndex]) != 0) {
-							String amplitude = 180/Math.PI * Math.atan((Double.parseDouble(currRow[saccadeAmplIndex]) * 0.0264583333)/60) + "";
+							String amplitude = 180/Math.PI * Math.atan((Double.parseDouble(currRow[saccadeAmplIndex]) * 0.0264583333)/65) + "";
 							prevRow = currRow;
 							String peakVelocity = saccade.getPeakVelocity(saccadePoints) + "";
 							row.add(peakVelocity);
