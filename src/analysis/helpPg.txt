@@ -1,7 +1,7 @@
-How to use the data analysis page
+How to use the Data Analysis Page
 	1) The prompt will ask you for three files and a participant name
-		a) The program will be asking for the gaze file that was outputted from gazepoint
-		b) The program will be asking for the fixation file that was outputted from gazepoint
+		a) The program will be asking for the gaze file that was outputted from Gazepoint
+		b) The program will be asking for the fixation file that was outputted from Gazepoint
 		c) The program will be asking for a folder location where you want the files that the program is going to generate to be located
 		d) The particpant's name section will be the name of your folder.
 	2) Once you submit these,  the program will then display a new screen where the user will have the option to select specific windows for the output
@@ -14,7 +14,7 @@ How to use the data analysis page
 			  If the data exceeds the baseline value, it will be counted as an event, and the program will continue to search for the next event within a specified 
 			  time period. If no event is found, the program will close at a specific period. If another event is found, the session window will continue searching
 	3) The prompt will then ask you to pick a file to use
-	4) Depending on what you choose your prompts will ask different questions
+	4) Depending on what you selected, the program will prompt you to provide additional parameters specific to that window.
 		a)Continuous Snapshot and Cumulative Snapshot: The program will ask for a Window size in seconds. This is how the program is going to break up your file
 		  into sections. 
 		b)Overlapping Snapshot:The program will ask for a Window size and an overlapping amount in seconds. Not including the first file, the rest of your snapshot
