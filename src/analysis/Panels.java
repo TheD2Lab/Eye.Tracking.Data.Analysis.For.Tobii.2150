@@ -102,7 +102,7 @@ public class Panels {
 		c.insets = new  Insets(10, 15, 15, 0);
 		panel.add(title,c);
 
-		c.gridy = 2;//change the y location
+		c.gridy = 2;//change the y lo cation
 		panel.add(gazeTextF,c);
 		c.gridx = 1;
 		panel.add(gazeBrowseBtn,c);
@@ -299,6 +299,12 @@ public class Panels {
 		JRadioButton eventAnalyticsButton = new JRadioButton("Event Analytics");
 		JRadioButton exitBtn = new JRadioButton("Exit");
 
+		continuousSnapshotButton.setToolTipText("This option generates gaze data in a series of fixed, non-overlapping windows");
+		cumulativeSnapshotButton.setToolTipText("This option generates gaze data in a series of expanding windows that increases with every interval");
+		overlappingSnapshotButton.setToolTipText("This option generates gaze data in a series of fixed and overlapping windows");
+		eventAnalyticsButton.setToolTipText("This option generates a baseline file based on the first two minutes of the gaze data, and then compares it to the rest of the file");
+		
+		
 		//Adds all the JRadioButton to a layout
 		bg.add(continuousSnapshotButton);
 		bg.add(cumulativeSnapshotButton);

@@ -1,21 +1,20 @@
-How to use the data analysis page
+How to use the Data Analysis Page
 	1) The prompt will ask you for three files and a participant name
-		a) For the first section, the program will be asking for the gaze file that was outputted from gazepoint
-		b) For the second section, the program will be asking for the fixation file that was outputted from gazepoint
-		c) For the third section, the program will be asking for a folder location where you want the files that the program is going to generate to be located
+		a) The program will be asking for the gaze file that was outputted from Gazepoint
+		b) The program will be asking for the fixation file that was outputted from Gazepoint
+		c) The program will be asking for a folder location where you want the files that the program is going to generate to be located
 		d) The particpant's name section will be the name of your folder.
-	2) Once you submit these, the prompt will then ask you if you "Would you like to output snapshots of the data?"
-		a) This is where the program will section out your original gaze or fixation files based on time or defined events
-		b) If you select no the program will automatically exit
-	3) If you select yes, the prompt will give you four options to choose from: Continuous Snapshot, Cumulative Snapshot, Overlapping Snapshot, Event Analytics
-		a)Continuous Snapshot: This option generates gaze data in a series of fixed, non-overlapping windows
-		b)Cumulative Snapshot: This option generates gaze data in a series of expanding windows that increases with every interval.
-		c)Overlapping Snapshot: This option generates gaze data in a series of fixed and overlapping windows
-		d)Event Analytics: his option generates a baseline file based on the first two minutes of the gaze data, and then compares it to the rest of the file. 
-		  If the data exceeds the baseline value, it will be counted as an event, and the program will continue to search for the next event within a specified 
-		  time period. If no event is found, the program will close at a specific period. If another event is found, the session window will continue searching
-	4) The prompt will then ask you to pick a file to use
-	5) Depending on what you choose your prompts will ask different questions
+	2) Once you submit these,  the program will then display a new screen where the user will have the option to select specific windows for the output
+		a) If you do not want to select a window than you can simply choose the exit option and the program will terminate
+		b) There are four different window option you can choose from 
+			a)Continuous Snapshot: This option generates gaze data in a series of fixed, non-overlapping windows
+			b)Cumulative Snapshot: This option generates gaze data in a series of expanding windows that increases with every interval.
+			c)Overlapping Snapshot: This option generates gaze data in a series of fixed and overlapping windows
+			d)Event Analytics: his option generates a baseline file based on the first two minutes of the gaze data, and then compares it to the rest of the file. 
+			  If the data exceeds the baseline value, it will be counted as an event, and the program will continue to search for the next event within a specified 
+			  time period. If no event is found, the program will close at a specific period. If another event is found, the session window will continue searching
+	3) The prompt will then ask you to pick a file to use
+	4) Depending on what you selected, the program will prompt you to provide additional parameters specific to that window.
 		a)Continuous Snapshot and Cumulative Snapshot: The program will ask for a Window size in seconds. This is how the program is going to break up your file
 		  into sections. 
 		b)Overlapping Snapshot:The program will ask for a Window size and an overlapping amount in seconds. Not including the first file, the rest of your snapshot
