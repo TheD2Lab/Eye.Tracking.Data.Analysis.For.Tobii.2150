@@ -85,10 +85,13 @@ public class main
 		mainFrame.setSize(screenWidth, screenHeight);
 		
 		//tabbed pages
-		Panels pages = new Panels();
-		JPanel acquirePathsPanel=new JPanel();
-		acquirePathsPanel = pages.acquirePathsPage();
-		JPanel p2=new JPanel();  
+		Panels daPages = new Panels();
+		Panels mlPages = new Panels();
+		
+		JPanel dataAnalysisPanel=new JPanel();
+		dataAnalysisPanel = daPages.acquirePathsPage();
+		JPanel machineLearningPanel=new JPanel();  
+		machineLearningPanel = mlPages.machineLearnPage();
 		JPanel helpPgPanel =new JPanel();  
 		JTabbedPane tp=new JTabbedPane();  
 		
@@ -106,16 +109,26 @@ public class main
 
 		
 		tp.setBounds(50,50,200,200);  
-		tp.add("Data Analysis Page",acquirePathsPanel);  
-		tp.add("Machine Learning",p2);  
+		tp.add("Data Analysis Page",dataAnalysisPanel);  
+		tp.add("Machine Learning",machineLearningPanel);  
 		tp.add("Help",helpPgPanel);    
 
 		mainFrame.add(tp);    
 		mainFrame.setVisible(true);
 		
-		
-		
-		
+		dataAnaylsisFunction(daPages,tp);
+		machineLearningFunction();
+	
+	
+	}
+	private static void machineLearningFunction()
+	{
+		System.out.println("This works");
+	}
+
+	
+	private static void dataAnaylsisFunction(Panels pages, JTabbedPane tp) throws InterruptedException, CsvValidationException, IOException
+	{
 		//waits for the UI to finish
 		while(pages.getGZDPath().equals("")) {Thread.sleep(2000);};
 		
@@ -169,9 +182,7 @@ public class main
 		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		tp.setComponentAt(0, pages.dataAnlysisPage());
 		tp.repaint();
-	
 	}
-
 
 	/*
 	 * merges all the input files 
