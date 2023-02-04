@@ -1,4 +1,12 @@
 .classpath
 .project
+.settings/
 /results/
 /bin/
+*.class
+bin/
+
+# Mac stuff
+desktop.ini
+.DS_Store
+*/DS_Store
