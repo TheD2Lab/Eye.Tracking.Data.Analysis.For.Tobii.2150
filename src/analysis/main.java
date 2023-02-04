@@ -165,7 +165,8 @@ public class main
 		gazeAnalytics.csvToARFF(outputFolderPath + "/combineResults.csv");
 
 		// Analyze AOI data
-		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+		AOI.processAOIs(gazepointFXDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+		
 		tp.setComponentAt(0, pages.dataAnlysisPage());
 		tp.repaint();
 	
@@ -315,7 +316,7 @@ public class main
 	            int pupilRightValidityIndex = headers.indexOf("RPMMV");
 	            int pupilLeftDiameterIndex = headers.indexOf("LPMM");
 	            int pupilRightDiameterIndex = headers.indexOf("RPMM");
-	            int saccadeAmplIndex = headers.indexOf("SACCADE_MAG");
+	            int saccadeDistanceIndex = headers.indexOf("SACCADE_MAG");
 				
 				
 				
@@ -337,6 +338,8 @@ public class main
 				
 				ArrayList<String> row = new ArrayList<String>(Arrays.asList(prevRow));
 				row.add(0 + "");
+				row.add(0 + "");
+				row.add(0 + "");
 				writer.writeNext(row.toArray(new String[row.size()]));
 				
 				ArrayList<Double[]> saccadePoints = new ArrayList<Double[]>();
@@ -347,7 +350,7 @@ public class main
 					double y = Double.valueOf(currRow[yIndex]);
 					boolean onScreen = (x <= 1.0 && x >= 0 && y <= 1.0 && y >= 0) ? true : false;
 			
-					//checks the pupils validity
+					// Checks the pupils validity
 					boolean pupilLeftValid = Integer.valueOf(currRow[pupilLeftValidityIndex]) == 1 ? true : false;
 					boolean pupilRightValid = Integer.valueOf(currRow[pupilRightValidityIndex]) == 1 ? true : false;
 					boolean pupilsDimensionValid = false;
@@ -355,10 +358,10 @@ public class main
                 	double pupilRight = Double.parseDouble(currRow[pupilRightDiameterIndex]);
                 	
                 
-                	//checks if pupil sizes are possible (between 2mm to 8mm)
+                	// Checks if pupil sizes are possible (between 2mm to 8mm)
                 	if(pupilLeft >=2 && pupilLeft <=8 && pupilRight >=2 && pupilRight <=8)
                 	{
-                		//checks if the difference in size between the left and right is 1mm or less
+                		// Checks if the difference in size between the left and right is 1mm or less
                 		if(Math.abs(pupilRight - pupilLeft) <= 1)
                 		{
                 			pupilsDimensionValid = true;
@@ -387,12 +390,16 @@ public class main
 					
 					if (onScreen && pupilLeftValid && pupilRightValid && pupilsDimensionValid) {
 						if (Double.valueOf(currRow[sacDirIndex]) != 0) {
-							String amplitude = 180/Math.PI * Math.atan((Double.parseDouble(currRow[saccadeAmplIndex]) * 0.0264583333)/65) + "";
+							String amplitude = 180/Math.PI * Math.atan((Double.parseDouble(currRow[saccadeDistanceIndex]) * 0.0264583333)/65) + "";
 							prevRow = currRow;
 							String peakVelocity = saccade.getPeakVelocity(saccadePoints) + "";
 							row.add(peakVelocity);
 							row.add(amplitude);
 							saccadePoints.clear();
+						}
+						else {
+							row.add(0 + "");
+							row.add(0 + "");
 						}
 						
 						writer.writeNext(row.toArray(new String[row.size()]));
