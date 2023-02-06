@@ -157,9 +157,9 @@ public class gazeAnalytics {
 	        		else
 	        		{
 	        			outputCSVWriter.close();
-	        			csvToARFF(outputFile);
+	        			ManipFilePaths.csvToARFF(outputFile);
 	        			gaze.processGaze(outputFile, outputCalcFile);
-	        			csvToARFF(outputCalcFile);
+	        			ManipFilePaths.csvToARFF(outputCalcFile);
 	        			eventStart = false;
 	        			index++;
 	        			outputFile = outputFolderPath + "/event_" + index + ".csv";
@@ -246,7 +246,7 @@ public class gazeAnalytics {
         {
         	System.out.println("done writing file: " + outputFile);
         	outputCSVWriter.close();
-        	csvToARFF(outputFile);
+        	ManipFilePaths.csvToARFF(outputFile);
         	return false;
         }
         catch(Exception e)
@@ -261,49 +261,11 @@ public class gazeAnalytics {
             csvReader.close();
         }
         
-        csvToARFF(outputFile);
+        ManipFilePaths.csvToARFF(outputFile);
         return true;
 	}
 	
 	
-	public static void csvToARFF(String outputCSVPath)
-	{
-		String outputARFFPath = outputCSVPath.replace(".csv", ".arff");
-
-		try 
-		{
-
-			CSVLoader loader = new CSVLoader();
-			loader.setSource(new File(outputCSVPath));
-			Instances data = loader.getDataSet();
-
-			File arffFile = new File(outputARFFPath);
-			if(!arffFile.exists())
-			{
-				ArffSaver saver = new ArffSaver();
-				saver.setInstances(data);
-				saver.setFile(arffFile);
-				saver.writeBatch();
-				System.out.println("Successfully converted CSV to ARFF " + outputARFFPath);
-				systemLogger.writeToSystemLog(Level.INFO, gazeAnalytics.class.getName(), "Successfully converted CSV to ARFF " + outputARFFPath);
-			}
-			else
-			{
-				System.out.println("File Exists");
-			}
-		}
-		catch(IOException e)
-		{
-			System.out.println("Error coverting CSV to ARFF " + outputARFFPath + "\n" + e.toString());
-			systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error coverting CSV to ARFF " + outputARFFPath + "\n" + e.toString());
-
-		}
-		catch(IllegalArgumentException ia)
-		{
-			System.out.println("Error coverting CSV to ARFF " + outputARFFPath + "\n" + ia.toString());
-			systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error coverting CSV to ARFF " + outputARFFPath + "\n" + ia.toString());
-
-		}
-	}
+	
 	
 }
