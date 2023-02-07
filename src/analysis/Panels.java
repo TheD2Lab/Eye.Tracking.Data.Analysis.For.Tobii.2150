@@ -40,6 +40,8 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
+import wekaext.WekaExperiment;
+
 public class Panels {
 
 
@@ -54,6 +56,73 @@ public class Panels {
 	{
 		myPicture = ImageIO.read(new File("data/d2logo.jpg"));
 		image = new JLabel(new ImageIcon(myPicture));
+	}
+	
+	public JPanel machineLearnPage() throws IOException
+	{	
+		
+
+		JLabel title = new JLabel("D\u00B2 Lab Eye Tracking Machine Learning Tool");
+		title.setFont(new Font("Verdana", Font.PLAIN, 30));
+
+		JTextField csvTextF = new JTextField("Location of ARFF file folder: ", 50);
+		JButton csvBrowseBtn = new JButton("Browse");
+		csvTextF.setBackground(Color.WHITE);
+		csvTextF.setEditable(false);
+		csvTextF.setPreferredSize(new Dimension(50, 30));
+
+
+		GridBagConstraints c = new GridBagConstraints();
+
+		c.gridx = 0;//set the x location of the grid for the next component
+		c.gridy = 0;//set the y location of the grid for the next component
+		panel.add(image,c);
+		
+		c.gridy = 1;
+		c.insets = new  Insets(10, 15, 15, 0);
+		panel.add(title,c);
+
+		c.gridy = 3;//change the y location
+		c.gridx = 0;
+
+		c.gridy=6;
+		JButton submitBtn = new JButton("Submit");
+		panel.add(submitBtn, c);
+
+		csvBrowseBtn.addActionListener(e -> {
+			String temp = fileChooser("Select the gaze .csv file you would like to use", "/data/");
+			if(!temp.equals(""))
+			{
+				csvTextF.setText(temp);
+			}
+
+		});
+
+		submitBtn.addActionListener(e-> {
+			if(csvTextF.getText().equals("") || csvTextF.getText()==null || csvTextF.getText().equals("Location of gaze file: "))
+			{
+				JOptionPane.showMessageDialog(null, "Must select a gaze file", "Error Message", JOptionPane.ERROR_MESSAGE);
+			} 
+			else
+			{
+
+				WekaExperiment weka = new WekaExperiment();
+				try {
+					weka.setupExperiment(true, csvTextF.getText());
+					System.out.println("in");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			
+			panel.removeAll();
+			panel.repaint();			
+		});
+		
+
+		return panel;
+
 	}
 	public  JPanel acquirePathsPage() throws IOException
 	{	

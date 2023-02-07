@@ -24,8 +24,6 @@ package analysis;
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import java.awt.geom.Point2D;
-
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -90,9 +88,11 @@ public class main
 		
 		//tabbed pages
 		Panels pages = new Panels();
+		Panels mlpages = new Panels();
 		JPanel acquirePathsPanel=new JPanel();
 		acquirePathsPanel = pages.acquirePathsPage();
 		JPanel p2=new JPanel();  
+		p2= mlpages.machineLearnPage();
 		JPanel helpPgPanel =new JPanel();  
 		JTabbedPane tp=new JTabbedPane();  
 		
