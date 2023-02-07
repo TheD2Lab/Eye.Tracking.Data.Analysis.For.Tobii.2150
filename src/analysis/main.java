@@ -422,67 +422,6 @@ public class main
 		}
 
 		return outputFiles;
-	}
-
-	/*
-	 * UI for users to select the file they want to use
-	 * 
-	 * @param	dialogTitle		title of the window
-	 * @param 	directory		directory to choose file from relative to project directory		
-	 */
-	private static String fileChooser(String dialogTitle, String directory)
-	{
-		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir")  + directory);
-
-		//ensures that only CSV files will be able to be selected
-		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
-		jfc.setDialogTitle(dialogTitle);
-		int returnValue = jfc.showOpenDialog(null);
-
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			File selectedFile = jfc.getSelectedFile();
-			return selectedFile.getAbsolutePath();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick a file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
-		}
-		return "";
-	}
-
-
-	/*
-	 * UI for users to select the folder they would want to use to place files in
-	 * 
-	 * @param	dialogTitle		title of the window
-	 */
-	private static String folderChooser(String dialogTitle)
-	{
-		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/results/");
-		jfc.setDialogTitle("Choose a directory to save your file: ");
-
-		//only directories can be selected
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int returnValue = jfc.showSaveDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			if (jfc.getSelectedFile().isDirectory()) 
-				return jfc.getSelectedFile().toString();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick a location to output the file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
-		}
-		return "";
-	}
-
-
-
-	
+	}	
 
 }

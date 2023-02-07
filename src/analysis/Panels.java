@@ -65,11 +65,14 @@ public class Panels {
 		JLabel title = new JLabel("D\u00B2 Lab Eye Tracking Machine Learning Tool");
 		title.setFont(new Font("Verdana", Font.PLAIN, 30));
 
-		JTextField csvTextF = new JTextField("Location of ARFF file folder: ", 50);
-		JButton csvBrowseBtn = new JButton("Browse");
-		csvTextF.setBackground(Color.WHITE);
-		csvTextF.setEditable(false);
-		csvTextF.setPreferredSize(new Dimension(50, 30));
+		JTextField arffTextF = new JTextField("Location of ARFF file folder: ", 50);
+		JButton arffBrowseBtn = new JButton("Browse");
+		JPanel arffPanel = new JPanel(new FlowLayout());
+		arffTextF.setBackground(Color.WHITE);
+		arffTextF.setEditable(false);
+		arffTextF.setPreferredSize(new Dimension(50, 30));
+		arffPanel.add(arffTextF);
+		arffPanel.add(arffBrowseBtn);
 
 
 		GridBagConstraints c = new GridBagConstraints();
@@ -82,6 +85,10 @@ public class Panels {
 		c.insets = new  Insets(10, 15, 15, 0);
 		panel.add(title,c);
 
+		c.gridy = 2; 
+		panel.add(arffTextF,c);
+		c.gridx = 1;
+		panel.add(arffPanel,c);
 		c.gridy = 3;//change the y location
 		c.gridx = 0;
 
@@ -89,17 +96,17 @@ public class Panels {
 		JButton submitBtn = new JButton("Submit");
 		panel.add(submitBtn, c);
 
-		csvBrowseBtn.addActionListener(e -> {
-			String temp = fileChooser("Select the gaze .csv file you would like to use", "/data/");
+		arffBrowseBtn.addActionListener(e -> {
+			String temp = folderChooser("Select the gaze .csv file you would like to use");
 			if(!temp.equals(""))
 			{
-				csvTextF.setText(temp);
+				arffTextF.setText(temp);
 			}
 
 		});
 
 		submitBtn.addActionListener(e-> {
-			if(csvTextF.getText().equals("") || csvTextF.getText()==null || csvTextF.getText().equals("Location of gaze file: "))
+			if(arffTextF.getText().equals("") || arffTextF.getText()==null || arffTextF.getText().equals("Location of gaze file: "))
 			{
 				JOptionPane.showMessageDialog(null, "Must select a gaze file", "Error Message", JOptionPane.ERROR_MESSAGE);
 			} 
@@ -108,7 +115,7 @@ public class Panels {
 
 				WekaExperiment weka = new WekaExperiment();
 				try {
-					weka.setupExperiment(true, csvTextF.getText());
+					weka.setupExperiment(true, arffTextF.getText());
 					System.out.println("in");
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -131,21 +138,18 @@ public class Panels {
 		JLabel title = new JLabel("D\u00B2 Lab Eye Tracking Data Analysis Tool");
 		title.setFont(new Font("Verdana", Font.PLAIN, 30));
 
-		JLabel gazeLabel = new JLabel("Location of gaze file: ");
 		JTextField gazeTextF = new JTextField("Location of gaze file: ", 50);
 		JButton gazeBrowseBtn = new JButton("Browse");
 		gazeTextF.setBackground(Color.WHITE);
 		gazeTextF.setEditable(false);
 		gazeTextF.setPreferredSize(new Dimension(50, 30));
 
-		JLabel fixationLabel = new JLabel("Location of fixation file: ");
 		JTextField fixationTextF = new JTextField("Location of fixation file: " , 50);
 		fixationTextF.setBackground(Color.WHITE);
 		JButton fixationBrowseBtn = new JButton("Browse");
 		fixationTextF.setEditable(false);
 		fixationTextF.setPreferredSize(new Dimension(50, 30));
 
-		JLabel outputLabel = new JLabel("Location of output file: ");
 		JTextField outputTextF = new JTextField("Location of output file: ", 50);
 		outputTextF.setBackground(Color.WHITE);
 		JButton outputBrowseBtn = new JButton("Browse");
