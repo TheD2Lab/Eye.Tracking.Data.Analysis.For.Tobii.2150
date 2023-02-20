@@ -36,6 +36,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -293,6 +294,9 @@ public class main
 		// Parse through the input files and remove any entries that are off screen or invalid
 		// then calculate the saccade velocity and append it as a new column
 		try {
+			
+			HashMap<String, String> peakVelocities =  new HashMap<String, String>();
+			
 			for (int i = 0; i < inputFiles.length; i++) {
 				CSVReader reader = new CSVReader(new FileReader(new File(inputFiles[i])));
 				CSVWriter writer = new CSVWriter(new FileWriter(new File(outputFiles[i])));
@@ -317,8 +321,6 @@ public class main
 	            int pupilLeftDiameterIndex = headers.indexOf("LPMM");
 	            int pupilRightDiameterIndex = headers.indexOf("RPMM");
 	            int saccadeDistanceIndex = headers.indexOf("SACCADE_MAG");
-				
-				
 				
 				// Two columns contain "TIME" and the name of the time column is dynamic, therefore search for it
 				for (int j = 0; j < headers.size(); j++) {
@@ -392,10 +394,17 @@ public class main
 						if (Double.valueOf(currRow[sacDirIndex]) != 0) {
 							String amplitude = 180/Math.PI * Math.atan((Double.parseDouble(currRow[saccadeDistanceIndex]) * 0.0264583333)/65) + "";
 							prevRow = currRow;
-							String peakVelocity = saccade.getPeakVelocity(saccadePoints) + "";
-							row.add(peakVelocity);
+							String time = currRow[timeIndex];
+							if (peakVelocities.containsKey(time)) {
+								row.add(peakVelocities.get(time));
+							}
+							else {
+								String peakVelocity = saccade.getPeakVelocity(saccadePoints) + "";
+								peakVelocities.put(time, peakVelocity);
+								row.add(peakVelocity);
+								saccadePoints.clear();
+							}
 							row.add(amplitude);
-							saccadePoints.clear();
 						}
 						else {
 							row.add(0 + "");
