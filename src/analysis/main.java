@@ -77,6 +77,10 @@ public class main
 {
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException, InterruptedException 
 	{
+		ScanPath scanPath = new ScanPath("C:\\Users\\kayla\\OneDrive\\Documents\\temp\\Esther\\inputFiles\\Esther_cleansed_fixation.csv");
+		scanPath.TScan();
+		
+		/*
 		// Resolution of monitor 
 		final int SCREEN_WIDTH = 1920;
 		final int SCREEN_HEIGHT = 1080;
@@ -168,6 +172,7 @@ public class main
 		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		tp.setComponentAt(0, pages.gazeAnalyticsOptions());
 		tp.repaint();
+		*/
 	
 	}
 

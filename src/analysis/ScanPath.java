@@ -296,7 +296,84 @@ public class ScanPath {
 		}
 	}
 
-	
+	public void radialScan() throws IOException
+	{
+		//AS, AI,HI,ALT
+				Iterator<Entry<Double,String>> aoiIterator = aoi.entrySet().iterator();
+				int counter = 0; // 6 
+				int csvCounter = 0;
+				boolean AI,otherInstr;
+				AI = otherInstr = false;
+				double prevElementTime, startTime; 
+				prevElementTime = startTime = -1;
+				String prevOthElementValue = ""; //o
+				
+				while(aoiIterator.hasNext())
+				{
+					Map.Entry<Double, String> element = (Map.Entry<Double, String>)aoiIterator.next();
+					if((prevElementTime == -1 || element.getKey()- prevElementTime < 1)&&element.getValue()!=null)
+					{
+						
+						if(element.getValue().equals("Horizontal Altitude"))
+						{
+							if(AI == true)
+							{
+								continue;
+							}
+							else
+							{
+								AI = true;
+								if(startTime==-1) startTime = element.getKey();
+								prevElementTime = element.getKey();
+								otherInstr = false;
+								counter++;
+								continue;
+							}
+						}
+						else if(!(element.getValue() ==null)&& !(element.getValue().equals("outside")))
+						{ 
+							if(otherInstr == true)
+							{
+								if(prevOthElementValue.equals(element.getValue()))
+								{
+									continue;
+								}
+							}
+							else
+							{
+								otherInstr= true;
+								if(startTime==-1) startTime = element.getKey();
+								prevElementTime = element.getKey();
+								prevOthElementValue = element.getValue();
+								AI = false;
+								counter++;
+								continue;
+							}
+						}
+						
+						
+					}
+					else if(element.getKey()- prevElementTime < 1)//if the element is null but within one minute
+					{
+						continue;
+					}
+					else
+					{
+						if(counter==6)
+						{
+							
+							writeToFile(fixationFile, outputFile + "RadialScan" + csvCounter + ".csv",startTime, prevElementTime);
+							AI = otherInstr = false;
+							prevElementTime = startTime = -1;
+							counter = 0;
+							prevOthElementValue = "";
+							csvCounter++;
+							
+						}
+					}
+					
+				}
+	}
 
 	
 	private static void writeToFile(String inputFile, String outputFile, double start, double end) throws IOException
