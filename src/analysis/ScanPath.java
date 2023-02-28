@@ -20,9 +20,12 @@ import com.opencsv.exceptions.CsvValidationException;
 public class ScanPath {
 	
 	//key is the time and the value is the aoi 
-	private LinkedHashMap<Double,String>aoi = new LinkedHashMap<Double,String>();
+	private LinkedHashMap<Double,String>aoi = new LinkedHashMap<>();
+	private HashMap<String, Double> scanpathTimes = new HashMap<>();
 	private String fixationFile; 
 	private String outputFile = "C:\\Users\\kayla\\OneDrive\\Documents\\temp\\ScanPath\\";
+	private static final double APPROVEDINTERVAL = 1.5;
+	
 	public ScanPath(String fixationFile)
 	{
 		this.fixationFile = fixationFile;
@@ -52,11 +55,7 @@ public class ScanPath {
 			{
 				String value = nextLine[aoiColumnIndex];
 				double key = Double.valueOf(nextLine[timeIndex]);
-				if(value.isBlank())
-				{
-					aoi.put(key, null);
-				}
-				else
+				if(!value.isBlank())
 				{
 					aoi.put(key, value);
 				}
@@ -84,7 +83,7 @@ public class ScanPath {
 		while(aoiIterator.hasNext())
 		{
 			Map.Entry<Double, String> element = (Map.Entry<Double, String>)aoiIterator.next();
-			if((prevElementTime == -1 || element.getKey()- prevElementTime < 1)&&element.getValue()!=null)
+			if(prevElementTime == -1 || element.getKey()- prevElementTime < 1)
 			{
 				switch(element.getValue())
 				{
@@ -111,7 +110,7 @@ public class ScanPath {
 				}
 				
 			}
-			else if(element.getKey()- prevElementTime < 1)
+			else if(element.getKey()- prevElementTime < APPROVEDINTERVAL)
 			{
 				continue;
 			}
@@ -121,11 +120,19 @@ public class ScanPath {
 				{
 					
 					writeToFile(fixationFile, outputFile + "T_Scan" + counter + ".csv",startTime, prevElementTime);
-					AI = HI = ALT = AS = false;
-					prevElementTime = startTime = -1;
-					counter++;
 					
+					if(scanpathTimes.containsKey("TScan"))
+					{
+						scanpathTimes.put("TScan", scanpathTimes.get("TScan")+(prevElementTime - startTime));
+					}
+					else
+					{
+						scanpathTimes.put("TScan", prevElementTime - startTime);
+					}
 				}
+				AI = HI = ALT = AS = false;
+				prevElementTime = startTime = -1;
+				counter++;
 			}
 			
 		}
@@ -144,7 +151,7 @@ public class ScanPath {
 		while(aoiIterator.hasNext())
 		{
 			Map.Entry<Double, String> element = (Map.Entry<Double, String>)aoiIterator.next();
-			if((prevElementTime == -1 || element.getKey()- prevElementTime < 1)&&element.getValue()!=null)
+			if(prevElementTime == -1 || element.getKey()- prevElementTime < 1)
 			{
 				switch(element.getValue())
 				{
@@ -166,7 +173,7 @@ public class ScanPath {
 				}
 				
 			}
-			else if(element.getKey()- prevElementTime < 1)
+			else if(element.getKey()- prevElementTime < APPROVEDINTERVAL)
 			{
 				continue;
 			}
@@ -175,12 +182,22 @@ public class ScanPath {
 				if(AI && HI && AS)
 				{
 					
-					writeToFile(fixationFile, outputFile + "PitchInstrumentAS" + counter + ".csv",startTime, prevElementTime);
-					AI = HI = AS = false;
-					prevElementTime = startTime = -1;
-					counter++;
+					writeToFile(fixationFile, outputFile + "primaryInstrumentAS" + counter + ".csv",startTime, prevElementTime);
+
+					
+					if(scanpathTimes.containsKey("primaryInstrumentAS"))
+					{
+						scanpathTimes.put("primaryInstrumentAS", scanpathTimes.get("primaryInstrumentAS")+(prevElementTime - startTime));
+					}
+					else
+					{
+						scanpathTimes.put("primaryInstrumentAS", prevElementTime - startTime);
+					}
 					
 				}
+				AI = HI = AS = false;
+				prevElementTime = startTime = -1;
+				counter++;
 			}
 			
 		}
@@ -199,7 +216,7 @@ public class ScanPath {
 		while(aoiIterator.hasNext())
 		{
 			Map.Entry<Double, String> element = (Map.Entry<Double, String>)aoiIterator.next();
-			if((prevElementTime == -1 || element.getKey()- prevElementTime < 1)&&element.getValue()!=null)
+			if(prevElementTime == -1 || element.getKey()- prevElementTime < 1)
 			{
 				switch(element.getValue())
 				{
@@ -221,7 +238,7 @@ public class ScanPath {
 				}
 				
 			}
-			else if(element.getKey()- prevElementTime < 1)
+			else if(element.getKey()- prevElementTime < APPROVEDINTERVAL)
 			{
 				continue;
 			}
@@ -230,12 +247,20 @@ public class ScanPath {
 				if(AI && HI && VSI)
 				{
 					
-					writeToFile(fixationFile, outputFile + "PitchInstrumentVSI" + counter + ".csv",startTime, prevElementTime);
-					AI = HI = VSI = false;
-					prevElementTime = startTime = -1;
-					counter++;
-					
+					writeToFile(fixationFile, outputFile + "primaryInstrumentVSI" + counter + ".csv",startTime, prevElementTime);
+
+					if(scanpathTimes.containsKey("primaryInstrumentVSI"))
+					{
+						scanpathTimes.put("primaryInstrumentVSI", scanpathTimes.get("primaryInstrumentVSI")+(prevElementTime - startTime));
+					}
+					else
+					{
+						scanpathTimes.put("primaryInstrumentVSI", prevElementTime - startTime);
+					}
 				}
+				AI = HI = VSI = false;
+				prevElementTime = startTime = -1;
+				counter++;
 			}
 			
 		}
@@ -254,7 +279,7 @@ public class ScanPath {
 		while(aoiIterator.hasNext())
 		{
 			Map.Entry<Double, String> element = (Map.Entry<Double, String>)aoiIterator.next();
-			if((prevElementTime == -1 || element.getKey()- prevElementTime < 1)&&element.getValue()!=null)
+			if(prevElementTime == -1 || element.getKey()- prevElementTime < 1)
 			{
 				switch(element.getValue())
 				{
@@ -276,7 +301,7 @@ public class ScanPath {
 				}
 				
 			}
-			else if(element.getKey()- prevElementTime < 1)
+			else if(element.getKey()- prevElementTime < APPROVEDINTERVAL)
 			{
 				continue;
 			}
@@ -285,12 +310,20 @@ public class ScanPath {
 				if(AI && ALT && VSI)
 				{
 					
-					writeToFile(fixationFile, outputFile + "PitchInstrumentVSI" + counter + ".csv",startTime, prevElementTime);
-					AI = ALT = VSI = false;
-					prevElementTime = startTime = -1;
-					counter++;
+					writeToFile(fixationFile, outputFile + "pitchTriangle" + counter + ".csv",startTime, prevElementTime);
+					if(scanpathTimes.containsKey("pitchTriangle"))
+					{
+						scanpathTimes.put("pitchTriangle", scanpathTimes.get("pitchTriangle")+(prevElementTime - startTime));
+					}
+					else
+					{
+						scanpathTimes.put("pitchTriangle", prevElementTime - startTime);
+					}
 					
 				}
+				AI = ALT = VSI = false;
+				prevElementTime = startTime = -1;
+				counter++;
 			}
 			
 		}
@@ -359,22 +392,108 @@ public class ScanPath {
 					}
 					else
 					{
-						if(counter==6)
+						if(counter>=6)
 						{
 							
 							writeToFile(fixationFile, outputFile + "RadialScan" + csvCounter + ".csv",startTime, prevElementTime);
-							AI = otherInstr = false;
-							prevElementTime = startTime = -1;
-							counter = 0;
-							prevOthElementValue = "";
 							csvCounter++;
+							if(scanpathTimes.containsKey("pitchTriangle"))
+							{
+								scanpathTimes.put("radialScan", scanpathTimes.get("radialScan")+(prevElementTime - startTime));
+							}
+							else
+							{
+								scanpathTimes.put("radialScan", prevElementTime - startTime);
+							}
 							
 						}
+						AI = otherInstr = false;
+						prevElementTime = startTime = -1;
+						counter = 0;
+						prevOthElementValue = "";
+						
 					}
 					
 				}
 	}
 
+	
+	
+	public void circularScan() throws Exception 
+	{
+		String[]order = {"Airspeed", "Horizontal Altitude", "MSL Altitude", "Vertical Speed", "Heading", "Turn Coordinator"};
+		int prevElementIndex = -1;
+		double prevElementTime, startTime; 
+		prevElementTime = startTime = -1;
+		Iterator<Entry<Double,String>> aoiIterator = aoi.entrySet().iterator();
+		int counter = 0; 
+		int csvCounter = 0;
+		while(aoiIterator.hasNext())
+		{
+				Map.Entry<Double, String> element = (Map.Entry<Double, String>)aoiIterator.next();
+				int currentElementIndex = Arrays.asList(order).indexOf(element.getValue());
+				if(prevElementIndex == -1)
+				{
+					prevElementIndex = currentElementIndex;
+					counter++; 
+					startTime = element.getKey();
+					prevElementTime = element.getKey();
+				}
+				else if(element.getKey()- prevElementTime < APPROVEDINTERVAL)
+				{
+					if(prevElementIndex == 0)
+					{
+						if(currentElementIndex == 1 || currentElementIndex == order.length -1)
+						{
+							prevElementIndex = currentElementIndex;
+							counter++; 
+							prevElementTime = element.getKey();
+							continue;
+						}
+					}
+					else if(prevElementIndex == order.length -1)
+					{
+						if(currentElementIndex == 0 || currentElementIndex == prevElementIndex - 1)
+						{
+							prevElementIndex = currentElementIndex;
+							counter++; 
+							prevElementTime = element.getKey();
+							continue;
+						}
+					}
+					else
+					{
+						if(currentElementIndex == prevElementIndex + 1 || currentElementIndex == prevElementIndex - 1)
+						{
+							prevElementIndex = currentElementIndex;
+							counter++; 
+							prevElementTime = element.getKey();
+							continue;
+						}
+					}
+				}
+				else
+				{
+					if(counter >= 3)
+					{
+						writeToFile(fixationFile, outputFile + "CircularScan" + csvCounter + ".csv",startTime, prevElementTime);
+						csvCounter++;
+						if(scanpathTimes.containsKey("CircularScan"))
+						{
+							scanpathTimes.put("CircularScan", scanpathTimes.get("CircularScan")+(prevElementTime - startTime));
+						}
+						else
+						{
+							scanpathTimes.put("CircularScan", prevElementTime - startTime);
+						}
+					}
+						
+					prevElementTime = startTime = prevElementIndex = -1;
+					counter = 0;
+				}
+			
+		}
+	}
 	
 	private static void writeToFile(String inputFile, String outputFile, double start, double end) throws IOException
 	{
@@ -444,7 +563,40 @@ public class ScanPath {
         }
 	
 
-	
+	public void avgScanPercentage(String outputFile) throws IOException
+	{
+		int totalTimes = 0; 
+		String []header = new String[scanpathTimes.size()];
+		String [] avg = new String[scanpathTimes.size()];
+		int counter = 0;
+		for (Map.Entry<String, Double> times : scanpathTimes.entrySet()) 
+		{
+			totalTimes += times.getValue();
+			header[counter++] = times.getKey() + " percentage";
+			
+        }
+		counter = 0; 
+		for (Map.Entry<String, Double> times : scanpathTimes.entrySet()) 
+		{
+			//check
+			avg[counter++] =String.valueOf((times.getValue() % totalTimes) * 100);
+			
+        }
+		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
+        CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
+        try
+        {
+        	outputCSVWriter.writeNext(header);
+        	outputCSVWriter.writeNext(avg);
+        }catch(Exception e)
+        {
+        	System.out.println(e);
+        }
+        finally
+        {
+        	outputCSVWriter.close();
+        }
+	}
 
 
 
