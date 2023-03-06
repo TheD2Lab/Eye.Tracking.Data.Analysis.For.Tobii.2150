@@ -78,7 +78,7 @@ public class main
 	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException, InterruptedException 
 	{
 		ScanPath scanPath = new ScanPath("C:\\Users\\kayla\\OneDrive\\Documents\\temp\\Esther\\inputFiles\\Esther_cleansed_fixation.csv");
-		scanPath.TScan();
+		scanPath.radialScan();
 		
 		/*
 		// Resolution of monitor 

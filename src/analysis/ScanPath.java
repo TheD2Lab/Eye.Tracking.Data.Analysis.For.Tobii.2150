@@ -70,6 +70,8 @@ public class ScanPath {
 		}
 	}
 	
+	
+	//Good
 	public void TScan() throws IOException
 	{
 		//AS, AI,HI,ALT
@@ -140,7 +142,6 @@ public class ScanPath {
 
 	public void primaryInstrumentAS() throws IOException
 	{
-		//AS, AI,HI,ALT
 		Iterator<Entry<Double,String>> aoiIterator = aoi.entrySet().iterator();
 		int counter = 0; 
 		boolean AI, HI, AS;
@@ -193,11 +194,11 @@ public class ScanPath {
 					{
 						scanpathTimes.put("primaryInstrumentAS", prevElementTime - startTime);
 					}
-					
+					counter++;
 				}
 				AI = HI = AS = false;
 				prevElementTime = startTime = -1;
-				counter++;
+				
 			}
 			
 		}
@@ -205,7 +206,6 @@ public class ScanPath {
 	
 	public void primaryInstrumentVSI() throws IOException
 	{
-		//AS, AI,HI,ALT
 		Iterator<Entry<Double,String>> aoiIterator = aoi.entrySet().iterator();
 		int counter = 0; 
 		boolean AI, HI, VSI;
@@ -257,10 +257,11 @@ public class ScanPath {
 					{
 						scanpathTimes.put("primaryInstrumentVSI", prevElementTime - startTime);
 					}
+					counter++;
 				}
 				AI = HI = VSI = false;
 				prevElementTime = startTime = -1;
-				counter++;
+				
 			}
 			
 		}
@@ -268,11 +269,10 @@ public class ScanPath {
 
 	public void pitchTriangle() throws IOException
 	{
-		//AS, AI,HI,ALT
 		Iterator<Entry<Double,String>> aoiIterator = aoi.entrySet().iterator();
 		int counter = 0; 
-		boolean AI, ALT, VSI;
-		ALT = AI = VSI = false;
+		boolean AI, ALT, VSI, AS;
+		ALT = AI = VSI = AS = false;
 		double prevElementTime, startTime; 
 		prevElementTime = startTime = -1;
 		
@@ -298,6 +298,11 @@ public class ScanPath {
 						if(startTime == -1) startTime = element.getKey();
 						prevElementTime = element.getKey();
 						break;
+					case "Airspeed":
+						AS = true;
+						if(startTime == -1) startTime = element.getKey();
+						prevElementTime = element.getKey();
+						break;
 				}
 				
 			}
@@ -307,7 +312,7 @@ public class ScanPath {
 			}
 			else
 			{
-				if(AI && ALT && VSI)
+				if(AI && ALT && VSI && AS)
 				{
 					
 					writeToFile(fixationFile, outputFile + "pitchTriangle" + counter + ".csv",startTime, prevElementTime);
@@ -321,7 +326,7 @@ public class ScanPath {
 					}
 					
 				}
-				AI = ALT = VSI = false;
+				AI = ALT = VSI = AS = false;
 				prevElementTime = startTime = -1;
 				counter++;
 			}
@@ -331,7 +336,7 @@ public class ScanPath {
 
 	public void radialScan() throws IOException
 	{
-		//AS, AI,HI,ALT
+	
 				Iterator<Entry<Double,String>> aoiIterator = aoi.entrySet().iterator();
 				int counter = 0; // 6 
 				int csvCounter = 0;
