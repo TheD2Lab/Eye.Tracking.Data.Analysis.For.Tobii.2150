@@ -23,13 +23,26 @@ public class ScanPath {
 	private LinkedHashMap<Double,String>aoi = new LinkedHashMap<>();
 	private HashMap<String, Double> scanpathTimes = new HashMap<>();
 	private String fixationFile; 
-	private String outputFile = "C:\\Users\\kayla\\OneDrive\\Documents\\temp\\ScanPath\\";
+	private String outputFile = "C:\\Users\\kayla\\OneDrive\\Desktop\\Temp\\ScanPath\\";
 	private static final double APPROVEDINTERVAL = 1.5;
 	
 	public ScanPath(String fixationFile)
 	{
 		this.fixationFile = fixationFile;
 		parseFile();
+
+	}
+	
+	public void runAllClimbScan() throws Exception
+	{
+		TScan();
+		primaryInstrumentAS();
+		primaryInstrumentVSI();
+		pitchTriangle();
+		radialScan();
+		circularScan();
+		avgScanPercentage(outputFile + "percentage.csv");
+		
 	}
 	//parses the files and puts all the needed value in a hashmap
 	private void parseFile()
@@ -55,7 +68,7 @@ public class ScanPath {
 			{
 				String value = nextLine[aoiColumnIndex];
 				double key = Double.valueOf(nextLine[timeIndex]);
-				if(!value.isBlank())
+				if(!value.isBlank() && !value.equals("Outside"))
 				{
 					aoi.put(key, value);
 				}
@@ -131,10 +144,11 @@ public class ScanPath {
 					{
 						scanpathTimes.put("TScan", prevElementTime - startTime);
 					}
+					counter++;
 				}
 				AI = HI = ALT = AS = false;
 				prevElementTime = startTime = -1;
-				counter++;
+				
 			}
 			
 		}
@@ -324,11 +338,11 @@ public class ScanPath {
 					{
 						scanpathTimes.put("pitchTriangle", prevElementTime - startTime);
 					}
-					
+					counter++;
 				}
 				AI = ALT = VSI = AS = false;
 				prevElementTime = startTime = -1;
-				counter++;
+				
 			}
 			
 		}
@@ -402,7 +416,7 @@ public class ScanPath {
 							
 							writeToFile(fixationFile, outputFile + "RadialScan" + csvCounter + ".csv",startTime, prevElementTime);
 							csvCounter++;
-							if(scanpathTimes.containsKey("pitchTriangle"))
+							if(scanpathTimes.containsKey("radialScan"))
 							{
 								scanpathTimes.put("radialScan", scanpathTimes.get("radialScan")+(prevElementTime - startTime));
 							}
@@ -570,7 +584,7 @@ public class ScanPath {
 
 	public void avgScanPercentage(String outputFile) throws IOException
 	{
-		int totalTimes = 0; 
+		double totalTimes = 0; 
 		String []header = new String[scanpathTimes.size()];
 		String [] avg = new String[scanpathTimes.size()];
 		int counter = 0;
@@ -584,7 +598,7 @@ public class ScanPath {
 		for (Map.Entry<String, Double> times : scanpathTimes.entrySet()) 
 		{
 			//check
-			avg[counter++] =String.valueOf((times.getValue() % totalTimes) * 100);
+			avg[counter++] =String.valueOf((times.getValue() / totalTimes) * 100);
 			
         }
 		FileWriter outputFileWriter = new FileWriter(new File (outputFile));

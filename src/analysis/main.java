@@ -75,10 +75,10 @@ import java.awt.*;
 
 public class main 
 {
-	public static void main(String args[]) throws IOException, CsvValidationException, NumberFormatException, InterruptedException 
+	public static void main(String args[]) throws Exception 
 	{
-		ScanPath scanPath = new ScanPath("C:\\Users\\kayla\\OneDrive\\Documents\\temp\\Esther\\inputFiles\\Esther_cleansed_fixation.csv");
-		scanPath.radialScan();
+		ScanPath scanPath = new ScanPath("C:\\Users\\kayla\\OneDrive\\Desktop\\Temp\\Esther Jung_fixations.csv");
+		scanPath.runAllClimbScan();
 		
 		/*
 		// Resolution of monitor 
