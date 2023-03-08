@@ -26,7 +26,7 @@ public class AOI {
             String[] nextLine = csvReader.readNext();
             
             // Locate the indexes for required fields
-            int aoiIndex = -1, xIndex = -1, yIndex = -1, fixDurIndex = -1, fixIdIndex = -1, timeIndex = -1;
+            int aoiIndex = -1, xIndex = -1, yIndex = -1, fixDurIndex = -1, fixIdIndex = -1, timeIndex = -1, peakVelocityIndex = -1, blinkRateIndex = -1;
             
             for (int i = 0; i < nextLine.length; i++) {
             	String header = nextLine[i];
@@ -50,6 +50,12 @@ public class AOI {
              			break;
             		case "FPOGID":
             			fixIdIndex = i;
+            			break;
+            		case "SACCADE_PV":
+            			peakVelocityIndex = i;
+            			break;
+            		case "BKPMIN":
+            			blinkRateIndex = i;
             			break;
             		default:
             			break;
@@ -190,80 +196,44 @@ public class AOI {
             	Point2D[] points = fixation.listToArray(boundingPoints);
             	data.add(String.valueOf(convexHull.getPolygonArea(points)));
             	
-            	// Write the number of fixations located in each AOI
             	data.add(String.valueOf(fixCount.keySet().size()));
-            	
-            	// Write the total fixation duration
             	data.add(String.valueOf(descriptiveStats.getSumOfDoubles(allFixationDurations)));
-            	
-            	// Write the mean fixation duration
                 data.add(String.valueOf(descriptiveStats.getMeanOfDoubles(allFixationDurations)));
-
-                // Write the median fixation duration
                 data.add(String.valueOf(descriptiveStats.getMedianOfDoubles(allFixationDurations)));
-
-                // Write the standard deviation between fixation durations
                 data.add(String.valueOf(descriptiveStats.getStDevOfDoubles(allFixationDurations)));
-
-                // Write the minimum fixation duration
                 data.add(String.valueOf(descriptiveStats.getMinOfDoubles(allFixationDurations)));
-
-                // Write the maximum fixation duration
                 data.add(String.valueOf(descriptiveStats.getMaxOfDoubles(allFixationDurations)));
                 
                 data.add(String.valueOf(allSaccadeLengths.length));
-                
                 data.add(String.valueOf(descriptiveStats.getSum(allSaccadeLengths)));
-                
                 data.add(String.valueOf(descriptiveStats.getMean(allSaccadeLengths)));
-                
                 data.add(String.valueOf(descriptiveStats.getMedian(allSaccadeLengths)));
-                
                 data.add(String.valueOf(descriptiveStats.getStDev(allSaccadeLengths)));
-                
                 data.add(String.valueOf(descriptiveStats.getMin(allSaccadeLengths)));
-                
                 data.add(String.valueOf(descriptiveStats.getMax(allSaccadeLengths)));
-                
                 data.add(String.valueOf(descriptiveStats.getSumOfDoubles(allSaccadeDurations)));
-
                 data.add(String.valueOf(descriptiveStats.getMeanOfDoubles(allSaccadeDurations)));
-
                 data.add(String.valueOf(descriptiveStats.getMedianOfDoubles(allSaccadeDurations)));
-
                 data.add(String.valueOf(descriptiveStats.getStDevOfDoubles(allSaccadeDurations)));
-
                 data.add(String.valueOf(descriptiveStats.getMinOfDoubles(allSaccadeDurations)));
-
                 data.add(String.valueOf(descriptiveStats.getMaxOfDoubles(allSaccadeDurations)));
-
                 data.add(String.valueOf(fixation.getScanpathDuration(allFixationDurations, allSaccadeDurations)));
-
                 data.add(String.valueOf(fixation.getFixationToSaccadeRatio(allFixationDurations, allSaccadeDurations)));
-            	
-                data.add(String.valueOf(descriptiveStats.getSumOfDoubles(allRelativeDegrees)));
                 
                 data.add(String.valueOf(descriptiveStats.getSumOfDoubles(allAbsoluteDegrees)));
-
                 data.add(String.valueOf(descriptiveStats.getMeanOfDoubles(allAbsoluteDegrees)));
-
                 data.add(String.valueOf(descriptiveStats.getMedianOfDoubles(allAbsoluteDegrees)));
-
                 data.add(String.valueOf(descriptiveStats.getStDevOfDoubles(allAbsoluteDegrees)));
-
                 data.add(String.valueOf(descriptiveStats.getMinOfDoubles(allAbsoluteDegrees)));
-                
+
                 data.add(String.valueOf(descriptiveStats.getSumOfDoubles(allRelativeDegrees)));
-                
                 data.add(String.valueOf(descriptiveStats.getMeanOfDoubles(allRelativeDegrees)));
-
                 data.add(String.valueOf(descriptiveStats.getMedianOfDoubles(allRelativeDegrees)));
-
                 data.add(String.valueOf(descriptiveStats.getStDevOfDoubles(allRelativeDegrees)));
-
                 data.add(String.valueOf(descriptiveStats.getMinOfDoubles(allRelativeDegrees)));
-
                 data.add(String.valueOf(descriptiveStats.getMaxOfDoubles(allRelativeDegrees)));
+                
+                data.add(String.valueOf(getAvgPeakSaccadeVelocity(map.get(aoi), peakVelocityIndex)));
             	
                 // Write the data into the .csv file as a new row
                 outputCSVWriter.writeNext(data.toArray(new String[data.size()]));
@@ -283,5 +253,15 @@ public class AOI {
 
 	        System.out.println("Error reading file '" + inputFile + "'");
 	    }
+	}
+	
+	public static double getAvgPeakSaccadeVelocity(ArrayList<String[]> data, int peakVelocityIndex) {
+		double total = 0;
+		
+		for (String[] entry : data) {
+			total += Double.parseDouble(entry[peakVelocityIndex]);
+		}
+		
+		return total / data.size();
 	}
 }
