@@ -78,10 +78,7 @@ public class main
 {
 	public static void main(String args[]) throws Exception 
 	{
-		ScanPath scanPath = new ScanPath("C:\\Users\\kayla\\OneDrive\\Desktop\\Temp\\Esther Jung_fixations.csv");
-		scanPath.runAllClimbScan();
 		
-		/*
 		// Resolution of monitor 
 		final int SCREEN_WIDTH = 1920;
 		final int SCREEN_HEIGHT = 1080;
@@ -152,7 +149,8 @@ public class main
 
 		String aoiResults = "/aoiResults.csv";
 		String aoiOutput = outputFolderPath + aoiResults;
-
+		ScanPath scanPath = new ScanPath(gazepointFXDPath, outputFolderPath);
+		scanPath.runAllClimbScan();
 		// Analyze graph related data
 		fixation.processFixation(gazepointFXDPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		event.processEvent(gazepointGZDPath, graphEventOutput);
@@ -173,7 +171,7 @@ public class main
 		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		tp.setComponentAt(0, pages.gazeAnalyticsOptions());
 		tp.repaint();
-		*/
+		
 	
 	}
 

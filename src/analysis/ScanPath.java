@@ -23,12 +23,15 @@ public class ScanPath {
 	private LinkedHashMap<Double,String>aoi = new LinkedHashMap<>();
 	private HashMap<String, Double> scanpathTimes = new HashMap<>();
 	private String fixationFile; 
-	private String outputFile = "C:\\Users\\kayla\\OneDrive\\Desktop\\Temp\\ScanPath\\";
+	private String outputPath;
 	private static final double APPROVEDINTERVAL = 1.5;
 	
-	public ScanPath(String fixationFile)
+	public ScanPath(String fixationFile, String outputPath)
 	{
 		this.fixationFile = fixationFile;
+		File snapshotFolder = new File(outputPath + "/ScanPathFolder/");
+		this.outputPath = outputPath + "/ScanPathFolder/";
+		snapshotFolder.mkdir();
 		parseFile();
 
 	}
@@ -41,7 +44,7 @@ public class ScanPath {
 		pitchTriangle();
 		radialScan();
 		circularScan();
-		avgScanPercentage(outputFile + "percentage.csv");
+		avgScanPercentage(outputPath + "percentage.csv");
 		
 	}
 	//parses the files and puts all the needed value in a hashmap
@@ -134,7 +137,7 @@ public class ScanPath {
 				if(AI && HI && ALT && AS)
 				{
 					
-					writeToFile(fixationFile, outputFile + "T_Scan" + counter + ".csv",startTime, prevElementTime);
+					writeToFile(fixationFile, outputPath + "T_Scan" + counter + ".csv",startTime, prevElementTime);
 					
 					if(scanpathTimes.containsKey("TScan"))
 					{
@@ -197,7 +200,7 @@ public class ScanPath {
 				if(AI && HI && AS)
 				{
 					
-					writeToFile(fixationFile, outputFile + "primaryInstrumentAS" + counter + ".csv",startTime, prevElementTime);
+					writeToFile(fixationFile, outputPath + "primaryInstrumentAS" + counter + ".csv",startTime, prevElementTime);
 
 					
 					if(scanpathTimes.containsKey("primaryInstrumentAS"))
@@ -261,7 +264,7 @@ public class ScanPath {
 				if(AI && HI && VSI)
 				{
 					
-					writeToFile(fixationFile, outputFile + "primaryInstrumentVSI" + counter + ".csv",startTime, prevElementTime);
+					writeToFile(fixationFile, outputPath + "primaryInstrumentVSI" + counter + ".csv",startTime, prevElementTime);
 
 					if(scanpathTimes.containsKey("primaryInstrumentVSI"))
 					{
@@ -329,7 +332,7 @@ public class ScanPath {
 				if(AI && ALT && VSI && AS)
 				{
 					
-					writeToFile(fixationFile, outputFile + "pitchTriangle" + counter + ".csv",startTime, prevElementTime);
+					writeToFile(fixationFile, outputPath + "pitchTriangle" + counter + ".csv",startTime, prevElementTime);
 					if(scanpathTimes.containsKey("pitchTriangle"))
 					{
 						scanpathTimes.put("pitchTriangle", scanpathTimes.get("pitchTriangle")+(prevElementTime - startTime));
@@ -414,7 +417,7 @@ public class ScanPath {
 						if(counter>=6)
 						{
 							
-							writeToFile(fixationFile, outputFile + "RadialScan" + csvCounter + ".csv",startTime, prevElementTime);
+							writeToFile(fixationFile, outputPath + "RadialScan" + csvCounter + ".csv",startTime, prevElementTime);
 							csvCounter++;
 							if(scanpathTimes.containsKey("radialScan"))
 							{
@@ -495,7 +498,7 @@ public class ScanPath {
 				{
 					if(counter >= 3)
 					{
-						writeToFile(fixationFile, outputFile + "CircularScan" + csvCounter + ".csv",startTime, prevElementTime);
+						writeToFile(fixationFile, outputPath + "CircularScan" + csvCounter + ".csv",startTime, prevElementTime);
 						csvCounter++;
 						if(scanpathTimes.containsKey("CircularScan"))
 						{
