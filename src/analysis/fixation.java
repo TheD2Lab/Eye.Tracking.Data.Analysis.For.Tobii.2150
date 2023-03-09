@@ -60,36 +60,13 @@ public class fixation {
         	 FileReader fileReader = new FileReader(inputFile);
              CSVReader csvReader = new CSVReader(fileReader);
              String[] nextLine = csvReader.readNext();
-             String[] prevLine = null;
-             int fixationValidityIndex = -1;
-             int fixationDurationIndex = -1;
-             int fixationIDIndex = 1;
-             int fixationXIndex = -1;
-             int fixationYIndex = -1;
+             int fixationDurationIndex = Arrays.asList(nextLine).indexOf("FPOGD");
+             int fixationIDIndex = Arrays.asList(nextLine).indexOf("FPOGID");
+             int fixationXIndex = Arrays.asList(nextLine).indexOf("FPOGX");
+             int fixationYIndex = Arrays.asList(nextLine).indexOf("FPOGY");
              int timestampIndex = -1;
          	for(int i = 0; i < nextLine.length; i++)
          	{
-         		String header = nextLine[i];
-
-         		switch(header)
-         		{
-         		case "FPOGV":
-         			fixationValidityIndex = i;
-         			break;
-         		case "FPOGD":
-         			fixationDurationIndex = i;
-         			break;
-         		case "FPOGX":
-         			fixationXIndex = i;
-         			break;
-         		case "FPOGY":
-         			fixationYIndex = i;
-         			break;
-         		case "FPOGID":
-         			fixationIDIndex = i;
-         		default:
-         			break;
-         		}
          		if(nextLine[i].contains("TIME") && timestampIndex == -1) {
          			timestampIndex = i;
          		}
@@ -103,8 +80,6 @@ public class fixation {
                 String fixationDurationSeconds = nextLine[fixationDurationIndex];
                 double eachDuration = Double.valueOf(fixationDurationSeconds);
                 double fixationID = Double.valueOf(nextLine[fixationIDIndex]);
-
-                String [] lineArray = new String[10];
 
                 //get each fixation's (x,y) coordinates
                 String eachFixationX = nextLine[fixationXIndex];
@@ -264,8 +239,8 @@ public class fixation {
             headers.add("convex hull area");
             data.add(String.valueOf(convexHull.getPolygonArea(points)));
             
-            headers.add("Average Saccade Velocity");
-            data.add(avgSaccadeVelocity(inputFile, outputFile));
+            headers.add("Average Peak Saccade Velocity");
+            data.add(avgPeakSaccadeVelocity(inputFile, outputFile));
             
             headers.add("Average Blink Rate per Minute");
             data.add(blinkRate(inputFile));
@@ -317,7 +292,6 @@ public class fixation {
 		FileReader fileReader = new FileReader(file);
 		CSVReader csvReader = new CSVReader(fileReader);
 		Iterator<String[]> iter = csvReader.iterator();
-		String[] line = new String[0];
 		int count = -1;
 		
 		// Iterate through each entry until you reach the last
@@ -332,7 +306,7 @@ public class fixation {
 		return count + "";
 	}
 	
-	public static String avgSaccadeVelocity(String inputFile, String outputFile) throws IOException 
+	public static String avgPeakSaccadeVelocity(String inputFile, String outputFile) throws IOException 
 	{
 		File file = new File(inputFile);
 		FileReader fileReader = new FileReader(file);
@@ -343,7 +317,7 @@ public class fixation {
 		
 		// Locate the saccade velocity index
 		String[] headers = iter.next();
-		int sacVel = Arrays.asList(headers).indexOf("SACCADE_VEL");
+		int sacVel = Arrays.asList(headers).indexOf("SACCADE_PV");
 				
 		while (iter.hasNext())
 		{

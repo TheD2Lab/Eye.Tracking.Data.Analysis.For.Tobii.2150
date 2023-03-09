@@ -1,0 +1,38 @@
+How to use the Data Analysis Page
+	1) The prompt will ask you for three files and a participant name
+		a) The program will be asking for the gaze file that was outputted from Gazepoint
+		b) The program will be asking for the fixation file that was outputted from Gazepoint
+		c) The program will be asking for a folder location where you want the files that the program is going to generate to be located
+		d) The particpant's name section will be the name of your folder.
+	2) Once you submit these,  the program will then display a new screen where the user will have the option to select specific windows for the output
+		a) If you do not want to select a window than you can simply choose the exit option and the program will terminate
+		b) There are four different window option you can choose from 
+			a)Continuous Snapshot: This option generates gaze data in a series of fixed, non-overlapping windows
+			b)Cumulative Snapshot: This option generates gaze data in a series of expanding windows that increases with every interval.
+			c)Overlapping Snapshot: This option generates gaze data in a series of fixed and overlapping windows
+			d)Event Analytics: his option generates a baseline file based on the first two minutes of the gaze data, and then compares it to the rest of the file. 
+			  If the data exceeds the baseline value, it will be counted as an event, and the program will continue to search for the next event within a specified 
+			  time period. If no event is found, the program will close at a specific period. If another event is found, the session window will continue searching
+	3) The prompt will then ask you to pick a file to use
+	4) Depending on what you selected, the program will prompt you to provide additional parameters specific to that window.
+		a)Continuous Snapshot and Cumulative Snapshot: The program will ask for a Window size in seconds. This is how the program is going to break up your file
+		  into sections. 
+		b)Overlapping Snapshot:The program will ask for a Window size and an overlapping amount in seconds. Not including the first file, the rest of your snapshot
+		  files will have overlapping values according to the overlapping input.
+		c)Event Analytics: The program will ask you to pick two values you would like to compare. One will come from an auto-generated file based on how the 
+		  participant performed in the first two minutes. The second will be from the file you picked. Please make sure the inputs correlate with one another,
+		  if not the calculations will be incorrect. You would also asked to define the maximum duration of an event in seconds. If there is no event trigger 
+		  within that amount of time, the event will automatically end.
+	  
+Troubleshooting
+	- ensure that all the required libraries are included
+		- arpack_combined.jar, common-lang3.jar, commons-math3-3.6.1.jar, core.jar, mt.jar, opencsv-5.7.0.jar, weka.jar
+	- if you are missing files, check the system logs. It'll tell you the errors that occurred and why it was unable to create a curtain file
+	- if there is an error in creating a folder, ensure that you are not using any special characters and there is no extra space at the end
+
+Limitation
+	- several sections of the codebase rely on the existence of data columns in the raw data files. To ensure that the program functions correctly, 
+	  select all the possible columns when exporting data from the Gazepoint Analysis software
+	- note that the program will create a folder for the participant regardless of the success of the program execution.
+	- Please be aware that if the names and locations selected for the files match those of an existing file, the existing file will be automatically 
+	  overwritten

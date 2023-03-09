@@ -30,6 +30,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import com.opencsv.CSVReader;
@@ -52,16 +53,7 @@ public class event {
              CSVReader csvReader = new CSVReader(fileReader);
              String[]nextLine = csvReader.readNext();
 
-            int leftMouseButtonIndex = -1;
-         	for(int i = 0; i < nextLine.length; i++)
-         	{
-         		String header = nextLine[i];
-
-         		if(header.equals("CS"))
-         		{
-         			leftMouseButtonIndex = i;
-         		}
-         	}
+            int leftMouseButtonIndex = Arrays.asList(nextLine).indexOf("CS");;
 
             while((nextLine = csvReader.readNext()) != null) {
                 if(nextLine[leftMouseButtonIndex].equals("1")){

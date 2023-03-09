@@ -170,7 +170,7 @@ public class convexHull {
 
         	Point2D.Double temp = points.get(i);
 
-            if((temp.y < lowest.y && temp.y >= 0)|| (temp.y == lowest.y && temp.x < lowest.x && temp.x >= 0)) {
+            if((temp.y < lowest.y )|| (temp.y == lowest.y && temp.x < lowest.x )) {
                 lowest = temp;
             }
         }
