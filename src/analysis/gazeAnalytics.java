@@ -20,18 +20,17 @@ import weka.core.converters.CSVLoader;
  */
 public class gazeAnalytics {
 
-	public static void continuousWindow(String inputFile, String outputFolder, int windowSize)
+	public static void continuousWindow(String inputFile, String outputFolder, int windowSize) throws CsvValidationException
 	{
-		
 		int endTime = windowSize;
 		int initialTime = 0;
-		String outputFile = outputFolder + "/continuous_" + endTime + ".csv";
+		String outputFile = "/continuous_" + endTime + ".csv";
 		try {
-			while(snapshot(inputFile,outputFile,initialTime,endTime))
+			while(snapshot(inputFile,outputFile, outputFolder, initialTime,endTime))
 			{
 				initialTime += windowSize;
 				endTime += windowSize;
-				outputFile = outputFolder + "/continuous_" + endTime + ".csv";
+				outputFile = "/continuous_" + endTime + ".csv";
 			}
 		} 
 		catch (IOException e) 
@@ -41,17 +40,17 @@ public class gazeAnalytics {
 
 	}
 	
-	public static void cumulativeWindow(String inputFile, String outputFolder, int windowSize)
+	public static void cumulativeWindow(String inputFile, String outputFolder, int windowSize) throws CsvValidationException
 	{
 		int endTime = windowSize;
 		int initialTime = 0;
-		String outputFile = outputFolder + "/cumulative_" + endTime + ".csv";
+		String outputFile = "/cumulative_" + endTime + ".csv";
 		try 
 		{
-			while(snapshot(inputFile,outputFile,initialTime,endTime))
+			while(snapshot(inputFile,outputFile,outputFolder,initialTime,endTime))
 			{
 				endTime += windowSize;
-				outputFile = outputFolder + "/cumulative_" + endTime + ".csv";
+				outputFile = "/cumulative_" + endTime + ".csv";
 			}
 		} 
 		catch (IOException e) 
@@ -60,17 +59,17 @@ public class gazeAnalytics {
 		}
 	}
 	
-	public static void overlappingWindow(String inputFile, String outputFolder, int windowSize, int overlap)
+	public static void overlappingWindow(String inputFile, String outputFolder, int windowSize, int overlap) throws CsvValidationException
 	{
 		int endTime = windowSize;
 		int initialTime = 0;
 		String outputFile = outputFolder + "/overlap_" + endTime + ".csv";
 		try {
-			while(snapshot(inputFile,outputFile,initialTime,endTime))
+			while(snapshot(inputFile,outputFile,outputFolder,initialTime,endTime))
 			{
 				initialTime = endTime - overlap;
 				endTime += windowSize;
-				outputFile = outputFolder + "/overlap_" + endTime + ".csv";
+				outputFile = "/overlap_" + endTime + ".csv";
 				
 			}
 		} 
@@ -196,8 +195,9 @@ public class gazeAnalytics {
 
 	}
 	
-	private static boolean snapshot(String inputFile, String outputFile, int start, int end) throws IOException
+	private static boolean snapshot(String inputFile, String fileName, String outputFolder, int start, int end) throws IOException, CsvValidationException
 	{
+		String outputFile = outputFolder + fileName;
 		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
         CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
         FileReader fileReader = new FileReader(inputFile);
@@ -247,6 +247,12 @@ public class gazeAnalytics {
         	System.out.println("done writing file: " + outputFile);
         	outputCSVWriter.close();
         	csvToARFF(outputFile);
+    		fixation.processFixation(outputFile, outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_fixation.csv", 1920, 1080);
+    		event.processEvent(outputFile, outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_event.csv");
+    		gaze.processGaze(outputFile, outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_gaze.csv");
+    		gazeAnalytics.csvToARFF(outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_gaze.csv");
+    		gazeAnalytics.csvToARFF(outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_event.csv");
+    		gazeAnalytics.csvToARFF(outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_fixation.csv");
         	return false;
         }
         catch(Exception e)
@@ -262,6 +268,12 @@ public class gazeAnalytics {
         }
         
         csvToARFF(outputFile);
+		fixation.processFixation(outputFile, outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_fixation.csv", 1920, 1080);
+		event.processEvent(outputFile, outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_event.csv");
+		gaze.processGaze(outputFile, outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_gaze.csv");
+		gazeAnalytics.csvToARFF(outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_gaze.csv");
+		gazeAnalytics.csvToARFF(outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_event.csv");
+		gazeAnalytics.csvToARFF(outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_fixation.csv");
         return true;
 	}
 	

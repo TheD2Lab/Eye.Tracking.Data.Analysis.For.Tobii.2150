@@ -379,7 +379,7 @@ public class Panels {
 						{
 							gazeAnalytics.continuousWindow(gazepointFile, outputFolder,Integer.parseInt(windowSizeInput.getText()) );
 						} 
-						catch (NumberFormatException e1) 
+						catch (NumberFormatException | CsvValidationException e1) 
 						{
 							JOptionPane.showMessageDialog(null, "User input was not a valid number. Unable to create gaze analytics files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
 							systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
@@ -393,7 +393,7 @@ public class Panels {
 						{
 							gazeAnalytics.cumulativeWindow(gazepointFile, outputFolder, Integer.parseInt(windowSizeInput.getText()));
 						} 
-						catch (NumberFormatException e1) 
+						catch (NumberFormatException | CsvValidationException e1) 
 						{
 							systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
 							JOptionPane.showMessageDialog(null, "User input was not a valid number. Unable to create gaze analytics files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
@@ -434,7 +434,7 @@ public class Panels {
 					{
 						gazeAnalytics.overlappingWindow(gazepointFile, outputFolder,Integer.parseInt(windowSizeInput.getText()), Integer.parseInt(overlappingInput.getText()) );
 					} 
-					catch (NumberFormatException e1) 
+					catch (NumberFormatException | CsvValidationException e1) 
 					{
 						systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
 						JOptionPane.showMessageDialog(null, "User input was not a valid number. Unable to create gaze analytics files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
