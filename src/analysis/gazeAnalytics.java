@@ -247,12 +247,17 @@ public class gazeAnalytics {
         	System.out.println("done writing file: " + outputFile);
         	outputCSVWriter.close();
         	csvToARFF(outputFile);
-    		fixation.processFixation(outputFile, outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_fixation.csv", 1920, 1080);
-    		event.processEvent(outputFile, outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_event.csv");
-    		gaze.processGaze(outputFile, outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_gaze.csv");
-    		gazeAnalytics.csvToARFF(outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_gaze.csv");
-    		gazeAnalytics.csvToARFF(outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_event.csv");
-    		gazeAnalytics.csvToARFF(outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_fixation.csv");
+        	String tempFixName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_fixation.csv";
+        	String tempEventName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_event.csv";
+        	String tempGazeName = outputFolder +  fileName.substring(0, fileName.indexOf(".")) + "_gaze.csv";
+    		fixation.processFixation(outputFile,tempFixName, 1920, 1080);
+    		event.processEvent(outputFile, tempEventName);
+    		gaze.processGaze(outputFile, tempGazeName);
+    		gazeAnalytics.csvToARFF(tempFixName);
+    		gazeAnalytics.csvToARFF(tempEventName);
+    		gazeAnalytics.csvToARFF(tempGazeName);
+    		main.mergingResultFiles(tempFixName, tempEventName, tempGazeName, outputFolder +  fileName.substring(0, fileName.indexOf("."))+  "_combineResults.csv");
+    		gazeAnalytics.csvToARFF( outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
         	return false;
         }
         catch(Exception e)
@@ -268,12 +273,17 @@ public class gazeAnalytics {
         }
         
         csvToARFF(outputFile);
-		fixation.processFixation(outputFile, outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_fixation.csv", 1920, 1080);
-		event.processEvent(outputFile, outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_event.csv");
-		gaze.processGaze(outputFile, outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_gaze.csv");
-		gazeAnalytics.csvToARFF(outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_gaze.csv");
-		gazeAnalytics.csvToARFF(outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_event.csv");
-		gazeAnalytics.csvToARFF(outputFolder + "/" + fileName.substring(0, fileName.indexOf(".")-1) + "_fixation.csv");
+    	String tempFixName = outputFolder  + fileName.substring(0, fileName.indexOf(".")) + "_fixation.csv";
+    	String tempEventName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_event.csv";
+    	String tempGazeName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_gaze.csv";
+		fixation.processFixation(outputFile,tempFixName, 1920, 1080);
+		event.processEvent(outputFile, tempEventName);
+		gaze.processGaze(outputFile, tempGazeName);
+		gazeAnalytics.csvToARFF(tempFixName);
+		gazeAnalytics.csvToARFF(tempEventName);
+		gazeAnalytics.csvToARFF(tempGazeName);
+		main.mergingResultFiles(tempFixName, tempEventName, tempGazeName,  outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
+		gazeAnalytics.csvToARFF( outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
         return true;
 	}
 	

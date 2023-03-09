@@ -181,7 +181,7 @@ public class main
 	 * 
 	 * @param	filePaths	an array where all the file paths will be stored
 	 */
-	private static void mergingResultFiles(String FXD, String EVD, String GZD, String outputFile) throws IOException
+	public static void mergingResultFiles(String FXD, String EVD, String GZD, String outputFile) throws IOException
 	{
 
  		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
