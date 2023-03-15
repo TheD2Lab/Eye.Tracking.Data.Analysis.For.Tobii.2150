@@ -20,7 +20,7 @@ public class ConvertCVSToArff {
 		String rootDirectory = in.nextLine();
 
 		boolean nominal = false;
-		System.out.print("Enter Y if class attribute is Nominal or N if class attribute is not Nominal: ");
+		System.out.print("Enter Y if class attribute is Nominal or N if class attribute is NOT Nominal: ");
 		String isNominal = in.nextLine();
 
 		if (isNominal.equalsIgnoreCase("Y")) {

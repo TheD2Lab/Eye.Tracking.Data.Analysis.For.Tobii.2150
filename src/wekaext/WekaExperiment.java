@@ -373,7 +373,7 @@ public class WekaExperiment {
 		if (classification) {
 			tester.multiResultsetFull(0, result.attribute("Percent_correct").index());
 		} else {
-			tester.multiResultsetFull(0, result.attribute("Root_relative_squared_error").index());
+			tester.multiResultsetFull(0, result.attribute("Root_mean_squared_error").index());
 		}
 
 		ResultMatrix matrix = tester.getResultMatrix();
