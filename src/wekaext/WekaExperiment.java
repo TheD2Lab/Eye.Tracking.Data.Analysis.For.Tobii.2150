@@ -37,12 +37,35 @@ import javax.swing.*;
 
 public class WekaExperiment {
 
-	public WekaExperiment() {}
+	public static void main(String[] args) {
+		Scanner in = new Scanner(System.in);
 
-	public void setupExperiment(boolean classification, String dirLocation) throws Exception {
+		System.out.print("Enter root directory: ");
+		String rootDirectory = in.nextLine();
+
+		boolean classification = false;
+		System.out.print("Enter C for classification or R for regression: ");
+		String typeOfExperiment = in.nextLine();
+
+		if (typeOfExperiment.equalsIgnoreCase("C")) {
+			classification = true;
+		}
+
+		try {
+			setupExperiment(classification, rootDirectory);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		in.close();
+
+	}
+
+	public static void setupExperiment(boolean classification, String dirLocation) throws Exception {
 		// set directory path
 		File dirPath = new File(dirLocation);
-		
+
 		// find all arff files
 		ArrayList<String> fileNames = new ArrayList<>();
 
@@ -51,8 +74,8 @@ public class WekaExperiment {
 				fileNames.add(s);
 			}
 		}
-		
-		// sort all files by filename 
+
+		// sort all files by filename
 		Collections.sort(fileNames, new Comparator<String>() {
 			@Override
 			public int compare(String o1, String o2) {
@@ -98,7 +121,7 @@ public class WekaExperiment {
 
 	}
 
-	private void writeResultsToCSV(Classifier[] classifiers, ArrayList<ClassifierResult[]> results,
+	private static void writeResultsToCSV(Classifier[] classifiers, ArrayList<ClassifierResult[]> results,
 			ArrayList<String> fileNames, String fileLocation) {
 		// first create file object for file placed at location
 		// specified by filepath
@@ -148,7 +171,7 @@ public class WekaExperiment {
 		}
 	}
 
-	private Classifier[] getClassificationClassifiers() throws Exception {
+	private static Classifier[] getClassificationClassifiers() throws Exception {
 		Classifier[] classifiers = new Classifier[44];
 
 		// set baseline classifier here
@@ -216,7 +239,7 @@ public class WekaExperiment {
 		return classifiers;
 	}
 
-	private Classifier[] getRegressionClassifiers() {
+	private static Classifier[] getRegressionClassifiers() {
 		Classifier[] classifiers = new Classifier[20];
 
 		// set baseline classifier here
@@ -253,7 +276,7 @@ public class WekaExperiment {
 		return classifiers;
 	}
 
-	private void printClassifierOptions(Classifier classifier) {
+	private static void printClassifierOptions(Classifier classifier) {
 		AbstractClassifier c = (AbstractClassifier) classifier;
 		StringBuilder classifierOptions = new StringBuilder();
 
@@ -269,7 +292,7 @@ public class WekaExperiment {
 		System.out.println(classifierOptions);
 	}
 
-	private ResultMatrix runExperiment(Classifier[] classifiers, String fileLocation, boolean classification,
+	private static ResultMatrix runExperiment(Classifier[] classifiers, String fileLocation, boolean classification,
 			Boolean logData) throws Exception {
 		// setup weka.experiment
 		Experiment exp = new Experiment();
@@ -365,7 +388,8 @@ public class WekaExperiment {
 		return matrix;
 	}
 
-	private ClassifierResult[] getClassificationExperimentResults(Classifier[] classifiers, ResultMatrix matrix) {
+	private static ClassifierResult[] getClassificationExperimentResults(Classifier[] classifiers,
+			ResultMatrix matrix) {
 		ClassifierResult[] classifierResults = new ClassifierResult[classifiers.length];
 
 		for (int i = 0; i < matrix.getColCount(); i++) {
@@ -378,7 +402,7 @@ public class WekaExperiment {
 		return classifierResults;
 	}
 
-	private void evaluateAllClassifiers(Classifier[] classifiers, Instances train) {
+	private static void evaluateAllClassifiers(Classifier[] classifiers, Instances train) {
 		// classifier evaluations
 		ArrayList<String> dnw = new ArrayList<String>();
 
