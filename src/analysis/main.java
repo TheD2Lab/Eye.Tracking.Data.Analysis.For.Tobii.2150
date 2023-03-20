@@ -83,6 +83,10 @@ public class main
 		final int SCREEN_WIDTH = 1920;
 		final int SCREEN_HEIGHT = 1080;
 				
+		String[] paths = {"C:\\Users\\kayla\\Downloads\\Hannah Park_all_gaze.csv", "C:\\Users\\kayla\\Downloads\\Hannah Park_fixations.csv","C:\\Users\\kayla\\OneDrive\\Documents\\TestCode\\TesterHannah/"};
+
+		String[] modifiedData = processData(new String[] {paths[0], paths[1]}, paths[2], SCREEN_WIDTH, SCREEN_HEIGHT);
+		/*
 		JFrame mainFrame = new JFrame("");
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 		int screenWidth = (int)size.getWidth();
@@ -171,7 +175,7 @@ public class main
 		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		tp.setComponentAt(0, pages.gazeAnalyticsOptions());
 		tp.repaint();
-		
+		*/
 	
 	}
 
@@ -339,17 +343,47 @@ public class main
 				}
 				
 				String[] prevRow = iter.next();
+				ArrayList<String> row = new ArrayList<String>();
+				while (iter.hasNext()) {
+					String[]currRow = iter.next();
+					double x = Double.valueOf(currRow[xIndex]);
+					double y = Double.valueOf(currRow[yIndex]);
+					boolean onScreen = (x <= 1.0 && x >= 0 && y <= 1.0 && y >= 0) ? true : false;
+			
+					// Checks the pupils validity
+					boolean pupilLeftValid = Integer.valueOf(currRow[pupilLeftValidityIndex]) == 1 ? true : false;
+					boolean pupilRightValid = Integer.valueOf(currRow[pupilRightValidityIndex]) == 1 ? true : false;
+					boolean pupilsDimensionValid = false;
+                	double pupilLeft = Double.parseDouble(currRow[pupilLeftDiameterIndex]);
+                	double pupilRight = Double.parseDouble(currRow[pupilRightDiameterIndex]);
+                	
+                
+                	// Checks if pupil sizes are possible (between 2mm to 8mm)
+                	if(pupilLeft >=2 && pupilLeft <=8 && pupilRight >=2 && pupilRight <=8)
+                	{
+                		// Checks if the difference in size between the left and right is 1mm or less
+                		if(Math.abs(pupilRight - pupilLeft) <= 1)
+                		{
+                			pupilsDimensionValid = true;
+                		}
+                	}
+                	if (onScreen && pupilLeftValid && pupilRightValid && pupilsDimensionValid) {
+					row = new ArrayList<String>(Arrays.asList(currRow));
+					row.add(0 + "");
+					row.add(0 + "");
+					row.add(0 + "");
+					writer.writeNext(row.toArray(new String[row.size()]));
+					break;
+                	}
+				}
 				
-				ArrayList<String> row = new ArrayList<String>(Arrays.asList(prevRow));
-				row.add(0 + "");
-				row.add(0 + "");
-				row.add(0 + "");
-				writer.writeNext(row.toArray(new String[row.size()]));
+				
+
 				
 				ArrayList<Double[]> saccadePoints = new ArrayList<Double[]>();
 				
 				while (iter.hasNext()) {
-					String[] currRow = iter.next();
+					String[]currRow = iter.next();
 					double x = Double.valueOf(currRow[xIndex]);
 					double y = Double.valueOf(currRow[yIndex]);
 					boolean onScreen = (x <= 1.0 && x >= 0 && y <= 1.0 && y >= 0) ? true : false;
