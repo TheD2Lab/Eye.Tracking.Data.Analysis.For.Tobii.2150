@@ -76,7 +76,7 @@ public class Panels {
 		fixationTextF.setEditable(false);
 		fixationTextF.setPreferredSize(new Dimension(50, 30));
 
-		JLabel outputLabel = new JLabel("Location of output file: ");
+		JLabel outputLabel = new JLabel("Location of output file: ");  
 		JTextField outputTextF = new JTextField("Location of output file: ", 50);
 		outputTextF.setBackground(Color.WHITE);
 		JButton outputBrowseBtn = new JButton("Browse");
@@ -128,7 +128,7 @@ public class Panels {
 		panel.add(submitBtn, c);
 
 		gazeBrowseBtn.addActionListener(e -> {
-			String temp = fileChooser("Select the gaze .csv file you would like to use", "/data/");
+			String temp = modifier.fileChooser("Select the gaze .csv file you would like to use", "/data/");
 			if(!temp.equals(""))
 			{
 				gazeTextF.setText(temp);
@@ -136,7 +136,7 @@ public class Panels {
 
 		});
 		fixationBrowseBtn.addActionListener(e -> { 
-			String temp = fileChooser("Select the fixation .csv file you would like to use", "/data/");
+			String temp = modifier.fileChooser("Select the fixation .csv file you would like to use", "/data/");
 			if(!temp.equals(""))
 			{	
 				fixationTextF.setText(temp);
@@ -144,7 +144,7 @@ public class Panels {
 
 		});
 		outputBrowseBtn.addActionListener(e -> {
-			String temp = folderChooser("Choose a directory to save your file");
+			String temp = modifier.folderChooser("Choose a directory to save your file");
 			if(!temp.equals(""))
 			{	
 				outputTextF.setText(temp);
@@ -215,54 +215,6 @@ public class Panels {
 	{
 		return outputPath;
 	}
-
-	/*
-	 * UI for users to select the file they want to use
-	 * 
-	 * @param	dialogTitle		title of the window
-	 * @param 	directory		directory to choose file from relative to project directory		
-	 */
-	private  String fileChooser(String dialogTitle, String directory)
-	{
-		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir")  + directory);
-
-		//ensures that only CSV files will be able to be selected
-		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
-		jfc.setDialogTitle(dialogTitle);
-		int returnValue = jfc.showOpenDialog(null);
-
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			File selectedFile = jfc.getSelectedFile();
-			return selectedFile.getAbsolutePath();
-		}
-		return "";
-	}
-
-
-	/*
-	 * UI for users to select the folder they would want to use to place files in
-	 * 
-	 * @param	dialogTitle		title of the window
-	 */
-	private  String folderChooser(String dialogTitle)
-	{
-		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/results/");
-		jfc.setDialogTitle("Choose a directory to save your file: ");
-
-		//only directories can be selected
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int returnValue = jfc.showSaveDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			if (jfc.getSelectedFile().isDirectory()) 
-				return jfc.getSelectedFile().toString();
-		}
-		return "";
-	}
-
 	
 
 	/*
@@ -356,7 +308,7 @@ public class Panels {
 			
 			if(continuousSnapshotButton.isSelected()||cumulativeSnapshotButton.isSelected())
 			{
-				String gazepointFile = fileChooser("Please select which file you would like to parse out", dir);
+				String gazepointFile = modifier.fileChooser("Please select which file you would like to parse out", dir);
 				JTextField windowSizeInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size(seconds): ");
 				
@@ -406,7 +358,7 @@ public class Panels {
 			}
 			else if(overlappingSnapshotButton.isSelected())
 			{
-				String gazepointFile = fileChooser("Please select which file you would like to parse out", dir);
+				String gazepointFile = modifier.fileChooser("Please select which file you would like to parse out", dir);
 				JTextField windowSizeInput = new JTextField("", 5);
 				JTextField overlappingInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size(seconds): ");
@@ -448,7 +400,7 @@ public class Panels {
 			}
 			else if(eventAnalyticsButton.isSelected())
 			{
-				String gazepointFilePath = fileChooser("Please select your gaze file", dir);
+				String gazepointFilePath = modifier.fileChooser("Please select your gaze file", dir);
 				String baselineFilePath = outputPath + "/baseline.csv";
 	
 				try 

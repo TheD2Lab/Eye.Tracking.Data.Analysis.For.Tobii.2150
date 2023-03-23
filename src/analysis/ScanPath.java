@@ -567,7 +567,7 @@ public class ScanPath {
         {
         	System.out.println("done writing file: " + outputFile);
         	outputCSVWriter.close();
-        	gazeAnalytics.csvToARFF(outputFile);
+        	modifier.csvToARFF(outputFile);
         }
         catch(Exception e)
         {
@@ -581,7 +581,7 @@ public class ScanPath {
             csvReader.close();
         }
         
-        gazeAnalytics.csvToARFF(outputFile);
+        modifier.csvToARFF(outputFile);
         }
 	
 

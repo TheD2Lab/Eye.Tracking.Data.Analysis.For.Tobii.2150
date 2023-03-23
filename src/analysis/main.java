@@ -83,10 +83,10 @@ public class main
 		final int SCREEN_WIDTH = 1920;
 		final int SCREEN_HEIGHT = 1080;
 				
-		String[] paths = {"C:\\Users\\kayla\\Downloads\\Hannah Park_all_gaze.csv", "C:\\Users\\kayla\\Downloads\\Hannah Park_fixations.csv","C:\\Users\\kayla\\OneDrive\\Documents\\TestCode\\TesterHannah/"};
-
-		String[] modifiedData = processData(new String[] {paths[0], paths[1]}, paths[2], SCREEN_WIDTH, SCREEN_HEIGHT);
-		/*
+//		String[] paths = {"C:\\Users\\kayla\\Downloads\\Hannah Park_all_gaze.csv", "C:\\Users\\kayla\\Downloads\\Hannah Park_fixations.csv","C:\\Users\\kayla\\OneDrive\\Documents\\TestCode\\TesterHannah/"};
+//
+//		String[] modifiedData = processData(new String[] {paths[0], paths[1]}, paths[2], SCREEN_WIDTH, SCREEN_HEIGHT);
+		
 		JFrame mainFrame = new JFrame("");
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 		int screenWidth = (int)size.getWidth();
@@ -159,123 +159,25 @@ public class main
 		fixation.processFixation(gazepointFXDPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		event.processEvent(gazepointGZDPath, graphEventOutput);
 		gaze.processGaze(gazepointGZDPath, graphGazeOutput);
-		createBaselineFile(gazepointGZDPath, outputFolderPath);
+		modifier.createBaselineFile(gazepointGZDPath, outputFolderPath);
 
 
 		// Gaze Analytics 
-		gazeAnalytics.csvToARFF(graphFixationOutput);
-		gazeAnalytics.csvToARFF(graphEventOutput);
-		gazeAnalytics.csvToARFF(graphGazeOutput);
+		modifier.csvToARFF(graphFixationOutput);
+		modifier.csvToARFF(graphEventOutput);
+		modifier.csvToARFF(graphGazeOutput);
 
 		//combining all result files
-		mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
-		gazeAnalytics.csvToARFF(outputFolderPath + "/combineResults.csv");
+		modifier.mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
+		modifier.csvToARFF(outputFolderPath + "/combineResults.csv");
 
 		// Analyze AOI data
 		AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		tp.setComponentAt(0, pages.gazeAnalyticsOptions());
 		tp.repaint();
-		*/
+		
 	
 	}
-
-
-	/*
-	 * merges all the input files 
-	 * 
-	 * @param	filePaths	an array where all the file paths will be stored
-	 */
-	public static void mergingResultFiles(String FXD, String EVD, String GZD, String outputFile) throws IOException
-	{
-
- 		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
-        CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
-        
-        FileReader fileReaderFXD = new FileReader(FXD);
-        CSVReader csvReaderFXD = new CSVReader(fileReaderFXD);
-        FileReader fileReaderEVD = new FileReader(EVD);
-        CSVReader csvReaderEVD = new CSVReader(fileReaderEVD);
-        FileReader fileReaderGZD = new FileReader(GZD);
-        CSVReader csvReaderGZD = new CSVReader(fileReaderGZD);
-
-        try
-        {
-    		Iterator<String[]> iterFXD = csvReaderFXD.iterator();
-    		Iterator<String[]> iterEVD = csvReaderEVD.iterator();
-    		Iterator<String[]> iterGZD = csvReaderGZD.iterator();
-    		String[] rowFXD= new String[0];
-    		String[] rowEVD = new String[0];
-    		String[] rowGZD = new String[0];
-
-        	while(iterFXD.hasNext())
-        	{
-        		rowGZD = iterGZD.next();
-        		rowEVD = iterEVD.next();
-        		rowFXD = iterFXD.next();
-            	String[]results = new String[rowGZD.length + rowEVD.length + rowFXD.length];
-            	System.arraycopy(rowGZD, 0, results, 0, rowGZD.length);
-            	System.arraycopy(rowEVD, 0, results, rowGZD.length, rowEVD.length);
-            	System.arraycopy(rowFXD, 0, results, rowEVD.length + rowGZD.length, rowFXD.length);
-            	outputCSVWriter.writeNext(results);
-        	}
-
-        }
-        catch(Exception e)
-        {
-        	System.out.println(e);
-			systemLogger.writeToSystemLog(Level.WARNING, main.class.getName(), "");
-        }
-        finally
-        {
-        	outputCSVWriter.close();
-        	csvReaderFXD.close();
-        	csvReaderEVD.close();
-        	csvReaderGZD.close();
-        }
-	}
-
-
-
-
-	/*
-	 * create baseline file
-	 * grabs the first two minutes of the file and averages it
-	 * 
-	 */
-	private static void createBaselineFile(String filePath, String outputFolder) throws IOException, CsvValidationException
-	{
-		FileWriter outputFileWriter = new FileWriter(new File (outputFolder + "/baselineModifiedFile.csv"));
-		CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
-		FileReader fileReader = new FileReader(filePath);
-		CSVReader csvReader = new CSVReader(fileReader);
-		String[]nextLine = csvReader.readNext();//header
-		outputCSVWriter.writeNext(nextLine);
-		
-		try 
-		{
-			
-			while((nextLine = csvReader.readNext()) != null)
-			{
-				if(Double.valueOf(nextLine[3]) <= 120) //two minutes
-				{
-					outputCSVWriter.writeNext(nextLine);
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			System.out.println(e);
-		}
-		finally
-		{
-			outputCSVWriter.close();
-			csvReader.close();
-
-		}
-		gaze.processGaze(outputFolder + "/baselineModifiedFile.csv", outputFolder + "/baseline.csv");
-		gazeAnalytics.csvToARFF(outputFolder + "/baseline.csv");
-	}
-
 
 	/*
 	 * Modifies input data files by cleansing the data and calculating the saccade velocity as an additional column
@@ -469,62 +371,7 @@ public class main
 		return outputFiles;
 	}
 
-	/*
-	 * UI for users to select the file they want to use
-	 * 
-	 * @param	dialogTitle		title of the window
-	 * @param 	directory		directory to choose file from relative to project directory		
-	 */
-	private static String fileChooser(String dialogTitle, String directory)
-	{
-		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir")  + directory);
 
-		//ensures that only CSV files will be able to be selected
-		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
-		jfc.setDialogTitle(dialogTitle);
-		int returnValue = jfc.showOpenDialog(null);
-
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			File selectedFile = jfc.getSelectedFile();
-			return selectedFile.getAbsolutePath();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick a file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
-		}
-		return "";
-	}
-
-
-	/*
-	 * UI for users to select the folder they would want to use to place files in
-	 * 
-	 * @param	dialogTitle		title of the window
-	 */
-	private static String folderChooser(String dialogTitle)
-	{
-		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/results/");
-		jfc.setDialogTitle("Choose a directory to save your file: ");
-
-		//only directories can be selected
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int returnValue = jfc.showSaveDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			if (jfc.getSelectedFile().isDirectory()) 
-				return jfc.getSelectedFile().toString();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(null, "Must pick a location to output the file", "Error Message", JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
-		}
-		return "";
-	}
 
 
 
