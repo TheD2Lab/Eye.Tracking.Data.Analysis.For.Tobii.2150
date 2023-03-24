@@ -42,7 +42,8 @@ import com.opencsv.exceptions.CsvValidationException;
 
 public class Panels {
 
-
+	final int SCREEN_WIDTH = 1920;
+	final int SCREEN_HEIGHT = 1080;
 	private  String gazepointGZDPath = "";
 	private  String gazepointFXDPath = "";
 	private  String outputPath = "";
@@ -192,7 +193,57 @@ public class Panels {
 			}
 			
 			panel.removeAll();
-			panel.repaint();			
+			panel.repaint();	
+			String[] paths = {getGZDPath(), getFXDPath(), getOutputPath()};
+
+			String[] modifiedData = modifier.processData(new String[] {paths[0], paths[1]}, paths[2], 1920, 1080);
+			String gazepointGZDPath = modifiedData[0];
+			String gazepointFXDPath = modifiedData[1];
+			String outputFolderPath = paths[2];
+
+			systemLogger.createSystemLog(outputFolderPath);
+			//create the system log    
+			systemLogger.createSystemLog(outputFolderPath);
+
+			//output file paths
+			String graphFixationResults = "/graphFXDResults.csv";
+			String graphFixationOutput = outputFolderPath + graphFixationResults;
+
+			String graphEventResults = "/graphEVDResults.csv";
+			String graphEventOutput = outputFolderPath + graphEventResults;
+
+			String graphGazeResults = "/graphGZDResults.csv";
+			String graphGazeOutput = outputFolderPath + graphGazeResults;
+
+
+			String aoiResults = "/aoiResults.csv";
+			String aoiOutput = outputFolderPath + aoiResults;
+			ScanPath scanPath = new ScanPath(gazepointFXDPath, outputFolderPath);
+			try {
+			scanPath.runAllClimbScan();
+			// Analyze graph related data
+			fixation.processFixation(gazepointFXDPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+			event.processEvent(gazepointGZDPath, graphEventOutput);
+			gaze.processGaze(gazepointGZDPath, graphGazeOutput);
+			modifier.createBaselineFile(gazepointGZDPath, outputFolderPath);
+
+
+			// Gaze Analytics 
+			modifier.csvToARFF(graphFixationOutput);
+			modifier.csvToARFF(graphEventOutput);
+			modifier.csvToARFF(graphGazeOutput);
+
+			//combining all result files
+			modifier.mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
+			modifier.csvToARFF(outputFolderPath + "/combineResults.csv");
+
+			// Analyze AOI data
+			AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+			}
+			catch(Exception ex)
+			{
+				System.out.println(ex);
+			}
 		});
 		
 
