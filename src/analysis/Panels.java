@@ -46,7 +46,7 @@ public class Panels {
 	final int SCREEN_HEIGHT = 1080;
 	private  String gazepointGZDPath = "";
 	private  String gazepointFXDPath = "";
-	private  String outputPath = "";
+	private  String outputFolderPath = "";
 	private JPanel panel=new JPanel(new GridBagLayout());
 	private final BufferedImage myPicture;
 	private final JLabel image; 
@@ -175,7 +175,7 @@ public class Panels {
 			{
 				gazepointGZDPath = gazeTextF.getText();
 				gazepointFXDPath = fixationTextF.getText();
-				outputPath = outputTextF.getText() + "/" + partTextF.getText();
+				outputFolderPath = outputTextF.getText() + "/" + partTextF.getText();
 				
 				File participantFolder = new File(outputTextF.getText() + "/" + partTextF.getText());
 
@@ -188,83 +188,80 @@ public class Panels {
 						JOptionPane.showMessageDialog(null, "Unable to create participant's folder", "Error Message", JOptionPane.ERROR_MESSAGE);
 						System.exit(0);
 					}
+					else
+					{
+						analyzeData();
+						try {
+							
+							gazeAnalyticsOptions();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+						panel.repaint();	
+					}
 
 				}
 			}
 			
-			panel.removeAll();
-			panel.repaint();	
-			String[] paths = {getGZDPath(), getFXDPath(), getOutputPath()};
-
-			String[] modifiedData = modifier.processData(new String[] {paths[0], paths[1]}, paths[2], 1920, 1080);
-			String gazepointGZDPath = modifiedData[0];
-			String gazepointFXDPath = modifiedData[1];
-			String outputFolderPath = paths[2];
-
-			systemLogger.createSystemLog(outputFolderPath);
-			//create the system log    
-			systemLogger.createSystemLog(outputFolderPath);
-
-			//output file paths
-			String graphFixationResults = "/graphFXDResults.csv";
-			String graphFixationOutput = outputFolderPath + graphFixationResults;
-
-			String graphEventResults = "/graphEVDResults.csv";
-			String graphEventOutput = outputFolderPath + graphEventResults;
-
-			String graphGazeResults = "/graphGZDResults.csv";
-			String graphGazeOutput = outputFolderPath + graphGazeResults;
-
-
-			String aoiResults = "/aoiResults.csv";
-			String aoiOutput = outputFolderPath + aoiResults;
-			ScanPath scanPath = new ScanPath(gazepointFXDPath, outputFolderPath);
-			try {
-			scanPath.runAllClimbScan();
-			// Analyze graph related data
-			fixation.processFixation(gazepointFXDPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
-			event.processEvent(gazepointGZDPath, graphEventOutput);
-			gaze.processGaze(gazepointGZDPath, graphGazeOutput);
-			modifier.createBaselineFile(gazepointGZDPath, outputFolderPath);
-
-
-			// Gaze Analytics 
-			modifier.csvToARFF(graphFixationOutput);
-			modifier.csvToARFF(graphEventOutput);
-			modifier.csvToARFF(graphGazeOutput);
-
-			//combining all result files
-			modifier.mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
-			modifier.csvToARFF(outputFolderPath + "/combineResults.csv");
-
-			// Analyze AOI data
-			AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
-			}
-			catch(Exception ex)
-			{
-				System.out.println(ex);
-			}
 		});
 		
 
 		return panel;
 
 	}
+	
+	private void analyzeData()
+	{
+		String[] paths = {getGZDPath(), getFXDPath(), getOutputPath()};
 
+		String[] modifiedData = modifier.processData(new String[] {paths[0], paths[1]}, paths[2], 1920, 1080);
+		gazepointGZDPath = modifiedData[0];
+		gazepointFXDPath = modifiedData[1];
+		outputFolderPath = paths[2];
+
+		systemLogger.createSystemLog(outputFolderPath);
+		//create the system log    
+		systemLogger.createSystemLog(outputFolderPath);
+
+		//output file paths
+		String graphFixationResults = "/graphFXDResults.csv";
+		String graphFixationOutput = outputFolderPath + graphFixationResults;
+
+		String graphEventResults = "/graphEVDResults.csv";
+		String graphEventOutput = outputFolderPath + graphEventResults;
+
+		String graphGazeResults = "/graphGZDResults.csv";
+		String graphGazeOutput = outputFolderPath + graphGazeResults;
+
+
+		String aoiResults = "/aoiResults.csv";
+		String aoiOutput = outputFolderPath + aoiResults;
+		ScanPath scanPath = new ScanPath(gazepointFXDPath, outputFolderPath);
+		try {
+			scanPath.runAllClimbScan();
+			// Analyze graph related data
+			fixation.processFixation(gazepointFXDPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+			event.processEvent(gazepointGZDPath, graphEventOutput);
+			gaze.processGaze(gazepointGZDPath, graphGazeOutput);
+			modifier.createBaselineFile(gazepointGZDPath, outputFolderPath);
 	
-	public  String getGZDPath()
-	{
-		return gazepointGZDPath;
-	}
 	
-	public  String getFXDPath()
-	{
-		return gazepointFXDPath;
-	}
+			// Gaze Analytics 
+			modifier.csvToARFF(graphFixationOutput);
+			modifier.csvToARFF(graphEventOutput);
+			modifier.csvToARFF(graphGazeOutput);
 	
-	public  String getOutputPath()
-	{
-		return outputPath;
+			//combining all result files
+			modifier.mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
+			modifier.csvToARFF(outputFolderPath + "/combineResults.csv");
+	
+			// Analyze AOI data
+			AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+		}
+		catch(Exception ex)
+		{
+			System.out.println(ex);
+		}
 	}
 	
 
@@ -277,14 +274,14 @@ public class Panels {
 	 */
 	public JPanel gazeAnalyticsOptions() throws IOException
 	{
-		String dir = "/results/" + outputPath.substring(outputPath.lastIndexOf("/") + 1) + "/inputFiles/";
+		String dir = "/results/" + outputFolderPath.substring(outputFolderPath.lastIndexOf("/") + 1) + "/inputFiles/";
 		
 		//All the gaze analytics options
 		panel.removeAll();
 		panel.revalidate();
-
+		panel.repaint();
 		//create folder to put the analysis in
-		File snapshotFolder = new File(outputPath + "/SnapshotFolder");
+		File snapshotFolder = new File(outputFolderPath + "/SnapshotFolder");
 		snapshotFolder.mkdir();
 		String outputFolder = snapshotFolder.getPath();
 		
@@ -452,7 +449,7 @@ public class Panels {
 			else if(eventAnalyticsButton.isSelected())
 			{
 				String gazepointFilePath = modifier.fileChooser("Please select your gaze file", dir);
-				String baselineFilePath = outputPath + "/baseline.csv";
+				String baselineFilePath = outputFolderPath + "/baseline.csv";
 	
 				try 
 				{
@@ -526,5 +523,19 @@ public class Panels {
 	}
 
 	
+	public  String getGZDPath()
+	{
+		return gazepointGZDPath;
+	}
+	
+	public  String getFXDPath()
+	{
+		return gazepointFXDPath;
+	}
+	
+	public  String getOutputPath()
+	{
+		return outputFolderPath;
+	}
 
 }
