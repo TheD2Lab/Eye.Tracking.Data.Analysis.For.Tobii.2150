@@ -4,16 +4,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Level;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
-
-import weka.core.Instances;
-import weka.core.converters.ArffSaver;
-import weka.core.converters.CSVLoader;
 
 /*
  * Output files based on the gaze calculations that are done
@@ -156,9 +151,9 @@ public class gazeAnalytics {
 	        		else
 	        		{
 	        			outputCSVWriter.close();
-	        			csvToARFF(outputFile);
+	        			modifier.csvToARFF(outputFile);
 	        			gaze.processGaze(outputFile, outputCalcFile);
-	        			csvToARFF(outputCalcFile);
+	        			modifier.csvToARFF(outputCalcFile);
 	        			eventStart = false;
 	        			index++;
 	        			outputFile = outputFolderPath + "/event_" + index + ".csv";
@@ -246,18 +241,18 @@ public class gazeAnalytics {
         {
         	System.out.println("done writing file: " + outputFile);
         	outputCSVWriter.close();
-        	csvToARFF(outputFile);
+        	modifier.csvToARFF(outputFile);
         	String tempFixName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_fixation.csv";
         	String tempEventName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_event.csv";
         	String tempGazeName = outputFolder +  fileName.substring(0, fileName.indexOf(".")) + "_gaze.csv";
     		fixation.processFixation(outputFile,tempFixName, 1920, 1080);
     		event.processEvent(outputFile, tempEventName);
     		gaze.processGaze(outputFile, tempGazeName);
-    		gazeAnalytics.csvToARFF(tempFixName);
-    		gazeAnalytics.csvToARFF(tempEventName);
-    		gazeAnalytics.csvToARFF(tempGazeName);
-    		main.mergingResultFiles(tempFixName, tempEventName, tempGazeName, outputFolder +  fileName.substring(0, fileName.indexOf("."))+  "_combineResults.csv");
-    		gazeAnalytics.csvToARFF( outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
+    		modifier.csvToARFF(tempFixName);
+    		modifier.csvToARFF(tempEventName);
+    		modifier.csvToARFF(tempGazeName);
+    		modifier.mergingResultFiles(tempFixName, tempEventName, tempGazeName, outputFolder +  fileName.substring(0, fileName.indexOf("."))+  "_combineResults.csv");
+    		modifier.csvToARFF( outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
         	return false;
         }
         catch(Exception e)
@@ -272,60 +267,21 @@ public class gazeAnalytics {
             csvReader.close();
         }
         
-        csvToARFF(outputFile);
+        modifier.csvToARFF(outputFile);
     	String tempFixName = outputFolder  + fileName.substring(0, fileName.indexOf(".")) + "_fixation.csv";
     	String tempEventName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_event.csv";
     	String tempGazeName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_gaze.csv";
 		fixation.processFixation(outputFile,tempFixName, 1920, 1080);
 		event.processEvent(outputFile, tempEventName);
 		gaze.processGaze(outputFile, tempGazeName);
-		gazeAnalytics.csvToARFF(tempFixName);
-		gazeAnalytics.csvToARFF(tempEventName);
-		gazeAnalytics.csvToARFF(tempGazeName);
-		main.mergingResultFiles(tempFixName, tempEventName, tempGazeName,  outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
-		gazeAnalytics.csvToARFF( outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
+		modifier.csvToARFF(tempFixName);
+		modifier.csvToARFF(tempEventName);
+		modifier.csvToARFF(tempGazeName);
+		modifier.mergingResultFiles(tempFixName, tempEventName, tempGazeName,  outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
+		modifier.csvToARFF( outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
         return true;
 	}
 	
 	
-	public static void csvToARFF(String outputCSVPath)
-	{
-		String outputARFFPath = outputCSVPath.replace(".csv", ".arff");
-
-		try 
-		{
-
-			CSVLoader loader = new CSVLoader();
-			loader.setSource(new File(outputCSVPath));
-			Instances data = loader.getDataSet();
-
-			File arffFile = new File(outputARFFPath);
-			if(!arffFile.exists())
-			{
-				ArffSaver saver = new ArffSaver();
-				saver.setInstances(data);
-				saver.setFile(arffFile);
-				saver.writeBatch();
-				System.out.println("Successfully converted CSV to ARFF " + outputARFFPath);
-				systemLogger.writeToSystemLog(Level.INFO, gazeAnalytics.class.getName(), "Successfully converted CSV to ARFF " + outputARFFPath);
-			}
-			else
-			{
-				System.out.println("File Exists");
-			}
-		}
-		catch(IOException e)
-		{
-			System.out.println("Error coverting CSV to ARFF " + outputARFFPath + "\n" + e.toString());
-			systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error coverting CSV to ARFF " + outputARFFPath + "\n" + e.toString());
-
-		}
-		catch(IllegalArgumentException ia)
-		{
-			System.out.println("Error coverting CSV to ARFF " + outputARFFPath + "\n" + ia.toString());
-			systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error coverting CSV to ARFF " + outputARFFPath + "\n" + ia.toString());
-
-		}
-	}
 	
 }

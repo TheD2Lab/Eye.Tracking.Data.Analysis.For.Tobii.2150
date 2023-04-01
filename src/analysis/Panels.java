@@ -42,10 +42,11 @@ import com.opencsv.exceptions.CsvValidationException;
 
 public class Panels {
 
-
+	final int SCREEN_WIDTH = 1920;
+	final int SCREEN_HEIGHT = 1080;
 	private  String gazepointGZDPath = "";
 	private  String gazepointFXDPath = "";
-	private  String outputPath = "";
+	private  String outputFolderPath = "";
 	private JPanel panel=new JPanel(new GridBagLayout());
 	private final BufferedImage myPicture;
 	private final JLabel image; 
@@ -76,7 +77,7 @@ public class Panels {
 		fixationTextF.setEditable(false);
 		fixationTextF.setPreferredSize(new Dimension(50, 30));
 
-		JLabel outputLabel = new JLabel("Location of output file: ");
+		JLabel outputLabel = new JLabel("Location of output file: ");  
 		JTextField outputTextF = new JTextField("Location of output file: ", 50);
 		outputTextF.setBackground(Color.WHITE);
 		JButton outputBrowseBtn = new JButton("Browse");
@@ -128,7 +129,7 @@ public class Panels {
 		panel.add(submitBtn, c);
 
 		gazeBrowseBtn.addActionListener(e -> {
-			String temp = fileChooser("Select the gaze .csv file you would like to use", "/data/");
+			String temp = modifier.fileChooser("Select the gaze .csv file you would like to use", "/data/");
 			if(!temp.equals(""))
 			{
 				gazeTextF.setText(temp);
@@ -136,7 +137,7 @@ public class Panels {
 
 		});
 		fixationBrowseBtn.addActionListener(e -> { 
-			String temp = fileChooser("Select the fixation .csv file you would like to use", "/data/");
+			String temp = modifier.fileChooser("Select the fixation .csv file you would like to use", "/data/");
 			if(!temp.equals(""))
 			{	
 				fixationTextF.setText(temp);
@@ -144,7 +145,7 @@ public class Panels {
 
 		});
 		outputBrowseBtn.addActionListener(e -> {
-			String temp = folderChooser("Choose a directory to save your file");
+			String temp = modifier.folderChooser("Choose a directory to save your file");
 			if(!temp.equals(""))
 			{	
 				outputTextF.setText(temp);
@@ -174,7 +175,7 @@ public class Panels {
 			{
 				gazepointGZDPath = gazeTextF.getText();
 				gazepointFXDPath = fixationTextF.getText();
-				outputPath = outputTextF.getText() + "/" + partTextF.getText();
+				outputFolderPath = outputTextF.getText() + "/" + partTextF.getText();
 				
 				File participantFolder = new File(outputTextF.getText() + "/" + partTextF.getText());
 
@@ -187,82 +188,81 @@ public class Panels {
 						JOptionPane.showMessageDialog(null, "Unable to create participant's folder", "Error Message", JOptionPane.ERROR_MESSAGE);
 						System.exit(0);
 					}
+					else
+					{
+						analyzeData();
+						try {
+							
+							gazeAnalyticsOptions();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+						panel.repaint();	
+					}
 
 				}
 			}
 			
-			panel.removeAll();
-			panel.repaint();			
 		});
 		
 
 		return panel;
 
 	}
-
 	
-	public  String getGZDPath()
+	private void analyzeData()
 	{
-		return gazepointGZDPath;
-	}
+		String[] paths = {getGZDPath(), getFXDPath(), getOutputPath()};
+
+		String[] modifiedData = modifier.processData(new String[] {paths[0], paths[1]}, paths[2], 1920, 1080);
+		gazepointGZDPath = modifiedData[0];
+		gazepointFXDPath = modifiedData[1];
+		outputFolderPath = paths[2];
+
+		systemLogger.createSystemLog(outputFolderPath);
+		//create the system log    
+		systemLogger.createSystemLog(outputFolderPath);
+
+		//output file paths
+		String graphFixationResults = "/graphFXDResults.csv";
+		String graphFixationOutput = outputFolderPath + graphFixationResults;
+
+		String graphEventResults = "/graphEVDResults.csv";
+		String graphEventOutput = outputFolderPath + graphEventResults;
+
+		String graphGazeResults = "/graphGZDResults.csv";
+		String graphGazeOutput = outputFolderPath + graphGazeResults;
+
+
+		String aoiResults = "/aoiResults.csv";
+		String aoiOutput = outputFolderPath + aoiResults;
+		ScanPath scanPath = new ScanPath(gazepointFXDPath, outputFolderPath);
+		try {
+			scanPath.runAllClimbScan();
+			// Analyze graph related data
+			fixation.processFixation(gazepointFXDPath, graphFixationOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
+			event.processEvent(gazepointGZDPath, graphEventOutput);
+			gaze.processGaze(gazepointGZDPath, graphGazeOutput);
+			modifier.createBaselineFile(gazepointGZDPath, outputFolderPath);
 	
-	public  String getFXDPath()
-	{
-		return gazepointFXDPath;
-	}
 	
-	public  String getOutputPath()
-	{
-		return outputPath;
-	}
-
-	/*
-	 * UI for users to select the file they want to use
-	 * 
-	 * @param	dialogTitle		title of the window
-	 * @param 	directory		directory to choose file from relative to project directory		
-	 */
-	private  String fileChooser(String dialogTitle, String directory)
-	{
-		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir")  + directory);
-
-		//ensures that only CSV files will be able to be selected
-		jfc.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
-		jfc.setDialogTitle(dialogTitle);
-		int returnValue = jfc.showOpenDialog(null);
-
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
-		{
-			File selectedFile = jfc.getSelectedFile();
-			return selectedFile.getAbsolutePath();
+			// Gaze Analytics 
+			modifier.csvToARFF(graphFixationOutput);
+			modifier.csvToARFF(graphEventOutput);
+			modifier.csvToARFF(graphGazeOutput);
+	
+			//combining all result files
+			modifier.mergingResultFiles(graphFixationOutput, graphEventOutput, graphGazeOutput, outputFolderPath + "/combineResults.csv");
+			modifier.csvToARFF(outputFolderPath + "/combineResults.csv");
+	
+			// Analyze AOI data
+			AOI.processAOIs(gazepointGZDPath, aoiOutput, SCREEN_WIDTH, SCREEN_HEIGHT);
 		}
-		return "";
-	}
-
-
-	/*
-	 * UI for users to select the folder they would want to use to place files in
-	 * 
-	 * @param	dialogTitle		title of the window
-	 */
-	private  String folderChooser(String dialogTitle)
-	{
-		//Initializes the user to a set directory
-		JFileChooser jfc = new JFileChooser(System.getProperty("user.dir") + "/results/");
-		jfc.setDialogTitle("Choose a directory to save your file: ");
-
-		//only directories can be selected
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int returnValue = jfc.showSaveDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) 
+		catch(Exception ex)
 		{
-			if (jfc.getSelectedFile().isDirectory()) 
-				return jfc.getSelectedFile().toString();
+			System.out.println(ex);
 		}
-		return "";
 	}
-
 	
 
 	/*
@@ -274,14 +274,14 @@ public class Panels {
 	 */
 	public JPanel gazeAnalyticsOptions() throws IOException
 	{
-		String dir = "/results/" + outputPath.substring(outputPath.lastIndexOf("/") + 1) + "/inputFiles/";
+		String dir = "/results/" + outputFolderPath.substring(outputFolderPath.lastIndexOf("/") + 1) + "/inputFiles/";
 		
 		//All the gaze analytics options
 		panel.removeAll();
 		panel.revalidate();
-
+		panel.repaint();
 		//create folder to put the analysis in
-		File snapshotFolder = new File(outputPath + "/SnapshotFolder");
+		File snapshotFolder = new File(outputFolderPath + "/SnapshotFolder");
 		snapshotFolder.mkdir();
 		String outputFolder = snapshotFolder.getPath();
 		
@@ -356,7 +356,7 @@ public class Panels {
 			
 			if(continuousSnapshotButton.isSelected()||cumulativeSnapshotButton.isSelected())
 			{
-				String gazepointFile = fileChooser("Please select which file you would like to parse out", dir);
+				String gazepointFile = modifier.fileChooser("Please select which file you would like to parse out", dir);
 				JTextField windowSizeInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size(seconds): ");
 				
@@ -406,7 +406,7 @@ public class Panels {
 			}
 			else if(overlappingSnapshotButton.isSelected())
 			{
-				String gazepointFile = fileChooser("Please select which file you would like to parse out", dir);
+				String gazepointFile = modifier.fileChooser("Please select which file you would like to parse out", dir);
 				JTextField windowSizeInput = new JTextField("", 5);
 				JTextField overlappingInput = new JTextField("", 5);
 				JLabel windowSizeLabel = new JLabel("Window Size(seconds): ");
@@ -448,8 +448,8 @@ public class Panels {
 			}
 			else if(eventAnalyticsButton.isSelected())
 			{
-				String gazepointFilePath = fileChooser("Please select your gaze file", dir);
-				String baselineFilePath = outputPath + "/baseline.csv";
+				String gazepointFilePath = modifier.fileChooser("Please select your gaze file", dir);
+				String baselineFilePath = outputFolderPath + "/baseline.csv";
 	
 				try 
 				{
@@ -523,5 +523,19 @@ public class Panels {
 	}
 
 	
+	public  String getGZDPath()
+	{
+		return gazepointGZDPath;
+	}
+	
+	public  String getFXDPath()
+	{
+		return gazepointFXDPath;
+	}
+	
+	public  String getOutputPath()
+	{
+		return outputFolderPath;
+	}
 
 }
