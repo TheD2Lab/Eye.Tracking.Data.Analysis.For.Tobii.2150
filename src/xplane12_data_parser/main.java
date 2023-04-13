@@ -10,33 +10,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvValidationException;
 
 public class main {
 
-	public static void main(String[] args) 
+	public static void main(String[] args) throws CsvValidationException, IOException 
 	{
-		String filePath = "C:\\Users\\kayla\\Downloads\\Data.txt";
-		String outputFilePath = "C:\\Users\\kayla\\Documents\\TestingReformatted_data.csv";
-		try 
-		{
-			FileReader fileReader = new FileReader(filePath);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			FileWriter outputFileWriter = new FileWriter(new File (outputFilePath));
-			CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
-			String line = bufferedReader.readLine();
-			while ((line = bufferedReader.readLine()) != null) 
-			{
-				String[] fields = line.split("\\|");
-				outputCSVWriter.writeNext(fields);
-			}
-			outputCSVWriter.close();
-			bufferedReader.close();
-			fileReader.close();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
+		String txtFilePath = "C:\\Users\\kayla\\Downloads\\Data (1).txt";
+		String outputFilePath = "C:\\Users\\kayla\\OneDrive\\Desktop";
+		String originalCSVFilePath = parser.txtToCSV(txtFilePath, outputFilePath);
+		String refactoredCSVFilePath = parser.parseData(originalCSVFilePath, outputFilePath);
+		
 	}
 	
 }
