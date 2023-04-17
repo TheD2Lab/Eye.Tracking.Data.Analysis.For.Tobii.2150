@@ -131,16 +131,17 @@ public class parser {
 			String[] headers = csvReader.readNext();
 			for (int i = 0; i < headers.length; i++) 
 			{
-				if(headers.equals("__lat,__deg"))
+				if(headers[i].equals("__lat,__deg"))
 				{
 					headerIndex = i;
 				}
 			}
-			int latIndex = 0; 
+			int index = 0; 
 			String[] row;
 			while ((row = csvReader.readNext()) != null) 
 			{
-				latitude[latIndex] = Double.valueOf(row[headerIndex]);
+				latitude[index] = Double.valueOf(row[headerIndex]);
+				index++;
 			}
 		}
 		catch(Exception e)
@@ -148,6 +149,77 @@ public class parser {
 			System.out.println(e);
 		}
 		return latitude;
+		
+	}
+	public static double[] getAllLongitude(String filePath) throws NumberFormatException, IOException
+	{
+		double[]longitude = new double[numOfData];
+		FileReader fileReader = new FileReader(filePath);
+		CSVReader csvReader = new CSVReader(fileReader);
+		int headerIndex = -1;
+		try 
+		{
+			String[] headers = csvReader.readNext();
+			for (int i = 0; i < headers.length; i++) 
+			{
+				if(headers[i].equals("__lon,__deg"))
+				{
+					headerIndex = i;
+				}
+			}
+			int index = 0; 
+			String[] row;
+			while ((row = csvReader.readNext()) != null) 
+			{
+				longitude[index] = Double.valueOf(row[headerIndex]);
+				index++;
+			}
+		}
+		catch(CsvValidationException ev)
+		{
+			System.out.println("Not a valid csv \n"  + ev);
+		}
+		finally
+		{
+			csvReader.close();
+		}
+		return longitude;
+		
+	}
+	
+	public static double[] getAllSpeed(String filePath) throws NumberFormatException, IOException
+	{
+		double[]speed = new double[numOfData];
+		FileReader fileReader = new FileReader(filePath);
+		CSVReader csvReader = new CSVReader(fileReader);
+		int headerIndex = -1;
+		try 
+		{
+			String[] headers = csvReader.readNext();
+			for (int i = 0; i < headers.length; i++) 
+			{
+				if(headers[i].equals("_Vind,_kias"))
+				{
+					headerIndex = i;
+				}
+			}
+			int index = 0; 
+			String[] row;
+			while ((row = csvReader.readNext()) != null) 
+			{
+				speed[index] = Double.valueOf(row[headerIndex]);
+				index++;
+			}
+		}
+		catch(CsvValidationException ev)
+		{
+			System.out.println("Not a valid csv \n"  + ev);
+		}
+		finally
+		{
+			csvReader.close();
+		}
+		return speed;
 		
 	}
 		

@@ -20,6 +20,13 @@ public class main {
 		String outputFilePath = "C:\\Users\\kayla\\OneDrive\\Desktop";
 		String originalCSVFilePath = parser.txtToCSV(txtFilePath, outputFilePath);
 		String refactoredCSVFilePath = parser.parseData(originalCSVFilePath, outputFilePath);
+		double[]lat = parser.getAllLatitude(refactoredCSVFilePath);
+		double[]lon = parser.getAllLongitude(refactoredCSVFilePath);
+		double[]speed = parser.getAllSpeed(refactoredCSVFilePath);
+		scoreCalcuations score = new scoreCalcuations();
+		System.out.println(score.getHighestScore());
+		score.scoreCalc(lat,lon,speed);
+		System.out.println(score.getTotalScore() / score.getHighestScore() * 100);
 		
 	}
 	
