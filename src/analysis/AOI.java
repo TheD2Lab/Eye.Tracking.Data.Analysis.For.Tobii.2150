@@ -96,11 +96,11 @@ public class AOI {
         	// Fixation columns
         	headers.add("Fixation Count");
         	headers.add("Total Duration");
-        	headers.add("Mean Duration");
-        	headers.add("Median Duration");
-        	headers.add("StDev of Durations");
-        	headers.add("Min Duration");
-        	headers.add("Max Duration");
+        	headers.add("mean fixation duration (ms)");
+        	headers.add("median fixation duration (ms)");
+        	headers.add("StDev of fixation durations (ms)");
+        	headers.add("Min. fixation duration (ms)");
+        	headers.add(" Max. fixation duration (ms)");
         	
         	// Saccade columns
         	headers.add("total number of saccades");
