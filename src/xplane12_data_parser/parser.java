@@ -39,7 +39,8 @@ public class parser {
 				"__mag,_comp",
 				"__lat,__deg",
 				"__lon,__deg",
-				"___CG,ftMSL"
+				"___CG,ftMSL",
+				"_vdef,_dots"
 				);
 		int[] columnIndex = new int[columnNames.size()];
 		try 
@@ -151,6 +152,39 @@ public class parser {
 		return latitude;
 		
 	}
+	
+	public static double[] getVDefDots(String filePath) throws FileNotFoundException
+	{
+		double[]vert = new double[numOfData];
+		FileReader fileReader = new FileReader(filePath);
+		CSVReader csvReader = new CSVReader(fileReader);
+		int headerIndex = -1;
+		try 
+		{
+			String[] headers = csvReader.readNext();
+			for (int i = 0; i < headers.length; i++) 
+			{
+				if(headers[i].equals("_vdef,_dots"))
+				{
+					headerIndex = i;
+				}
+			}
+			int index = 0; 
+			String[] row;
+			while ((row = csvReader.readNext()) != null) 
+			{
+				vert[index] = Double.valueOf(row[headerIndex]);
+				index++;
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		return vert;
+		
+	}
+	
 	public static double[] getAllLongitude(String filePath) throws NumberFormatException, IOException
 	{
 		double[]longitude = new double[numOfData];

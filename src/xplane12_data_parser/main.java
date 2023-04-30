@@ -16,16 +16,17 @@ public class main {
 
 	public static void main(String[] args) throws CsvValidationException, IOException 
 	{
-		String txtFilePath = "C:\\Users\\kayla\\Downloads\\Data (1).txt";
+		String txtFilePath = "C:\\Users\\kayla\\Downloads\\Data.txt";
 		String outputFilePath = "C:\\Users\\kayla\\OneDrive\\Desktop";
 		String originalCSVFilePath = parser.txtToCSV(txtFilePath, outputFilePath);
 		String refactoredCSVFilePath = parser.parseData(originalCSVFilePath, outputFilePath);
 		double[]lat = parser.getAllLatitude(refactoredCSVFilePath);
 		double[]lon = parser.getAllLongitude(refactoredCSVFilePath);
 		double[]speed = parser.getAllSpeed(refactoredCSVFilePath);
+		double[]vertDef = parser.getVDefDots(refactoredCSVFilePath);
 		scoreCalcuations score = new scoreCalcuations();
 		System.out.println(score.getHighestScore());
-		score.scoreCalc(lat,lon,speed);
+		score.scoreCalc(lat,lon,speed, vertDef);
 		System.out.println(score.getTotalScore() / score.getHighestScore() * 100);
 		
 	}
