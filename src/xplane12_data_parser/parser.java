@@ -40,8 +40,8 @@ public class parser {
 				"__lat,__deg",
 				"__lon,__deg",
 				"___CG,ftMSL",
-				"_vdef,_dots",
-				"_hdef,_dots"
+				"copN1,h-def",
+				"copN1,v-def"
 				);
 		int[] columnIndex = new int[columnNames.size()];
 		try 

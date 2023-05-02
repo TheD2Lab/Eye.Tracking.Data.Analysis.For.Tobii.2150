@@ -16,18 +16,18 @@ public class main {
 
 	public static void main(String[] args) throws CsvValidationException, IOException 
 	{
-		String txtFilePath = "C:\\Users\\kayla\\Downloads\\Data.txt";
-		String outputFilePath = "C:\\Users\\kayla\\OneDrive\\Desktop";
+		String txtFilePath = "C:\\Users\\capta\\OneDrive\\Documents\\result\\Data.txt";
+		String outputFilePath = "C:\\Users\\capta\\OneDrive\\Documents\\result";
 		String originalCSVFilePath = parser.txtToCSV(txtFilePath, outputFilePath);
 		String refactoredCSVFilePath = parser.parseData(originalCSVFilePath, outputFilePath);
-		double[]lat = parser.getData(refactoredCSVFilePath, "__lat,__deg");
-		double[]lon = parser.getData(refactoredCSVFilePath, "__lon,__deg");
+		double[]horiDef = parser.getData(refactoredCSVFilePath, "copN1,h-def");
 		double[]speed = parser.getData(refactoredCSVFilePath, "_Vind,_kias");
-		double[]vertDef = parser.getData(refactoredCSVFilePath, "_vdef,_dots");
+		double[]vertDef = parser.getData(refactoredCSVFilePath, "copN1,v-def");
 		scoreCalcuations score = new scoreCalcuations();
 		System.out.println(score.getHighestScore());
-		score.scoreCalc(lat,lon,speed, vertDef);
-		System.out.println(score.getTotalScore() / score.getHighestScore() * 100);
+		score.scoreCalc(horiDef,speed, vertDef);
+		System.out.println(score.getTotalScore() + " / " + score.getHighestScore() + ":");
+		System.out.println(score.getTotalScore() / score.getHighestScore());
 		
 	}
 	

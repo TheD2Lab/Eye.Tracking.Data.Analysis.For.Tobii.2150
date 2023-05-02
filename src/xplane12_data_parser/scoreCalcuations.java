@@ -14,88 +14,36 @@ public class scoreCalcuations {
 	private final double MAX_PTS_PER_MEASURMENT = 1;
 	public scoreCalcuations()
 	{
-		highestScore = totalScore = parser.getNumberOfData()*0.33;
-		
+		highestScore = totalScore = parser.getNumberOfData()*3;
 	}
-	
-	/*
-	 * Checks if the aircraft is exactly on the localizer line
-	 * @param double x	the latitude of the aircraft
-	 * @param double y the longitude of the aircraft
-	 * @return boolean Returns true if the aircraft is on the line
-	 */
-	private static boolean isOnLocLine(double x, double y)
-	{
-		//checks if y is within the range of y1 and y2
-		//Actual line: (y < 47.43139) ? Math.tan(89.48447*Math.PI/180)*x + 13640.326
-	    double y1 = (y < 47.43139) ? Math.tan(89.48447*Math.PI/180)*x + 13640.306 : Double.NEGATIVE_INFINITY;
-	    double y2 = (y < 47.43139) ? Math.tan(89.48447*Math.PI/180)*x + 13640.346 : Double.POSITIVE_INFINITY;
-	    double minY = Math.min(y1, y2);
-	    double maxY = Math.max(y1, y2);
-	    return y >= minY && y <= maxY;
-	}
-	
-	/*
-	 * Checks if the aircraft is 0 up to 2 degrees off left or right of the localizer line
-	 * @param double x	the latitude of the aircraft
-	 * @param double y the longitude of the aircraft
-	 * @return boolean Returns true if the aircraft is up to 2 degrees off of the line
-	 */
-	private static boolean isBetweenLocLineMinusQuarter(double x, double y)
-	{
-		//checks if y is within the range of y1 and y2
-	    double y1 = (y < 47.43139) ? Math.tan(86.48447*Math.PI/180)*x + 2038.29426 : Double.NEGATIVE_INFINITY;
-	    double y2 = (y < 47.43139) ? Math.tan(92.48447*Math.PI/180)*x - 2771.416 : Double.POSITIVE_INFINITY;
-	    double minY = Math.min(y1, y2);
-	    double maxY = Math.max(y1, y2);
-	    return y >= minY && y <= maxY;
-	}
-	
-	/*
-	 * Checks if the aircraft is 0 up to 4 degrees off left or right of the localizer line
-	 * @param double x	the latitude of the aircraft
-	 * @param double y the longitude of the aircraft
-	 * @return boolean Returns true if the aircraft is up to 4 degrees off of the line
-	 */
-	private static boolean isBetweenLocLineMinusHalf(double x, double y)
-	{
-		//checks if y is within the range of y1 and y2
-	    double y1a = (y < 47.43139) ? Math.tan(86.48447*Math.PI/180)*x + 2038.29426 : Double.NEGATIVE_INFINITY;
-	    double y1b = (y < 47.43139) ? Math.tan(83.48447*Math.PI/180)*x + 1118.33447 : Double.NEGATIVE_INFINITY;
-	    double y2a = (y < 47.43139) ? Math.tan(92.48447*Math.PI/180)*x - 2771.416 : Double.POSITIVE_INFINITY;
-	    double y2b = (y < 47.43139) ? Math.tan(95.48447*Math.PI/180)*x - 1226.40511 : Double.POSITIVE_INFINITY;
-	    double min1Y = Math.min(y1a, y1b);
-	    double min2Y = Math.min(y2a, y2b);
-	    double max1Y = Math.max(y1a, y1b);
-	    double max2Y = Math.max(y2a, y2b);
-	    return (y >= min1Y && y <= max1Y) || (y >= min2Y && y <= max2Y);
-	}
-
 	
 	/*
 	 * returns the total score penalty for the localizer portion of the ILS approach
-	 * @param double[] x	all of the latitude position of the aircraft
-	 * @param double[] y 	all of the longitude position of the aircraft
+	 * @param double[] horizontalDef is all of the localizer position of the aircraft
 	 * @return double Returns the total penalty
 	 */
-	private double locScorePenalty(double[]x, double[]y)
+	private double locScorePenalty(double[]horizontalDef)
 	{
 		double penalty = 0;
-		for(int i=0; i<x.length; i++)
+		for(int i=0; i<horizontalDef.length; i++)
 		{
-			if(isOnLocLine(x[i], y[i]))
+			if(Math.abs(horizontalDef[i]) < 0.1)
 			{
 				continue;
 			}
-			else if(isBetweenLocLineMinusQuarter(x[i], y[i]))
+			else if(Math.abs(horizontalDef[i]) <= 0.5) //2 degree
 			{
 				penalty += 0.25 * MAX_PTS_PER_MEASURMENT;
 			}
-			else if(isBetweenLocLineMinusHalf(x[i], y[i]))
+			else if(Math.abs(horizontalDef[i]) <= 1) //4 degree
 			{
 				penalty += 0.50 * MAX_PTS_PER_MEASURMENT;
 			}
-			else
+			else if(Math.abs(horizontalDef[i]) <= 1.5) //6 degree
+			{
+				penalty += 0.75 * MAX_PTS_PER_MEASURMENT;
+			}
+			else if(Math.abs(horizontalDef[i]) > 1.5)
 			{
 				penalty += MAX_PTS_PER_MEASURMENT;
 			}
@@ -103,28 +51,33 @@ public class scoreCalcuations {
 		return penalty;
 	}
 	
+	/*
+	 * returns the total score penalty for the glideslope portion of the ILS approach
+	 * @param double[] verticalDef is all of the vertical position of the aircraft
+	 * @return double Returns the total penalty
+	 */
 	private double glideSlopeScorePenalty(double[]verticalDef)
 	{
 		double penalty = 0;
 		for(int i=0; i<verticalDef.length; i++)
 		{
-			if(verticalDef[i] < 0.1)
+			if(Math.abs(verticalDef[i]) < 0.1)
 			{
 				continue;
 			}
-			else if(verticalDef[i] <= 0.5) //2 degree
+			else if(Math.abs(verticalDef[i]) <= 0.5) //2 degree
 			{
 				penalty += 0.25 * MAX_PTS_PER_MEASURMENT;
 			}
-			else if(verticalDef[i] <= 1) //4 degree
+			else if(Math.abs(verticalDef[i]) <= 1) //4 degree
 			{
 				penalty += 0.50 * MAX_PTS_PER_MEASURMENT;
 			}
-			else if(verticalDef[i] <= 1.5) //6 degree
+			else if(Math.abs(verticalDef[i]) <= 1.5) //6 degree
 			{
 				penalty += 0.75 * MAX_PTS_PER_MEASURMENT;
 			}
-			else if(verticalDef[i] > 1.5)
+			else if(Math.abs(verticalDef[i]) > 1.5)
 			{
 				penalty += MAX_PTS_PER_MEASURMENT;
 			}
@@ -142,15 +95,15 @@ public class scoreCalcuations {
 		double penalty = 0;
 		for(double speed: speeds)
 		{
-			if(speed >89 && speed < 91)
+			if(89 < speed && speed < 91)
 			{
 				continue;
 			}
-			else if(speed >80 && speed < 100)
+			else if(80 < speed && speed < 100)
 			{
 				penalty += 0.25 * MAX_PTS_PER_MEASURMENT;
 			}
-			else if(speed >75 && speed < 105)
+			else if(75 < speed && speed < 105)
 			{
 				penalty += 0.50 * MAX_PTS_PER_MEASURMENT;
 			}
@@ -164,33 +117,32 @@ public class scoreCalcuations {
 	
 	/*
 	 * returns the total penalty for the ILS approach
-	 * @param double[] x	all of the latitude position of the aircraft
-	 * @param double[] y 	all of the longitude position of the aircraft
-	 * @param double[]speed The speed of the aircraft during the ILS approach
+	 * @param double[] horiDef all of the localizer position of the aircraft
+	 * @param double[] speed The speed of the aircraft during the ILS approach
+	 * @param double[] vertDef all of the glideslope position of the aircraft
 	 * @return double Returns the total penalty
 	 */
-	public double scoreILSCalc(double[]x, double[]y, double[]speed, double[]vertDef)
+	public double scoreILSCalc(double[]horiDef, double[]speed, double[]vertDef)
 	{	
-		double lateralPen = locScorePenalty(x,y);
+		double lateralPen = locScorePenalty(horiDef);
 		double speedPen = speedILSCalcPenalty(speed);
 		double glideSlopePen = glideSlopeScorePenalty(vertDef);
-		System.out.println("Speed Calc Penalty" + speedPen);
-		System.out.println("Lateral Calc Penalty" + lateralPen);
-		System.out.println("Glide Slope Penalty" + vertDef);
+		System.out.println("Speed Calc Penalty: " + speedPen);
+		System.out.println("Lateral Calc Penalty: " + lateralPen);
+		System.out.println("Glide Slope Penalty: " + glideSlopePen);
 		
 		return lateralPen + speedPen + glideSlopePen;
 	}
 	
 	/*
 	 * returns the total penalty for the approach and landing
-	 * @param double[] x	all of the latitude position of the aircraft
-	 * @param double[] y 	all of the longitude position of the aircraft
+	 * @param double[] horiDef all of the localizer position of the aircraft
 	 * @param double[]speed The speed of the aircraft during the ILS approach
 	 * @return double Returns the total penalty
 	 */
-	public void scoreCalc(double[]x, double[]y, double[]speed, double[]vertDef)
+	public void scoreCalc(double[]horiDef, double[]speed, double[]vertDef)
 	{
-		totalScore -= scoreILSCalc(x,y,speed, vertDef);
+		totalScore -= scoreILSCalc(horiDef,speed, vertDef);
 	}
 	
 	public double getHighestScore() {
