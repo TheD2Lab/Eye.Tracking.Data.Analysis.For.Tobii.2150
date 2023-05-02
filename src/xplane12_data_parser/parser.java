@@ -40,7 +40,8 @@ public class parser {
 				"__lat,__deg",
 				"__lon,__deg",
 				"___CG,ftMSL",
-				"_vdef,_dots"
+				"_vdef,_dots",
+				"_hdef,_dots"
 				);
 		int[] columnIndex = new int[columnNames.size()];
 		try 
@@ -121,9 +122,11 @@ public class parser {
 		parser.numOfData = numberOfData;
 	}
 	
-	public static double[] getAllLatitude(String filePath) throws FileNotFoundException
+	
+	
+	public static double[]getData(String filePath, String dataHeader) throws FileNotFoundException
 	{
-		double[]latitude = new double[numOfData];
+		double[]data = new double[numOfData];
 		FileReader fileReader = new FileReader(filePath);
 		CSVReader csvReader = new CSVReader(fileReader);
 		int headerIndex = -1;
@@ -132,7 +135,7 @@ public class parser {
 			String[] headers = csvReader.readNext();
 			for (int i = 0; i < headers.length; i++) 
 			{
-				if(headers[i].equals("__lat,__deg"))
+				if(headers[i].equals(dataHeader))
 				{
 					headerIndex = i;
 				}
@@ -141,7 +144,7 @@ public class parser {
 			String[] row;
 			while ((row = csvReader.readNext()) != null) 
 			{
-				latitude[index] = Double.valueOf(row[headerIndex]);
+				data[index] = Double.valueOf(row[headerIndex]);
 				index++;
 			}
 		}
@@ -149,112 +152,9 @@ public class parser {
 		{
 			System.out.println(e);
 		}
-		return latitude;
-		
+		return data;
 	}
 	
-	public static double[] getVDefDots(String filePath) throws FileNotFoundException
-	{
-		double[]vert = new double[numOfData];
-		FileReader fileReader = new FileReader(filePath);
-		CSVReader csvReader = new CSVReader(fileReader);
-		int headerIndex = -1;
-		try 
-		{
-			String[] headers = csvReader.readNext();
-			for (int i = 0; i < headers.length; i++) 
-			{
-				if(headers[i].equals("_vdef,_dots"))
-				{
-					headerIndex = i;
-				}
-			}
-			int index = 0; 
-			String[] row;
-			while ((row = csvReader.readNext()) != null) 
-			{
-				vert[index] = Double.valueOf(row[headerIndex]);
-				index++;
-			}
-		}
-		catch(Exception e)
-		{
-			System.out.println(e);
-		}
-		return vert;
-		
-	}
-	
-	public static double[] getAllLongitude(String filePath) throws NumberFormatException, IOException
-	{
-		double[]longitude = new double[numOfData];
-		FileReader fileReader = new FileReader(filePath);
-		CSVReader csvReader = new CSVReader(fileReader);
-		int headerIndex = -1;
-		try 
-		{
-			String[] headers = csvReader.readNext();
-			for (int i = 0; i < headers.length; i++) 
-			{
-				if(headers[i].equals("__lon,__deg"))
-				{
-					headerIndex = i;
-				}
-			}
-			int index = 0; 
-			String[] row;
-			while ((row = csvReader.readNext()) != null) 
-			{
-				longitude[index] = Double.valueOf(row[headerIndex]);
-				index++;
-			}
-		}
-		catch(CsvValidationException ev)
-		{
-			System.out.println("Not a valid csv \n"  + ev);
-		}
-		finally
-		{
-			csvReader.close();
-		}
-		return longitude;
-		
-	}
-	
-	public static double[] getAllSpeed(String filePath) throws NumberFormatException, IOException
-	{
-		double[]speed = new double[numOfData];
-		FileReader fileReader = new FileReader(filePath);
-		CSVReader csvReader = new CSVReader(fileReader);
-		int headerIndex = -1;
-		try 
-		{
-			String[] headers = csvReader.readNext();
-			for (int i = 0; i < headers.length; i++) 
-			{
-				if(headers[i].equals("_Vind,_kias"))
-				{
-					headerIndex = i;
-				}
-			}
-			int index = 0; 
-			String[] row;
-			while ((row = csvReader.readNext()) != null) 
-			{
-				speed[index] = Double.valueOf(row[headerIndex]);
-				index++;
-			}
-		}
-		catch(CsvValidationException ev)
-		{
-			System.out.println("Not a valid csv \n"  + ev);
-		}
-		finally
-		{
-			csvReader.close();
-		}
-		return speed;
-		
-	}
+
 		
 }
