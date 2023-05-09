@@ -190,7 +190,7 @@ public class Panels {
 					}
 					else
 					{
-						analyzeData();
+						analyzeData(getGZDPath(), getFXDPath(), getOutputPath());
 						try {
 							
 							gazeAnalyticsOptions();
@@ -210,9 +210,9 @@ public class Panels {
 
 	}
 	
-	private void analyzeData()
+	public void analyzeData(String gzdPath, String fxdPath, String outputPath)
 	{
-		String[] paths = {getGZDPath(), getFXDPath(), getOutputPath()};
+		String[] paths = {gzdPath, fxdPath, outputPath};
 
 		String[] modifiedData = modifier.processData(new String[] {paths[0], paths[1]}, paths[2], 1920, 1080);
 		gazepointGZDPath = modifiedData[0];
