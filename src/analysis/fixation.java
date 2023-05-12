@@ -117,19 +117,19 @@ public class fixation {
             headers.add("sum of all fixation duration");
             data.add(String.valueOf(descriptiveStats.getSumOfDoubles(allFixationDurations)));
 
-            headers.add("mean duration");
+            headers.add("mean fixation duration (ms)");
             data.add(String.valueOf(descriptiveStats.getMeanOfDoubles(allFixationDurations)));
 
-            headers.add("median duration");
+            headers.add("median fixation duration (ms)");
             data.add(String.valueOf(descriptiveStats.getMedianOfDoubles(allFixationDurations)));
 
-            headers.add("StDev of durations");
+            headers.add(" StDev of fixation durations (ms)");
             data.add(String.valueOf(descriptiveStats.getStDevOfDoubles(allFixationDurations)));
 
-            headers.add("Min. duration");
+            headers.add("Min. fixation duration (ms)");
             data.add(String.valueOf(descriptiveStats.getMinOfDoubles(allFixationDurations)));
 
-            headers.add("Max. duration");
+            headers.add("Max. fixation duration (ms)");
             data.add(String.valueOf(descriptiveStats.getMaxOfDoubles(allFixationDurations)));
 
             Double[] allSaccadeLengths = saccade.getAllSaccadeLength(allCoordinates);
@@ -239,8 +239,8 @@ public class fixation {
             headers.add("convex hull area");
             data.add(String.valueOf(convexHull.getPolygonArea(points)));
             
-            headers.add("Average Saccade Velocity");
-            data.add(avgSaccadeVelocity(inputFile, outputFile));
+            headers.add("Average Peak Saccade Velocity");
+            data.add(avgPeakSaccadeVelocity(inputFile, outputFile));
             
             headers.add("Average Blink Rate per Minute");
             data.add(blinkRate(inputFile));
@@ -306,7 +306,7 @@ public class fixation {
 		return count + "";
 	}
 	
-	public static String avgSaccadeVelocity(String inputFile, String outputFile) throws IOException 
+	public static String avgPeakSaccadeVelocity(String inputFile, String outputFile) throws IOException 
 	{
 		File file = new File(inputFile);
 		FileReader fileReader = new FileReader(file);
@@ -317,7 +317,7 @@ public class fixation {
 		
 		// Locate the saccade velocity index
 		String[] headers = iter.next();
-		int sacVel = Arrays.asList(headers).indexOf("SACCADE_VEL");
+		int sacVel = Arrays.asList(headers).indexOf("SACCADE_PV");
 				
 		while (iter.hasNext())
 		{

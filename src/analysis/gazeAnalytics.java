@@ -4,34 +4,28 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Level;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
-import weka.core.Instances;
-import weka.core.converters.ArffSaver;
-import weka.core.converters.CSVLoader;
-
 /*
  * Output files based on the gaze calculations that are done
  */
 public class gazeAnalytics {
 
-	public static void continuousWindow(String inputFile, String outputFolder, int windowSize)
+	public static void continuousWindow(String inputFile, String outputFolder, int windowSize) throws CsvValidationException
 	{
-		
 		int endTime = windowSize;
 		int initialTime = 0;
-		String outputFile = outputFolder + "/continuous_" + endTime + ".csv";
+		String outputFile = "/continuous_" + endTime + ".csv";
 		try {
-			while(snapshot(inputFile,outputFile,initialTime,endTime))
+			while(snapshot(inputFile,outputFile, outputFolder, initialTime,endTime))
 			{
 				initialTime += windowSize;
 				endTime += windowSize;
-				outputFile = outputFolder + "/continuous_" + endTime + ".csv";
+				outputFile = "/continuous_" + endTime + ".csv";
 			}
 		} 
 		catch (IOException e) 
@@ -41,17 +35,17 @@ public class gazeAnalytics {
 
 	}
 	
-	public static void cumulativeWindow(String inputFile, String outputFolder, int windowSize)
+	public static void cumulativeWindow(String inputFile, String outputFolder, int windowSize) throws CsvValidationException
 	{
 		int endTime = windowSize;
 		int initialTime = 0;
-		String outputFile = outputFolder + "/cumulative_" + endTime + ".csv";
+		String outputFile = "/cumulative_" + endTime + ".csv";
 		try 
 		{
-			while(snapshot(inputFile,outputFile,initialTime,endTime))
+			while(snapshot(inputFile,outputFile,outputFolder,initialTime,endTime))
 			{
 				endTime += windowSize;
-				outputFile = outputFolder + "/cumulative_" + endTime + ".csv";
+				outputFile = "/cumulative_" + endTime + ".csv";
 			}
 		} 
 		catch (IOException e) 
@@ -60,17 +54,17 @@ public class gazeAnalytics {
 		}
 	}
 	
-	public static void overlappingWindow(String inputFile, String outputFolder, int windowSize, int overlap)
+	public static void overlappingWindow(String inputFile, String outputFolder, int windowSize, int overlap) throws CsvValidationException
 	{
 		int endTime = windowSize;
 		int initialTime = 0;
 		String outputFile = outputFolder + "/overlap_" + endTime + ".csv";
 		try {
-			while(snapshot(inputFile,outputFile,initialTime,endTime))
+			while(snapshot(inputFile,outputFile,outputFolder,initialTime,endTime))
 			{
 				initialTime = endTime - overlap;
 				endTime += windowSize;
-				outputFile = outputFolder + "/overlap_" + endTime + ".csv";
+				outputFile = "/overlap_" + endTime + ".csv";
 				
 			}
 		} 
@@ -157,9 +151,9 @@ public class gazeAnalytics {
 	        		else
 	        		{
 	        			outputCSVWriter.close();
-	        			csvToARFF(outputFile);
+	        			modifier.csvToARFF(outputFile);
 	        			gaze.processGaze(outputFile, outputCalcFile);
-	        			csvToARFF(outputCalcFile);
+	        			modifier.csvToARFF(outputCalcFile);
 	        			eventStart = false;
 	        			index++;
 	        			outputFile = outputFolderPath + "/event_" + index + ".csv";
@@ -196,8 +190,9 @@ public class gazeAnalytics {
 
 	}
 	
-	private static boolean snapshot(String inputFile, String outputFile, int start, int end) throws IOException
+	private static boolean snapshot(String inputFile, String fileName, String outputFolder, int start, int end) throws IOException, CsvValidationException
 	{
+		String outputFile = outputFolder + fileName;
 		FileWriter outputFileWriter = new FileWriter(new File (outputFile));
         CSVWriter outputCSVWriter = new CSVWriter(outputFileWriter);
         FileReader fileReader = new FileReader(inputFile);
@@ -246,7 +241,18 @@ public class gazeAnalytics {
         {
         	System.out.println("done writing file: " + outputFile);
         	outputCSVWriter.close();
-        	csvToARFF(outputFile);
+        	modifier.csvToARFF(outputFile);
+        	String tempFixName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_fixation.csv";
+        	String tempEventName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_event.csv";
+        	String tempGazeName = outputFolder +  fileName.substring(0, fileName.indexOf(".")) + "_gaze.csv";
+    		fixation.processFixation(outputFile,tempFixName, 1920, 1080);
+    		event.processEvent(outputFile, tempEventName);
+    		gaze.processGaze(outputFile, tempGazeName);
+    		modifier.csvToARFF(tempFixName);
+    		modifier.csvToARFF(tempEventName);
+    		modifier.csvToARFF(tempGazeName);
+    		modifier.mergingResultFiles(tempFixName, tempEventName, tempGazeName, outputFolder +  fileName.substring(0, fileName.indexOf("."))+  "_combineResults.csv");
+    		modifier.csvToARFF( outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
         	return false;
         }
         catch(Exception e)
@@ -261,49 +267,21 @@ public class gazeAnalytics {
             csvReader.close();
         }
         
-        csvToARFF(outputFile);
+        modifier.csvToARFF(outputFile);
+    	String tempFixName = outputFolder  + fileName.substring(0, fileName.indexOf(".")) + "_fixation.csv";
+    	String tempEventName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_event.csv";
+    	String tempGazeName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_gaze.csv";
+		fixation.processFixation(outputFile,tempFixName, 1920, 1080);
+		event.processEvent(outputFile, tempEventName);
+		gaze.processGaze(outputFile, tempGazeName);
+		modifier.csvToARFF(tempFixName);
+		modifier.csvToARFF(tempEventName);
+		modifier.csvToARFF(tempGazeName);
+		modifier.mergingResultFiles(tempFixName, tempEventName, tempGazeName,  outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
+		modifier.csvToARFF( outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
         return true;
 	}
 	
 	
-	public static void csvToARFF(String outputCSVPath)
-	{
-		String outputARFFPath = outputCSVPath.replace(".csv", ".arff");
-
-		try 
-		{
-
-			CSVLoader loader = new CSVLoader();
-			loader.setSource(new File(outputCSVPath));
-			Instances data = loader.getDataSet();
-
-			File arffFile = new File(outputARFFPath);
-			if(!arffFile.exists())
-			{
-				ArffSaver saver = new ArffSaver();
-				saver.setInstances(data);
-				saver.setFile(arffFile);
-				saver.writeBatch();
-				System.out.println("Successfully converted CSV to ARFF " + outputARFFPath);
-				systemLogger.writeToSystemLog(Level.INFO, gazeAnalytics.class.getName(), "Successfully converted CSV to ARFF " + outputARFFPath);
-			}
-			else
-			{
-				System.out.println("File Exists");
-			}
-		}
-		catch(IOException e)
-		{
-			System.out.println("Error coverting CSV to ARFF " + outputARFFPath + "\n" + e.toString());
-			systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error coverting CSV to ARFF " + outputARFFPath + "\n" + e.toString());
-
-		}
-		catch(IllegalArgumentException ia)
-		{
-			System.out.println("Error coverting CSV to ARFF " + outputARFFPath + "\n" + ia.toString());
-			systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error coverting CSV to ARFF " + outputARFFPath + "\n" + ia.toString());
-
-		}
-	}
 	
 }
