@@ -30,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -77,7 +78,7 @@ public class Panels {
 		fixationTextF.setEditable(false);
 		fixationTextF.setPreferredSize(new Dimension(50, 30));
 
-		JLabel outputLabel = new JLabel("Location of output file: ");  
+		JLabel outputLabel = new JLabel("LocaAtion of output file: ");  
 		JTextField outputTextF = new JTextField("Location of output file: ", 50);
 		outputTextF.setBackground(Color.WHITE);
 		JButton outputBrowseBtn = new JButton("Browse");

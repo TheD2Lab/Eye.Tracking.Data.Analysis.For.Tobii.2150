@@ -25,13 +25,11 @@ public class main {
 		//JTabbedPane tp=new JTabbedPane();  
 		JFileChooser chooser = new JFileChooser();
 		HashMap<String, String>partInfo = new HashMap<>();
-		File[]files;
-		do{
+
 		chooser.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
 		chooser.setMultiSelectionEnabled(true);
+		do {
 		int returnValue = chooser.showOpenDialog(frame);
-		files = chooser.getSelectedFiles();
-
 		if (returnValue != JFileChooser.APPROVE_OPTION) 
 		{
 			JOptionPane.showMessageDialog(null, "Must pick a file", "Error Message", JOptionPane.ERROR_MESSAGE);
@@ -39,7 +37,7 @@ public class main {
 		}
 		
 		
-		}while(!validation(files,partInfo));
+		}while(!validation(chooser.getSelectedFiles(),partInfo));
 		
 		
 		String outputLocation = analysis.modifier.folderChooser("Please choose the location where you would like your files to reside in");

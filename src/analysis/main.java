@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
@@ -58,10 +59,15 @@ public class main
 		JPanel acquirePathsPanel=new JPanel();
 		acquirePathsPanel = pages.acquirePathsPage();
 		JPanel p2=new JPanel();  
-		JPanel helpPgPanel =new JPanel();  
+		JPanel helpPgPanel =new JPanel(); 
+		JPanel bulkPage = new JPanel();
+		bulkPage = bulkAnalytics.bulkAnalyticsUI();
+
+		
+		
 		JTabbedPane tp=new JTabbedPane();  
 		
-		JTextArea ta=new JTextArea(200,150);
+		JTextArea ta=new JTextArea(200,400);
 		ta.setFont(new Font("Verdana", Font.PLAIN, 15));
 		ta.setAutoscrolls(false);
 		ta.setMargin(new Insets(20,900,20,20) );
@@ -77,7 +83,7 @@ public class main
 		tp.setBounds(50,50,200,200);  
 		tp.add("Data Analysis Page",acquirePathsPanel);  
 		tp.add("Machine Learning",p2);  
-		tp.add("Help",helpPgPanel);    
+		tp.add("Help",bulkPage);    
 
 		mainFrame.add(tp);    
 		mainFrame.setVisible(true);
