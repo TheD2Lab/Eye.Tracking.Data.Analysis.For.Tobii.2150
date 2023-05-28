@@ -2,8 +2,10 @@ package analysis;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,6 +13,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -20,35 +24,40 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class bulkAnalytics {
+public class BatchAnalytics {
 	private static final String GZD_SUFFIX = "all_gaze.csv";
 	private static final String FXD_SUFFIX = "fixations.csv";
 
 	/*
-	 * UI for bulk anaylsis
+	 * UI for 
 	 */
-	public static JPanel bulkAnalyticsUI() throws IOException
+	public static JPanel batchAnalyticsUI() throws IOException
 	{
 		JPanel panel = new JPanel();
+		
+		BufferedImage myPicture = ImageIO.read(new File("data/d2logo.jpg"));
+		JLabel image = new JLabel(new ImageIcon(myPicture));
+		
+		JPanel bulkPanel = new JPanel(new FlowLayout());
 		JLabel gazeLabel = new JLabel("Please select all participant files: ");
 		JTextField gazeTextF = new JTextField("Location of files: ", 50);
 		JButton gazeBrowseBtn = new JButton("Browse");
+		bulkPanel.add(gazeLabel);
+		bulkPanel.add(gazeTextF);
+		bulkPanel.add(gazeBrowseBtn);
+		
 		gazeTextF.setBackground(Color.WHITE);
 		gazeTextF.setEditable(false);
 		gazeTextF.setPreferredSize(new Dimension(50, 30));
 		
 		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;//set the x location of the grid for the next component
-		c.gridy = 0;//set the y location of the grid for the next component
-		panel.add(gazeLabel,c);
+		c.gridx = 0;
+		c.gridy = 0;
+		panel.add(image,c);
 		
-		c.gridx = 1;
+		c.gridy = 1;
 		c.insets = new  Insets(10, 15, 15, 0);
-		panel.add(gazeTextF,c);
-
-		c.gridx = 2;//change the y location
-		panel.add(gazeBrowseBtn,c);
-		
+		panel.add(bulkPanel,c);
 		
 		JFrame frame = new JFrame("");
 		JFileChooser chooser = new JFileChooser();
@@ -68,8 +77,15 @@ public class bulkAnalytics {
 			}while(!validation(chooser.getSelectedFiles(),partInfo));
 		});
 		
-		panel.add(gazeLabel);
-		panel.add(gazeBrowseBtn);
+		String outputLocation = analysis.modifier.folderChooser("Please choose the location where you would like your files to reside in");
+		if(!modifier.createFolders(outputLocation, partInfo))
+		{
+			JOptionPane.showMessageDialog(null, "Error in creating files. Please see error log for more details", "Error Message", JOptionPane.ERROR_MESSAGE);
+			System.exit(0);
+		}
+		
+		runAnalysis(outputLocation,partInfo );
+
 		return panel;
 	}
 	
@@ -124,4 +140,17 @@ public class bulkAnalytics {
 		
 	}
 
+	private static void runAnalysis(String outputLocation, HashMap<String,String>partInfo) throws IOException
+	{
+		for(String name: partInfo.keySet())
+		{
+			String currentPartFolderName = outputLocation + "/" + name;
+			String gzdPath = partInfo.get(name) + "/" + name + "_" + GZD_SUFFIX;
+			String fxdPath = partInfo.get(name) + "/" + name + "_" + FXD_SUFFIX;
+			
+			Panels panels = new Panels();
+			panels.analyzeData(gzdPath, fxdPath, currentPartFolderName);
+			
+		}
+	}
 }

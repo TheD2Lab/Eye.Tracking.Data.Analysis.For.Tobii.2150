@@ -61,7 +61,7 @@ public class main
 		JPanel p2=new JPanel();  
 		JPanel helpPgPanel =new JPanel(); 
 		JPanel bulkPage = new JPanel();
-		bulkPage = bulkAnalytics.bulkAnalyticsUI();
+		bulkPage = BatchAnalytics.batchAnalyticsUI();
 
 		
 		

@@ -403,4 +403,35 @@ public class modifier {
 	}
 
 
+	/*
+	 * create multiple folders within the chosen location
+	 * 
+	 * @param	outLocation	where the folders will reside
+	 * @param	partInfo All the folder names in which it will be named after
+	 * @return	returns true if the folders are successfully created, false otherwise
+	 */
+	public static boolean createFolders(String outputLocation, HashMap<String, String>names)
+	{
+		String message = "";
+		for(String name: names.keySet())
+		{
+			File folder = new File(outputLocation + "/" + name);
+			
+			// Create a folder to store the input files if it doesn't already exist
+			if(!folder.exists()) {
+				boolean folderCreated = folder.mkdir();
+				if(!folderCreated)
+				{
+					message += name + ": Unable to create modified data files folder.";
+					return false;
+				}
+			}
+		}
+		
+		if(!message.equals(""))
+		{
+			return false;
+		}
+		return true;		
+	}
 }
