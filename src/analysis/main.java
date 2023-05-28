@@ -53,6 +53,7 @@ public class main
 		int screenHeight = (int)size.getHeight();
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setSize(screenWidth, screenHeight);
+		Panels.setUp();
 		
 		//tabbed pages
 		Panels pages = new Panels();
@@ -61,7 +62,7 @@ public class main
 		JPanel p2=new JPanel();  
 		JPanel helpPgPanel =new JPanel(); 
 		JPanel bulkPage = new JPanel();
-		bulkPage = BatchAnalytics.batchAnalyticsUI();
+		bulkPage = BatchAnalytics.batchAnalyticsPage();
 
 		
 		

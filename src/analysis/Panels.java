@@ -43,23 +43,24 @@ import com.opencsv.exceptions.CsvValidationException;
 
 public class Panels {
 
-	final int SCREEN_WIDTH = 1920;
-	final int SCREEN_HEIGHT = 1080;
-	private  String gazepointGZDPath = "";
-	private  String gazepointFXDPath = "";
-	private  String outputFolderPath = "";
-	private JPanel panel=new JPanel(new GridBagLayout());
-	private final BufferedImage myPicture;
-	private final JLabel image; 
+	final static int SCREEN_WIDTH = 1920;
+	final static int SCREEN_HEIGHT = 1080;
+	private static JPanel panel=new JPanel(new GridBagLayout());
+	private  static String gazepointGZDPath = "";
+	private  static String gazepointFXDPath = "";
+	private  static String outputFolderPath = "";
+	private static BufferedImage myPicture;
+	private static JLabel image;
 	
-	public Panels() throws IOException
+	public static void setUp() throws IOException
 	{
-		myPicture = ImageIO.read(new File("data/d2logo.jpg"));
-		image = new JLabel(new ImageIcon(myPicture));
+		 myPicture = ImageIO.read(new File("data/d2logo.jpg")); 
+		 image = new JLabel(new ImageIcon(myPicture));
 	}
-	public  JPanel acquirePathsPage() throws IOException
+	
+	public static JPanel acquirePathsPage() throws IOException
 	{	
-		
+
 
 		JLabel title = new JLabel("D\u00B2 Lab Eye Tracking Data Analysis Tool");
 		title.setFont(new Font("Verdana", Font.PLAIN, 30));
@@ -104,7 +105,7 @@ public class Panels {
 		c.insets = new  Insets(10, 15, 15, 0);
 		panel.add(title,c);
 
-		c.gridy = 2;//change the y lo cation
+		c.gridy = 2;//change the y location
 		panel.add(gazeTextF,c);
 		c.gridx = 1;
 		panel.add(gazeBrowseBtn,c);
@@ -191,7 +192,7 @@ public class Panels {
 					}
 					else
 					{
-						analyzeData(getGZDPath(), getFXDPath(), getOutputPath());
+						analyzeData(gazepointGZDPath, gazepointFXDPath, outputFolderPath);
 						try {
 							
 							gazeAnalyticsOptions();
@@ -211,7 +212,7 @@ public class Panels {
 
 	}
 	
-	public void analyzeData(String gzdPath, String fxdPath, String outputPath)
+	public static void analyzeData(String gzdPath, String fxdPath, String outputPath)
 	{
 		String[] paths = {gzdPath, fxdPath, outputPath};
 
@@ -273,7 +274,7 @@ public class Panels {
 	 * @param	p				the panel the UI will be placed on
 	 * @param	outputfolder	the folder path where all the files will be placed in
 	 */
-	public JPanel gazeAnalyticsOptions() throws IOException
+	public static JPanel gazeAnalyticsOptions() throws IOException
 	{
 		String dir = "/results/" + outputFolderPath.substring(outputFolderPath.lastIndexOf("/") + 1) + "/inputFiles/";
 		
@@ -524,19 +525,6 @@ public class Panels {
 	}
 
 	
-	public  String getGZDPath()
-	{
-		return gazepointGZDPath;
-	}
-	
-	public  String getFXDPath()
-	{
-		return gazepointFXDPath;
-	}
-	
-	public  String getOutputPath()
-	{
-		return outputFolderPath;
-	}
+
 
 }

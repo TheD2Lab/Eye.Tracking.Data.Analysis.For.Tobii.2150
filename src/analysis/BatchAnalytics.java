@@ -29,9 +29,9 @@ public class BatchAnalytics {
 	private static final String FXD_SUFFIX = "fixations.csv";
 
 	/*
-	 * UI for 
+	 * UI for batch processing
 	 */
-	public static JPanel batchAnalyticsUI() throws IOException
+	public static JPanel batchAnalyticsPage() throws IOException
 	{
 		JPanel panel = new JPanel();
 		
@@ -148,8 +148,7 @@ public class BatchAnalytics {
 			String gzdPath = partInfo.get(name) + "/" + name + "_" + GZD_SUFFIX;
 			String fxdPath = partInfo.get(name) + "/" + name + "_" + FXD_SUFFIX;
 			
-			Panels panels = new Panels();
-			panels.analyzeData(gzdPath, fxdPath, currentPartFolderName);
+			Panels.analyzeData(gzdPath, fxdPath, currentPartFolderName);
 			
 		}
 	}
