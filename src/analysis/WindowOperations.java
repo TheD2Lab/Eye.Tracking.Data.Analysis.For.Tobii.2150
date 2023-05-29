@@ -13,7 +13,7 @@ import com.opencsv.exceptions.CsvValidationException;
 /*
  * Output files based on the gaze calculations that are done
  */
-public class gazeAnalytics {
+public class WindowOperations {
 
 	public static void continuousWindow(String inputFile, String outputFolder, int windowSize) throws CsvValidationException
 	{
@@ -30,7 +30,7 @@ public class gazeAnalytics {
 		} 
 		catch (IOException e) 
 		{
-			 systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error with continuous window output " + outputFile + "\n" + e.toString());
+			 systemLogger.writeToSystemLog(Level.WARNING, WindowOperations.class.getName(), "Error with continuous window output " + outputFile + "\n" + e.toString());
 		}
 
 	}
@@ -50,7 +50,7 @@ public class gazeAnalytics {
 		} 
 		catch (IOException e) 
 		{
-			 systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error with cumulative window output " + outputFile + "\n" + e.toString());
+			 systemLogger.writeToSystemLog(Level.WARNING, WindowOperations.class.getName(), "Error with cumulative window output " + outputFile + "\n" + e.toString());
 		}
 	}
 	
@@ -70,7 +70,7 @@ public class gazeAnalytics {
 		} 
 		catch (IOException e) 
 		{
-			 systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error with overlapping window output " + outputFile + "\n" + e.toString());
+			 systemLogger.writeToSystemLog(Level.WARNING, WindowOperations.class.getName(), "Error with overlapping window output " + outputFile + "\n" + e.toString());
 		}
 	}
 	
@@ -103,7 +103,7 @@ public class gazeAnalytics {
         }
         catch (Exception e)
         {
-    		systemLogger.writeToSystemLog(Level.SEVERE, gazeAnalytics.class.getName(), "Error with event window baseline reading " + outputFile + "\n" + e.toString());
+    		systemLogger.writeToSystemLog(Level.SEVERE, WindowOperations.class.getName(), "Error with event window baseline reading " + outputFile + "\n" + e.toString());
     		System.exit(0);
         }
         finally
@@ -177,7 +177,7 @@ public class gazeAnalytics {
         catch(Exception e)
         {
         	System.out.println("Error with event window  " + outputFile + "\n" + e.toString());
-    		systemLogger.writeToSystemLog(Level.SEVERE, gazeAnalytics.class.getName(), "Error with event window  " + outputFile + "\n" + e.toString());
+    		systemLogger.writeToSystemLog(Level.SEVERE, WindowOperations.class.getName(), "Error with event window  " + outputFile + "\n" + e.toString());
     		System.exit(0);
         }
         finally
@@ -235,29 +235,17 @@ public class gazeAnalytics {
             	 return false;
              }
              
-     		systemLogger.writeToSystemLog(Level.INFO, gazeAnalytics.class.getName(), "Successfully created file " + outputFile );
+     		systemLogger.writeToSystemLog(Level.INFO, WindowOperations.class.getName(), "Successfully created file " + outputFile );
         }
         catch(NullPointerException ne)
         {
         	System.out.println("done writing file: " + outputFile);
         	outputCSVWriter.close();
-        	modifier.csvToARFF(outputFile);
-        	String tempFixName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_fixation.csv";
-        	String tempEventName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_event.csv";
-        	String tempGazeName = outputFolder +  fileName.substring(0, fileName.indexOf(".")) + "_gaze.csv";
-    		fixation.processFixation(outputFile,tempFixName, 1920, 1080);
-    		event.processEvent(outputFile, tempEventName);
-    		gaze.processGaze(outputFile, tempGazeName);
-    		modifier.csvToARFF(tempFixName);
-    		modifier.csvToARFF(tempEventName);
-    		modifier.csvToARFF(tempGazeName);
-    		modifier.mergingResultFiles(tempFixName, tempEventName, tempGazeName, outputFolder +  fileName.substring(0, fileName.indexOf("."))+  "_combineResults.csv");
-    		modifier.csvToARFF( outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
         	return false;
         }
         catch(Exception e)
         {
-    		systemLogger.writeToSystemLog(Level.SEVERE, gazeAnalytics.class.getName(), "Error with window method  " + outputFile + "\n" + e.toString());
+    		systemLogger.writeToSystemLog(Level.SEVERE, WindowOperations.class.getName(), "Error with window method  " + outputFile + "\n" + e.toString());
     		System.exit(0);
 
         }
@@ -266,19 +254,6 @@ public class gazeAnalytics {
             outputCSVWriter.close();
             csvReader.close();
         }
-        
-        modifier.csvToARFF(outputFile);
-    	String tempFixName = outputFolder  + fileName.substring(0, fileName.indexOf(".")) + "_fixation.csv";
-    	String tempEventName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_event.csv";
-    	String tempGazeName = outputFolder + fileName.substring(0, fileName.indexOf(".")) + "_gaze.csv";
-		fixation.processFixation(outputFile,tempFixName, 1920, 1080);
-		event.processEvent(outputFile, tempEventName);
-		gaze.processGaze(outputFile, tempGazeName);
-		modifier.csvToARFF(tempFixName);
-		modifier.csvToARFF(tempEventName);
-		modifier.csvToARFF(tempGazeName);
-		modifier.mergingResultFiles(tempFixName, tempEventName, tempGazeName,  outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
-		modifier.csvToARFF( outputFolder +  fileName.substring(0, fileName.indexOf("."))+ "_combineResults.csv");
         return true;
 	}
 	

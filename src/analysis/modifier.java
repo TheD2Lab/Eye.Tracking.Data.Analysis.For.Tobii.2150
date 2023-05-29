@@ -43,7 +43,7 @@ public class modifier {
 				saver.setFile(arffFile);
 				saver.writeBatch();
 				System.out.println("Successfully converted CSV to ARFF " + outputARFFPath);
-				systemLogger.writeToSystemLog(Level.INFO, gazeAnalytics.class.getName(), "Successfully converted CSV to ARFF " + outputARFFPath);
+				systemLogger.writeToSystemLog(Level.INFO, WindowOperations.class.getName(), "Successfully converted CSV to ARFF " + outputARFFPath);
 			}
 			else
 			{
@@ -53,13 +53,13 @@ public class modifier {
 		catch(IOException e)
 		{
 			System.out.println("Error coverting CSV to ARFF " + outputARFFPath + "\n" + e.toString());
-			systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error coverting CSV to ARFF " + outputARFFPath + "\n" + e.toString());
+			systemLogger.writeToSystemLog(Level.WARNING, WindowOperations.class.getName(), "Error coverting CSV to ARFF " + outputARFFPath + "\n" + e.toString());
 
 		}
 		catch(IllegalArgumentException ia)
 		{
 			System.out.println("Error coverting CSV to ARFF " + outputARFFPath + "\n" + ia.toString());
-			systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error coverting CSV to ARFF " + outputARFFPath + "\n" + ia.toString());
+			systemLogger.writeToSystemLog(Level.WARNING, WindowOperations.class.getName(), "Error coverting CSV to ARFF " + outputARFFPath + "\n" + ia.toString());
 
 		}
 	}

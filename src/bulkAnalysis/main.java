@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import analysis.Panels;
+import analysis.SingleAnalytics;
 
 public class main {
 	
@@ -85,7 +85,7 @@ public class main {
 			String gzdPath = partInfo.get(name) + "/" + name + "_" + GZD_SUFFIX;
 			String fxdPath = partInfo.get(name) + "/" + name + "_" + FXD_SUFFIX;
 			
-			Panels panels = new Panels();
+			SingleAnalytics panels = new SingleAnalytics();
 			panels.analyzeData(gzdPath, fxdPath, currentPartFolderName);
 			
 		}

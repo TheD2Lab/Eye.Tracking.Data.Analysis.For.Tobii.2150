@@ -41,7 +41,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
-public class Panels {
+public class SingleAnalytics {
 
 	final static int SCREEN_WIDTH = 1920;
 	final static int SCREEN_HEIGHT = 1080;
@@ -49,6 +49,7 @@ public class Panels {
 	private  static String gazepointGZDPath = "";
 	private  static String gazepointFXDPath = "";
 	private  static String outputFolderPath = "";
+	private static String pName = "";
 	private static BufferedImage myPicture;
 	private static JLabel image;
 	
@@ -65,21 +66,18 @@ public class Panels {
 		JLabel title = new JLabel("D\u00B2 Lab Eye Tracking Data Analysis Tool");
 		title.setFont(new Font("Verdana", Font.PLAIN, 30));
 
-		JLabel gazeLabel = new JLabel("Location of gaze file: ");
 		JTextField gazeTextF = new JTextField("Location of gaze file: ", 50);
 		JButton gazeBrowseBtn = new JButton("Browse");
 		gazeTextF.setBackground(Color.WHITE);
 		gazeTextF.setEditable(false);
 		gazeTextF.setPreferredSize(new Dimension(50, 30));
 
-		JLabel fixationLabel = new JLabel("Location of fixation file: ");
 		JTextField fixationTextF = new JTextField("Location of fixation file: " , 50);
 		fixationTextF.setBackground(Color.WHITE);
 		JButton fixationBrowseBtn = new JButton("Browse");
 		fixationTextF.setEditable(false);
 		fixationTextF.setPreferredSize(new Dimension(50, 30));
 
-		JLabel outputLabel = new JLabel("LocaAtion of output file: ");  
 		JTextField outputTextF = new JTextField("Location of output file: ", 50);
 		outputTextF.setBackground(Color.WHITE);
 		JButton outputBrowseBtn = new JButton("Browse");
@@ -178,6 +176,7 @@ public class Panels {
 				gazepointGZDPath = gazeTextF.getText();
 				gazepointFXDPath = fixationTextF.getText();
 				outputFolderPath = outputTextF.getText() + "/" + partTextF.getText();
+				pName = partTextF.getText();
 				
 				File participantFolder = new File(outputTextF.getText() + "/" + partTextF.getText());
 
@@ -226,17 +225,17 @@ public class Panels {
 		systemLogger.createSystemLog(outputFolderPath);
 
 		//output file paths
-		String graphFixationResults = "/graphFXDResults.csv";
+		String graphFixationResults = "/" + pName + "_graphFXDResults.csv";
 		String graphFixationOutput = outputFolderPath + graphFixationResults;
 
-		String graphEventResults = "/graphEVDResults.csv";
+		String graphEventResults = "/" + pName + "_graphEVDResults.csv";
 		String graphEventOutput = outputFolderPath + graphEventResults;
 
-		String graphGazeResults = "/graphGZDResults.csv";
+		String graphGazeResults = "/" + pName + "_graphGZDResults.csv";
 		String graphGazeOutput = outputFolderPath + graphGazeResults;
 
 
-		String aoiResults = "/aoiResults.csv";
+		String aoiResults = "/" + pName + "_aoiResults.csv";
 		String aoiOutput = outputFolderPath + aoiResults;
 		ScanPath scanPath = new ScanPath(gazepointFXDPath, outputFolderPath);
 		try {
@@ -283,7 +282,7 @@ public class Panels {
 		panel.revalidate();
 		panel.repaint();
 		//create folder to put the analysis in
-		File snapshotFolder = new File(outputFolderPath + "/SnapshotFolder");
+		File snapshotFolder = new File(outputFolderPath + "/" + pName + "_SnapshotFolder");
 		snapshotFolder.mkdir();
 		String outputFolder = snapshotFolder.getPath();
 		
@@ -358,165 +357,18 @@ public class Panels {
 			
 			if(continuousSnapshotButton.isSelected()||cumulativeSnapshotButton.isSelected())
 			{
-				String gazepointFile = modifier.fileChooser("Please select which file you would like to parse out", dir);
-				JTextField windowSizeInput = new JTextField("", 5);
-				JLabel windowSizeLabel = new JLabel("Window Size(seconds): ");
-				
-				c.gridy = 1;
-				JPanel userInputPanel = new JPanel(new FlowLayout());
-				userInputPanel.add(windowSizeLabel);
-				userInputPanel.add(windowSizeInput);
-				panel.add(userInputPanel, c);
-				
-				JButton contBtn = new JButton("OK");
-				c.gridx = 0;
-				c.gridy = 2;
-				panel.add(contBtn, c);
-				panel.revalidate();
-
-				contBtn.addActionListener(ev -> {
-					if(continuousSnapshotButton.isSelected())
-					{
-						try 
-						{
-							gazeAnalytics.continuousWindow(gazepointFile, outputFolder,Integer.parseInt(windowSizeInput.getText()) );
-						} 
-						catch (NumberFormatException | CsvValidationException e1) 
-						{
-							JOptionPane.showMessageDialog(null, "User input was not a valid number. Unable to create gaze analytics files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
-							systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
-						}
-						JOptionPane.showMessageDialog(null, "Exiting out of program", "Exit", JOptionPane.INFORMATION_MESSAGE);
-						System.exit(0);
-					}
-					else
-					{
-						try 
-						{
-							gazeAnalytics.cumulativeWindow(gazepointFile, outputFolder, Integer.parseInt(windowSizeInput.getText()));
-						} 
-						catch (NumberFormatException | CsvValidationException e1) 
-						{
-							systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
-							JOptionPane.showMessageDialog(null, "User input was not a valid number. Unable to create gaze analytics files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
-						}
-						JOptionPane.showMessageDialog(null, "Exiting out of program", "Exit", JOptionPane.INFORMATION_MESSAGE);
-						System.exit(0);
-					}
-				});
+				contCumulWindowAction(c, outputFolder,dir, continuousSnapshotButton.isSelected());
 
 			}
 			else if(overlappingSnapshotButton.isSelected())
 			{
-				String gazepointFile = modifier.fileChooser("Please select which file you would like to parse out", dir);
-				JTextField windowSizeInput = new JTextField("", 5);
-				JTextField overlappingInput = new JTextField("", 5);
-				JLabel windowSizeLabel = new JLabel("Window Size(seconds): ");
-				JLabel overlappingLabel = new JLabel("Overlapping Amount(seconds): ");
-
-				JPanel userInputPanel0 = new JPanel(new FlowLayout());
-				JPanel userInputPanel1 = new JPanel(new FlowLayout());
-
-				c.gridy = 1;
-				userInputPanel0.add(windowSizeLabel);
-				userInputPanel0.add(windowSizeInput);
-				panel.add(userInputPanel0,c);
 				
-				c.gridy = 2;
-				userInputPanel1.add(overlappingLabel);
-				userInputPanel1.add(overlappingInput);
-				panel.add(userInputPanel1,c);
-				
-				c.gridy = 3;
-				JButton overlappingBtn = new JButton("OK");
-				panel.add(overlappingBtn, c);
-				panel.revalidate();
-				overlappingBtn.addActionListener(ev -> {
-					try 
-					{
-						gazeAnalytics.overlappingWindow(gazepointFile, outputFolder,Integer.parseInt(windowSizeInput.getText()), Integer.parseInt(overlappingInput.getText()) );
-					} 
-					catch (NumberFormatException | CsvValidationException e1) 
-					{
-						systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
-						JOptionPane.showMessageDialog(null, "User input was not a valid number. Unable to create gaze analytics files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
-
-					}
-					System.exit(0);
-
-
-				});
-
+				overlappingWindowAction(c, outputFolder,dir);
 			}
 			else if(eventAnalyticsButton.isSelected())
 			{
-				String gazepointFilePath = modifier.fileChooser("Please select your gaze file", dir);
-				String baselineFilePath = outputFolderPath + "/baseline.csv";
-	
-				try 
-				{
-					FileReader baselineFR = new FileReader(baselineFilePath);
-					CSVReader baselineCR = new CSVReader(baselineFR);	
-					FileReader gazepointFR = new FileReader(gazepointFilePath);
-					CSVReader gazepointCR = new CSVReader(gazepointFR);	
-					String[] baselineHeader = baselineCR.readNext();
-					String[]header = gazepointCR.readNext();
-					JLabel bLabel = new JLabel("Please pick the baseline value you would want to compare");
-					JLabel gzptLabel = new JLabel("Please pick the gaze/fixation value you would want to compare");
-					JLabel durLabel = new JLabel("Maxium Duration of an event (seconds): ");
-					JTextField maxDurInput = new JTextField("", 5);
-
-					JComboBox<String> baselineCB = new JComboBox<String>(baselineHeader);
-					JComboBox<String> gazepointCB = new JComboBox<String>(header);
-					baselineCB.setMaximumSize(baselineCB.getPreferredSize());
-					gazepointCB.setMaximumSize(gazepointCB.getPreferredSize());
-
-					JPanel userInputPanel0 = new JPanel(new FlowLayout());
-					JPanel userInputPanel1 = new JPanel(new FlowLayout());
-					JPanel userInputPanel2 = new JPanel(new FlowLayout());
-					
-					userInputPanel0.add(bLabel);
-					userInputPanel0.add(baselineCB);
-					userInputPanel1.add(gzptLabel);
-					userInputPanel1.add(gazepointCB);
-					userInputPanel2.add(durLabel);
-					userInputPanel2.add(maxDurInput);
-					
-					c.gridy = 1;
-					panel.add(userInputPanel0, c);
-					c.gridy = 2;
-					panel.add(userInputPanel1, c);
-					c.gridy = 3;
-					panel.add(userInputPanel2, c);
-					
-					c.gridy = 4;
-					JButton eventBtn = new JButton("OK");
-					panel.add(eventBtn, c);
-					panel.revalidate();
-
-					eventBtn.addActionListener(et -> {
-						try 
-						{
-							gazeAnalytics.eventWindow(gazepointFilePath, outputFolder, baselineFilePath, Arrays.asList(baselineHeader).indexOf(baselineCB.getSelectedItem()), Arrays.asList(header).indexOf(gazepointCB.getSelectedItem()), Integer.valueOf(maxDurInput.getText()));
-						} 
-						catch (NumberFormatException | IOException e1) 
-						{
-							systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
-						}
-						JOptionPane.showMessageDialog(null, "Exiting out of program", "Exit", JOptionPane.INFORMATION_MESSAGE);
-						System.exit(0);
-
-					});
-
-				} 
-				catch (IOException | CsvValidationException e1) 
-				{
-					systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "Unable to find selected baseline or input files" + e1);
-					JOptionPane.showMessageDialog(null, "Unable to find selected baseline or input files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
-					System.exit(0);
-				}
-
-
+				
+				eventWindowAction(c, outputFolder,dir);
 
 				
 			}
@@ -524,7 +376,166 @@ public class Panels {
 		return panel;
 	}
 
+	private static void contCumulWindowAction(GridBagConstraints c, String outputFolder, String dir, boolean contiWindowSelected)
+	{
+		String gazepointFile = modifier.fileChooser("Please select which file you would like to parse out", dir);
+		JTextField windowSizeInput = new JTextField("", 5);
+		JLabel windowSizeLabel = new JLabel("Window Size(seconds): ");
+		
+		c.gridy = 1;
+		JPanel userInputPanel = new JPanel(new FlowLayout());
+		userInputPanel.add(windowSizeLabel);
+		userInputPanel.add(windowSizeInput);
+		panel.add(userInputPanel, c);
+		
+		JButton contBtn = new JButton("OK");
+		c.gridx = 0;
+		c.gridy = 2;
+		panel.add(contBtn, c);
+		panel.revalidate();
+
+		contBtn.addActionListener(ev -> {
+			if(contiWindowSelected)
+			{
+				try 
+				{
+					WindowOperations.continuousWindow(gazepointFile, outputFolder,Integer.parseInt(windowSizeInput.getText()) );
+				} 
+				catch (NumberFormatException | CsvValidationException e1) 
+				{
+					JOptionPane.showMessageDialog(null, "User input was not a valid number. Unable to create gaze analytics files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
+					systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
+				}
+				JOptionPane.showMessageDialog(null, "Exiting out of program", "Exit", JOptionPane.INFORMATION_MESSAGE);
+				System.exit(0);
+			}
+			else
+			{
+				try 
+				{
+					WindowOperations.cumulativeWindow(gazepointFile, outputFolder, Integer.parseInt(windowSizeInput.getText()));
+				} 
+				catch (NumberFormatException | CsvValidationException e1) 
+				{
+					systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
+					JOptionPane.showMessageDialog(null, "User input was not a valid number. Unable to create gaze analytics files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
+				}
+				JOptionPane.showMessageDialog(null, "Exiting out of program", "Exit", JOptionPane.INFORMATION_MESSAGE);
+				System.exit(0);
+			}
+		});
+	}
 	
+	private static void overlappingWindowAction(GridBagConstraints c, String outputFolder, String dir)
+	{
+		String gazepointFile = modifier.fileChooser("Please select which file you would like to parse out", dir);
+		JTextField windowSizeInput = new JTextField("", 5);
+		JTextField overlappingInput = new JTextField("", 5);
+		JLabel windowSizeLabel = new JLabel("Window Size(seconds): ");
+		JLabel overlappingLabel = new JLabel("Overlapping Amount(seconds): ");
+
+		JPanel userInputPanel0 = new JPanel(new FlowLayout());
+		JPanel userInputPanel1 = new JPanel(new FlowLayout());
+
+		c.gridy = 1;
+		userInputPanel0.add(windowSizeLabel);
+		userInputPanel0.add(windowSizeInput);
+		panel.add(userInputPanel0,c);
+		
+		c.gridy = 2;
+		userInputPanel1.add(overlappingLabel);
+		userInputPanel1.add(overlappingInput);
+		panel.add(userInputPanel1,c);
+		
+		c.gridy = 3;
+		JButton overlappingBtn = new JButton("OK");
+		panel.add(overlappingBtn, c);
+		panel.revalidate();
+		overlappingBtn.addActionListener(ev -> {
+			try 
+			{
+				WindowOperations.overlappingWindow(gazepointFile, outputFolder,Integer.parseInt(windowSizeInput.getText()), Integer.parseInt(overlappingInput.getText()) );
+			} 
+			catch (NumberFormatException | CsvValidationException e1) 
+			{
+				systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
+				JOptionPane.showMessageDialog(null, "User input was not a valid number. Unable to create gaze analytics files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
+
+			}
+			System.exit(0);
+
+
+		});
+	}
+	private static void eventWindowAction(GridBagConstraints c, String outputFolder, String dir)
+	{
+		String gazepointFilePath = modifier.fileChooser("Please select your gaze file", dir);
+		String baselineFilePath = outputFolderPath + "/baseline.csv";
+
+		try 
+		{
+			FileReader baselineFR = new FileReader(baselineFilePath);
+			CSVReader baselineCR = new CSVReader(baselineFR);	
+			FileReader gazepointFR = new FileReader(gazepointFilePath);
+			CSVReader gazepointCR = new CSVReader(gazepointFR);	
+			String[] baselineHeader = baselineCR.readNext();
+			String[]header = gazepointCR.readNext();
+			JLabel bLabel = new JLabel("Please pick the baseline value you would want to compare");
+			JLabel gzptLabel = new JLabel("Please pick the gaze/fixation value you would want to compare");
+			JLabel durLabel = new JLabel("Maxium Duration of an event (seconds): ");
+			JTextField maxDurInput = new JTextField("", 5);
+
+			JComboBox<String> baselineCB = new JComboBox<String>(baselineHeader);
+			JComboBox<String> gazepointCB = new JComboBox<String>(header);
+			baselineCB.setMaximumSize(baselineCB.getPreferredSize());
+			gazepointCB.setMaximumSize(gazepointCB.getPreferredSize());
+
+			JPanel userInputPanel0 = new JPanel(new FlowLayout());
+			JPanel userInputPanel1 = new JPanel(new FlowLayout());
+			JPanel userInputPanel2 = new JPanel(new FlowLayout());
+			
+			userInputPanel0.add(bLabel);
+			userInputPanel0.add(baselineCB);
+			userInputPanel1.add(gzptLabel);
+			userInputPanel1.add(gazepointCB);
+			userInputPanel2.add(durLabel);
+			userInputPanel2.add(maxDurInput);
+			
+			c.gridy = 1;
+			panel.add(userInputPanel0, c);
+			c.gridy = 2;
+			panel.add(userInputPanel1, c);
+			c.gridy = 3;
+			panel.add(userInputPanel2, c);
+			
+			c.gridy = 4;
+			JButton eventBtn = new JButton("OK");
+			panel.add(eventBtn, c);
+			panel.revalidate();
+
+			eventBtn.addActionListener(et -> {
+				try 
+				{
+					WindowOperations.eventWindow(gazepointFilePath, outputFolder, baselineFilePath, Arrays.asList(baselineHeader).indexOf(baselineCB.getSelectedItem()), Arrays.asList(header).indexOf(gazepointCB.getSelectedItem()), Integer.valueOf(maxDurInput.getText()));
+				} 
+				catch (NumberFormatException | IOException e1) 
+				{
+					systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "User input was not a valid number. Unable to create gaze analytics files");
+				}
+				JOptionPane.showMessageDialog(null, "Exiting out of program", "Exit", JOptionPane.INFORMATION_MESSAGE);
+				System.exit(0);
+
+			});
+
+		} 
+		catch (IOException | CsvValidationException e1) 
+		{
+			systemLogger.writeToSystemLog(Level.SEVERE, main.class.getName(), "Unable to find selected baseline or input files" + e1);
+			JOptionPane.showMessageDialog(null, "Unable to find selected baseline or input files. Please check system log", "Exit", JOptionPane.ERROR_MESSAGE);
+			System.exit(0);
+		}
+
+	}
 
 
 }

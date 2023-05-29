@@ -75,17 +75,24 @@ public class BatchAnalytics {
 				
 				
 			}while(!validation(chooser.getSelectedFiles(),partInfo));
+			String outputLocation = analysis.modifier.folderChooser("Please choose the location where you would like your files to reside in");
+			if(!modifier.createFolders(outputLocation, partInfo))
+			{
+				JOptionPane.showMessageDialog(null, "Error in creating files. Please see error log for more details", "Error Message", JOptionPane.ERROR_MESSAGE);
+				System.exit(0);
+			}
+			
+			try {
+				runAnalysis(outputLocation,partInfo );
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+
 		});
 		
-		String outputLocation = analysis.modifier.folderChooser("Please choose the location where you would like your files to reside in");
-		if(!modifier.createFolders(outputLocation, partInfo))
-		{
-			JOptionPane.showMessageDialog(null, "Error in creating files. Please see error log for more details", "Error Message", JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
-		}
 		
-		runAnalysis(outputLocation,partInfo );
-
 		return panel;
 	}
 	
@@ -148,7 +155,7 @@ public class BatchAnalytics {
 			String gzdPath = partInfo.get(name) + "/" + name + "_" + GZD_SUFFIX;
 			String fxdPath = partInfo.get(name) + "/" + name + "_" + FXD_SUFFIX;
 			
-			Panels.analyzeData(gzdPath, fxdPath, currentPartFolderName);
+			SingleAnalytics.analyzeData(gzdPath, fxdPath, currentPartFolderName);
 			
 		}
 	}

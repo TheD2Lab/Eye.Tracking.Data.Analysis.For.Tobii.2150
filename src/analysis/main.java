@@ -53,10 +53,10 @@ public class main
 		int screenHeight = (int)size.getHeight();
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setSize(screenWidth, screenHeight);
-		Panels.setUp();
+		SingleAnalytics.setUp();
 		
 		//tabbed pages
-		Panels pages = new Panels();
+		SingleAnalytics pages = new SingleAnalytics();
 		JPanel acquirePathsPanel=new JPanel();
 		acquirePathsPanel = pages.acquirePathsPage();
 		JPanel p2=new JPanel();  

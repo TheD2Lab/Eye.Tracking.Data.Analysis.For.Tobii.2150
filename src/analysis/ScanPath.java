@@ -561,7 +561,7 @@ public class ScanPath {
             	 System.exit(0);
              }	
              
-     		systemLogger.writeToSystemLog(Level.INFO, gazeAnalytics.class.getName(), "Successfully created file " + outputFile );
+     		systemLogger.writeToSystemLog(Level.INFO, WindowOperations.class.getName(), "Successfully created file " + outputFile );
         }
         catch(NullPointerException ne)
         {
@@ -571,7 +571,7 @@ public class ScanPath {
         }
         catch(Exception e)
         {
-    		systemLogger.writeToSystemLog(Level.SEVERE, gazeAnalytics.class.getName(), "Error with window method  " + outputFile + "\n" + e.toString());
+    		systemLogger.writeToSystemLog(Level.SEVERE, WindowOperations.class.getName(), "Error with window method  " + outputFile + "\n" + e.toString());
     		System.exit(0);
 
         }
