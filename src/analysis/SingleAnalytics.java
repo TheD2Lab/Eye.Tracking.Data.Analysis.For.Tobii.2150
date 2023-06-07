@@ -53,12 +53,19 @@ public class SingleAnalytics {
 	private static BufferedImage myPicture;
 	private static JLabel image;
 	
+	/*
+	 * sets up the picture
+	 */
 	public static void setUp() throws IOException
 	{
 		 myPicture = ImageIO.read(new File("data/d2logo.jpg")); 
 		 image = new JLabel(new ImageIcon(myPicture));
 	}
 	
+	/*
+	 * Acquires all the path required to run an analysis
+	 * @return	JPanel	returns the UI for this page
+	 */
 	public static JPanel acquirePathsPage() throws IOException
 	{	
 
@@ -180,16 +187,19 @@ public class SingleAnalytics {
 					if(!folderCreated)
 					{
 						JOptionPane.showMessageDialog(null, "Unable to create participant's folder", "Error Message", JOptionPane.ERROR_MESSAGE);
+						systemLogger.writeToSystemLog(Level.SEVERE, SingleAnalytics.class.getName(), "Unable to create participant's folder");
 						System.exit(0);
 					}
 					else
 					{
 						analyzeData(gazepointGZDPath, gazepointFXDPath, outputFolderPath);
-						try {
-							
+						try
+						{	
 							gazeAnalyticsOptions();
-						} catch (IOException e1) {
-							e1.printStackTrace();
+						} 
+						catch (IOException e1) 
+						{
+							systemLogger.writeToSystemLog(Level.WARNING, SingleAnalytics.class.getName(), "Error in Windowing Operation \n" + e1);
 						}
 						panel.repaint();	
 					}
@@ -204,6 +214,13 @@ public class SingleAnalytics {
 
 	}
 	
+	
+	/*
+	 * Runs an analysis on the two files and all generated files will be in the ouputPath folder
+	 * @param	gzdPath		file path of the gaze file
+	 * @param	fxdPath		file path of the fixation file
+	 * @param	outputPath	folder path of the output location
+	 */
 	public static void analyzeData(String gzdPath, String fxdPath, String outputPath)
 	{
 		String[] paths = {gzdPath, fxdPath, outputPath};
@@ -254,7 +271,7 @@ public class SingleAnalytics {
 		}
 		catch(Exception ex)
 		{
-			System.out.println(ex);
+			systemLogger.writeToSystemLog(Level.WARNING, SingleAnalytics.class.getName(), "Error in analyzing data \n" + ex);
 		}
 	}
 	
@@ -265,16 +282,17 @@ public class SingleAnalytics {
 	 * 
 	 * @param	p				the panel the UI will be placed on
 	 * @param	outputfolder	the folder path where all the files will be placed in
+	 * @return 	JPanel			return panel where the UI elements are contained 
 	 */
 	public static JPanel gazeAnalyticsOptions() throws IOException
 	{
-		String dir = "/results/" + outputFolderPath.substring(outputFolderPath.lastIndexOf("/") + 1) + "/inputFiles/";
-		
 		//All the gaze analytics options
 		panel.removeAll();
 		panel.revalidate();
 		panel.repaint();
+		
 		//create folder to put the analysis in
+		String dir = "/results/" + outputFolderPath.substring(outputFolderPath.lastIndexOf("/") + 1) + "/inputFiles/";
 		File snapshotFolder = new File(outputFolderPath + "/" + pName + "_SnapshotFolder");
 		snapshotFolder.mkdir();
 		String outputFolder = snapshotFolder.getPath();
@@ -282,22 +300,20 @@ public class SingleAnalytics {
 		GridBagConstraints c = new GridBagConstraints();
 		ButtonGroup bg = new ButtonGroup();
 		
-		JLabel qLabel = new JLabel("Please pick an option");
-		qLabel.setFont(new Font("Verdana", Font.PLAIN, 20));
-		
+		JLabel qLabel = new JLabel("Please pick an option");		
 		JPanel optionsPanel = new JPanel(new FlowLayout());
-		
 		JRadioButton continuousSnapshotButton = new JRadioButton("Continuous Snapshot");
 		JRadioButton cumulativeSnapshotButton = new JRadioButton("Cumulative Snapshot");
 		JRadioButton overlappingSnapshotButton = new JRadioButton("Overlapping Snapshot");
 		JRadioButton eventAnalyticsButton = new JRadioButton("Event Analytics");
 		JRadioButton exitBtn = new JRadioButton("Exit");
+		JButton btn = new JButton("OK");
 
+		qLabel.setFont(new Font("Verdana", Font.PLAIN, 20));
 		continuousSnapshotButton.setToolTipText("This option generates gaze data in a series of fixed, non-overlapping windows");
 		cumulativeSnapshotButton.setToolTipText("This option generates gaze data in a series of expanding windows that increases with every interval");
 		overlappingSnapshotButton.setToolTipText("This option generates gaze data in a series of fixed and overlapping windows");
 		eventAnalyticsButton.setToolTipText("This option generates a baseline file based on the first two minutes of the gaze data, and then compares it to the rest of the file");
-		
 		
 		//Adds all the JRadioButton to a layout
 		bg.add(continuousSnapshotButton);
@@ -305,7 +321,6 @@ public class SingleAnalytics {
 		bg.add(overlappingSnapshotButton);
 		bg.add(eventAnalyticsButton);
 		bg.add(exitBtn);
-		
 		//Adds all the JRadioButton to a a flow layout
 		optionsPanel.add(continuousSnapshotButton);
 		optionsPanel.add(cumulativeSnapshotButton);
@@ -313,21 +328,14 @@ public class SingleAnalytics {
 		optionsPanel.add(eventAnalyticsButton);
 		optionsPanel.add(exitBtn);
 		
-		
-		
 		c.gridx = 0;//set the x location of the grid for the next component
 		c.gridy = 0;//set the y location of the grid for the next component
 		c.insets = new  Insets(40, 15, 15, 0);
 		panel.add(image,c);
-		
 		c.gridy = 1;
 		panel.add(qLabel, c);
-
-		//adds the buttons to a panel
 		c.gridy = 2;
 		panel.add(optionsPanel, c);
-
-		JButton btn = new JButton("OK");
 		c.gridy = 3;
 		c.gridx = 0;
 		panel.add(btn, c);
@@ -340,9 +348,9 @@ public class SingleAnalytics {
 				JOptionPane.showMessageDialog(null, "Exiting out of program", "Exit", JOptionPane.INFORMATION_MESSAGE);
 				System.exit(0);
 			}
+			
 			panel.removeAll();
 			panel.repaint();
-
 			//resets the grid
 			c.gridx = 0;
 			c.gridy = 0;
@@ -351,37 +359,40 @@ public class SingleAnalytics {
 			if(continuousSnapshotButton.isSelected()||cumulativeSnapshotButton.isSelected())
 			{
 				contCumulWindowAction(c, outputFolder,dir, continuousSnapshotButton.isSelected());
-
 			}
 			else if(overlappingSnapshotButton.isSelected())
 			{
-				
 				overlappingWindowAction(c, outputFolder,dir);
 			}
 			else if(eventAnalyticsButton.isSelected())
 			{
-				
-				eventWindowAction(c, outputFolder,dir);
-
-				
+				eventWindowAction(c, outputFolder,dir);	
 			}
 		});
+		
 		return panel;
 	}
 
+	/*
+	 * UI for both continuous and cumulative window
+	 * @param	c					layout type
+	 * @param	outputFolder		the path where the generated files will reside
+	 * @param	dir					sets the directory 
+	 * @param	contiWindowSelect	returns true if the user selected continuous window
+	 */
 	private static void contCumulWindowAction(GridBagConstraints c, String outputFolder, String dir, boolean contiWindowSelected)
 	{
+		JPanel userInputPanel = new JPanel(new FlowLayout());
 		String gazepointFile = modifier.fileChooser("Please select which file you would like to parse out", dir);
 		JTextField windowSizeInput = new JTextField("", 5);
 		JLabel windowSizeLabel = new JLabel("Window Size(seconds): ");
-		
-		c.gridy = 1;
-		JPanel userInputPanel = new JPanel(new FlowLayout());
+		JButton contBtn = new JButton("OK");
+
 		userInputPanel.add(windowSizeLabel);
 		userInputPanel.add(windowSizeInput);
-		panel.add(userInputPanel, c);
 		
-		JButton contBtn = new JButton("OK");
+		c.gridy = 1;
+		panel.add(userInputPanel, c);	
 		c.gridx = 0;
 		c.gridy = 2;
 		panel.add(contBtn, c);
@@ -419,31 +430,37 @@ public class SingleAnalytics {
 		});
 	}
 	
+	/*
+	 * UI for overlapping window
+	 * @param	c					layout type
+	 * @param	outputFolder		the path where the generated files will reside
+	 * @param	dir					sets the directory 
+	 */
 	private static void overlappingWindowAction(GridBagConstraints c, String outputFolder, String dir)
 	{
+		JPanel userInputPanel0 = new JPanel(new FlowLayout());
+		JPanel userInputPanel1 = new JPanel(new FlowLayout());
+		
 		String gazepointFile = modifier.fileChooser("Please select which file you would like to parse out", dir);
 		JTextField windowSizeInput = new JTextField("", 5);
 		JTextField overlappingInput = new JTextField("", 5);
 		JLabel windowSizeLabel = new JLabel("Window Size(seconds): ");
 		JLabel overlappingLabel = new JLabel("Overlapping Amount(seconds): ");
-
-		JPanel userInputPanel0 = new JPanel(new FlowLayout());
-		JPanel userInputPanel1 = new JPanel(new FlowLayout());
-
-		c.gridy = 1;
+		JButton overlappingBtn = new JButton("OK");
+		
 		userInputPanel0.add(windowSizeLabel);
 		userInputPanel0.add(windowSizeInput);
-		panel.add(userInputPanel0,c);
-		
-		c.gridy = 2;
 		userInputPanel1.add(overlappingLabel);
 		userInputPanel1.add(overlappingInput);
+
+		c.gridy = 1;
+		panel.add(userInputPanel0,c);
+		c.gridy = 2;
 		panel.add(userInputPanel1,c);
-		
 		c.gridy = 3;
-		JButton overlappingBtn = new JButton("OK");
 		panel.add(overlappingBtn, c);
 		panel.revalidate();
+		
 		overlappingBtn.addActionListener(ev -> {
 			try 
 			{
@@ -456,10 +473,15 @@ public class SingleAnalytics {
 
 			}
 			System.exit(0);
-
-
 		});
 	}
+	
+	/*
+	 * UI for event window
+	 * @param	c					layout type
+	 * @param	outputFolder		the path where the generated files will reside
+	 * @param	dir					sets the directory 
+	 */
 	private static void eventWindowAction(GridBagConstraints c, String outputFolder, String dir)
 	{
 		String gazepointFilePath = modifier.fileChooser("Please select your gaze file", dir);
@@ -473,19 +495,20 @@ public class SingleAnalytics {
 			CSVReader gazepointCR = new CSVReader(gazepointFR);	
 			String[] baselineHeader = baselineCR.readNext();
 			String[]header = gazepointCR.readNext();
+			JPanel userInputPanel0 = new JPanel(new FlowLayout());
+			JPanel userInputPanel1 = new JPanel(new FlowLayout());
+			JPanel userInputPanel2 = new JPanel(new FlowLayout());
 			JLabel bLabel = new JLabel("Please pick the baseline value you would want to compare");
 			JLabel gzptLabel = new JLabel("Please pick the gaze/fixation value you would want to compare");
 			JLabel durLabel = new JLabel("Maxium Duration of an event (seconds): ");
 			JTextField maxDurInput = new JTextField("", 5);
-
 			JComboBox<String> baselineCB = new JComboBox<String>(baselineHeader);
 			JComboBox<String> gazepointCB = new JComboBox<String>(header);
+			JButton eventBtn = new JButton("OK");
+
+			
 			baselineCB.setMaximumSize(baselineCB.getPreferredSize());
 			gazepointCB.setMaximumSize(gazepointCB.getPreferredSize());
-
-			JPanel userInputPanel0 = new JPanel(new FlowLayout());
-			JPanel userInputPanel1 = new JPanel(new FlowLayout());
-			JPanel userInputPanel2 = new JPanel(new FlowLayout());
 			
 			userInputPanel0.add(bLabel);
 			userInputPanel0.add(baselineCB);
@@ -502,7 +525,6 @@ public class SingleAnalytics {
 			panel.add(userInputPanel2, c);
 			
 			c.gridy = 4;
-			JButton eventBtn = new JButton("OK");
 			panel.add(eventBtn, c);
 			panel.revalidate();
 
@@ -528,6 +550,22 @@ public class SingleAnalytics {
 			System.exit(0);
 		}
 
+	}
+	
+	/*
+	 * get the participant's name
+	 * @return	String	name
+	 */
+	public static String getpName() {
+		return pName;
+	}
+
+	/*
+	 * sets the participant's name
+	 * @param	pName	participant's name
+	 */
+	public static void setpName(String pName) {
+		SingleAnalytics.pName = pName;
 	}
 
 

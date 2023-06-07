@@ -220,6 +220,7 @@ public class BatchAnalytics {
 			String gzdPath = partInfo.get(name) + "/" + name + "_" + GZD_SUFFIX;
 			String fxdPath = partInfo.get(name) + "/" + name + "_" + FXD_SUFFIX;
 			
+			SingleAnalytics.setpName(name);
 			SingleAnalytics.analyzeData(gzdPath, fxdPath, currentPartFolderName);
 			
 		}

@@ -42,15 +42,16 @@ public class main
 		JFrame mainFrame = new JFrame("");
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();//size of the computer monitor
 	
+		
+		SingleAnalytics.setUp();
 		//tabbed pages
 		JTabbedPane tp=new JTabbedPane();  
 		JPanel singleAnalyticsPg= SingleAnalytics.acquirePathsPage();
 		JPanel p2=new JPanel();  
 		JPanel helpPg =new JPanel(); 
 		JPanel batchAnalyticsPg = BatchAnalytics.batchAnalyticsPage();
-		JTextArea ta=new JTextArea(200,400);
+		JTextArea ta=new JTextArea(20, 10);
 		
-		SingleAnalytics.setUp();
 		int screenWidth = (int)size.getWidth();
 		int screenHeight = (int)size.getHeight();
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -58,7 +59,7 @@ public class main
 
 		ta.setFont(new Font("Verdana", Font.PLAIN, 15));
 		ta.setAutoscrolls(false);
-		ta.setMargin(new Insets(20,900,20,20) );
+		ta.setMargin(new Insets(20,90,20,20) );
 		BufferedReader in = new BufferedReader(new FileReader("src/analysis/helpPg.txt"));
 		String line = in.readLine();
 		while(line != null){
