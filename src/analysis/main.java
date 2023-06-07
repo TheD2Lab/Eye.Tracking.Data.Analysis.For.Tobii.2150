@@ -39,36 +39,23 @@ public class main
 {
 	public static void main(String args[]) throws Exception 
 	{
-		
-		// Resolution of monitor 
-		
-				
-//		String[] paths = {"C:\\Users\\kayla\\Downloads\\Hannah Park_all_gaze.csv", "C:\\Users\\kayla\\Downloads\\Hannah Park_fixations.csv","C:\\Users\\kayla\\OneDrive\\Documents\\TestCode\\TesterHannah/"};
-//
-//		String[] modifiedData = processData(new String[] {paths[0], paths[1]}, paths[2], SCREEN_WIDTH, SCREEN_HEIGHT);
-		
 		JFrame mainFrame = new JFrame("");
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();//size of the computer monitor
+	
+		//tabbed pages
+		JTabbedPane tp=new JTabbedPane();  
+		JPanel singleAnalyticsPg= SingleAnalytics.acquirePathsPage();
+		JPanel p2=new JPanel();  
+		JPanel helpPg =new JPanel(); 
+		JPanel batchAnalyticsPg = BatchAnalytics.batchAnalyticsPage();
+		JTextArea ta=new JTextArea(200,400);
+		
+		SingleAnalytics.setUp();
 		int screenWidth = (int)size.getWidth();
 		int screenHeight = (int)size.getHeight();
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setSize(screenWidth, screenHeight);
-		SingleAnalytics.setUp();
-		
-		//tabbed pages
-		SingleAnalytics pages = new SingleAnalytics();
-		JPanel acquirePathsPanel=new JPanel();
-		acquirePathsPanel = pages.acquirePathsPage();
-		JPanel p2=new JPanel();  
-		JPanel helpPgPanel =new JPanel(); 
-		JPanel bulkPage = new JPanel();
-		bulkPage = BatchAnalytics.batchAnalyticsPage();
 
-		
-		
-		JTabbedPane tp=new JTabbedPane();  
-		
-		JTextArea ta=new JTextArea(200,400);
 		ta.setFont(new Font("Verdana", Font.PLAIN, 15));
 		ta.setAutoscrolls(false);
 		ta.setMargin(new Insets(20,900,20,20) );
@@ -78,21 +65,17 @@ public class main
 		  ta.append(line + "\n");
 		  line = in.readLine();
 		}
-		helpPgPanel.add(ta);
+		helpPg.add(ta);
 
 		
-		tp.setBounds(50,50,200,200);  
-		tp.add("Data Analysis Page",acquirePathsPanel);  
+		tp.add("Data Analysis",singleAnalyticsPg);  
 		tp.add("Machine Learning",p2);  
-		tp.add("Help",bulkPage);    
+		tp.add("Batch Analysis",batchAnalyticsPg);  
+		tp.add("Help", helpPg);
 
 		mainFrame.add(tp);    
 		mainFrame.setVisible(true);
 		
-		
-		
-//		tp.setComponentAt(0, pages.gazeAnalyticsOptions());
-//		tp.repaint();
 		
 	
 	}

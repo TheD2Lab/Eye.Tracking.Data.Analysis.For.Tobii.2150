@@ -62,70 +62,63 @@ public class SingleAnalytics {
 	public static JPanel acquirePathsPage() throws IOException
 	{	
 
+		JPanel pPanel = new JPanel(new FlowLayout());
+		GridBagConstraints c = new GridBagConstraints();
+
 
 		JLabel title = new JLabel("D\u00B2 Lab Eye Tracking Data Analysis Tool");
-		title.setFont(new Font("Verdana", Font.PLAIN, 30));
-
 		JTextField gazeTextF = new JTextField("Location of gaze file: ", 50);
 		JButton gazeBrowseBtn = new JButton("Browse");
+		JTextField fixationTextF = new JTextField("Location of fixation file: " , 50);
+		JButton fixationBrowseBtn = new JButton("Browse");
+		JTextField outputTextF = new JTextField("Location of output file: ", 50);
+		JButton outputBrowseBtn = new JButton("Browse");
+		JLabel partLabel = new JLabel("Participant: ");
+		JTextField partTextF = new JTextField(15);
+		JButton submitBtn = new JButton("Submit");
+
+		title.setFont(new Font("Verdana", Font.PLAIN, 30));
 		gazeTextF.setBackground(Color.WHITE);
 		gazeTextF.setEditable(false);
 		gazeTextF.setPreferredSize(new Dimension(50, 30));
-
-		JTextField fixationTextF = new JTextField("Location of fixation file: " , 50);
 		fixationTextF.setBackground(Color.WHITE);
-		JButton fixationBrowseBtn = new JButton("Browse");
 		fixationTextF.setEditable(false);
 		fixationTextF.setPreferredSize(new Dimension(50, 30));
-
-		JTextField outputTextF = new JTextField("Location of output file: ", 50);
 		outputTextF.setBackground(Color.WHITE);
-		JButton outputBrowseBtn = new JButton("Browse");
 		outputTextF.setEditable(false);
 		outputTextF.setPreferredSize(new Dimension(50, 30));
-
-		JPanel pPanel = new JPanel(new FlowLayout());
-		JLabel partLabel = new JLabel("Participant: ");
-		JTextField partTextF = new JTextField(15);
 		partTextF.setPreferredSize(new Dimension(50, 30));
 		partLabel.setFont(new Font("Verdana", Font.PLAIN, 20));
+
 		pPanel.add(partLabel);
 		pPanel.add(partTextF);
 
 
-		GridBagConstraints c = new GridBagConstraints();
 
-		c.gridx = 0;//set the x location of the grid for the next component
-		c.gridy = 0;//set the y location of the grid for the next component
+		c.gridx = 0;//set the x location of the grid for the component
+		c.gridy = 0;//set the y location of the grid for the component
 		panel.add(image,c);
-		
 		c.gridy = 1;
 		c.insets = new  Insets(10, 15, 15, 0);
 		panel.add(title,c);
-
-		c.gridy = 2;//change the y location
+		c.gridy = 2;
 		panel.add(gazeTextF,c);
 		c.gridx = 1;
 		panel.add(gazeBrowseBtn,c);
-
-		c.gridy = 3;//change the y location
+		c.gridy = 3;
 		c.gridx = 0;
 		panel.add(fixationTextF,c);
 		c.gridx = 1;
 		panel.add(fixationBrowseBtn,c);
-
-		c.gridy = 4;//change the y location
+		c.gridy = 4;
 		c.gridx = 0;
 		panel.add(outputTextF,c);
 		c.gridx = 1;
 		panel.add(outputBrowseBtn,c);
-
-		c.gridy = 5;//change the y location
+		c.gridy = 5;
 		c.gridx = 0;
 		panel.add(pPanel,c);
-
 		c.gridy=6;
-		JButton submitBtn = new JButton("Submit");
 		panel.add(submitBtn, c);
 
 		gazeBrowseBtn.addActionListener(e -> {
