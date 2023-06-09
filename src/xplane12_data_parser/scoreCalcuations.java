@@ -1,20 +1,28 @@
 package xplane12_data_parser;
 /*
- * How the scoring works
- * For every data point, we will assign 0.99 pts
- * All the measurements will be given the same values 0.33(latitude, height, speed)
- * For every mistake in latitude, height, or speed it will either be 1/4, 1/2, or 1 pt off 
- * The point system is in place because the severity of a mistake increases exponentially as it gets bigger.
+ * How the Scoring Works
+ * For every data point, we will assign 3 possible points (latitude, height, speed)
+ * All the measurements will be given the same values: 1 point for latitude, 1 for height, and 1 for speed
+ * For every mistake in latitude, height, or speed, the deduction will either be 1/4, 1/2, or 1 point off
  */
+
 public class scoreCalcuations {
-	//For the lateral of the plane
-	//Check if its within +- 2 degrees of the designated line
-	private double totalScore = 0;
-	private double highestScore = 0;
-	private final double MAX_PTS_PER_MEASURMENT = 1;
+	private int dataPoints = 0;
+	private int highestScore = 0;
+	private double totalScore = 0; // Double because we will subtract decimals from it
+	private double percentageScore = 0; // Score out of 100%
+	
+	private double speedPenalty = 0;
+	private double localizerPenalty = 0;
+	private double glideSlopePenalty = 0;
+	
 	public scoreCalcuations()
 	{
-		highestScore = totalScore = parser.getNumberOfData()*3;
+		// Highest score and totalScore start out at the highest possible score, and then totalScore 
+		// decreases with each penalty
+		dataPoints = parser.getNumberOfData();
+		highestScore = dataPoints * 3;
+		totalScore = dataPoints * 3.0;
 	}
 	
 	/*
@@ -22,7 +30,9 @@ public class scoreCalcuations {
 	 * @param double[] horizontalDef is all of the localizer position of the aircraft
 	 * @return double Returns the total penalty
 	 */
-	private double locScorePenalty(double[]horizontalDef)
+	//For the lateral/vertical of the plane
+	//Check if its within +/- 2 degrees of the designated line
+	private double localizerScorePenalty(double[]horizontalDef)
 	{
 		double penalty = 0;
 		for(int i=0; i<horizontalDef.length; i++)
@@ -31,21 +41,21 @@ public class scoreCalcuations {
 			{
 				continue;
 			}
-			else if(Math.abs(horizontalDef[i]) <= 0.5) //2 degree
+			else if(Math.abs(horizontalDef[i]) <= 0.5) // 0.5 degrees
 			{
-				penalty += 0.25 * MAX_PTS_PER_MEASURMENT;
+				penalty += 0.25;
 			}
-			else if(Math.abs(horizontalDef[i]) <= 1) //4 degree
+			else if(Math.abs(horizontalDef[i]) <= 1) // 1 degree
 			{
-				penalty += 0.50 * MAX_PTS_PER_MEASURMENT;
+				penalty += 0.50;
 			}
-			else if(Math.abs(horizontalDef[i]) <= 1.5) //6 degree
+			else if(Math.abs(horizontalDef[i]) <= 1.5) // 1.5 degrees
 			{
-				penalty += 0.75 * MAX_PTS_PER_MEASURMENT;
+				penalty += 0.75;
 			}
-			else if(Math.abs(horizontalDef[i]) > 1.5)
+			else if(Math.abs(horizontalDef[i]) > 1.5) // Above 1.5 degrees
 			{
-				penalty += MAX_PTS_PER_MEASURMENT;
+				penalty += 1;
 			}
 		}
 		return penalty;
@@ -56,6 +66,8 @@ public class scoreCalcuations {
 	 * @param double[] verticalDef is all of the vertical position of the aircraft
 	 * @return double Returns the total penalty
 	 */
+	//For the lateral/vertical of the plane
+	//Check if its within +/- 2 degrees of the designated line
 	private double glideSlopeScorePenalty(double[]verticalDef)
 	{
 		double penalty = 0;
@@ -65,21 +77,21 @@ public class scoreCalcuations {
 			{
 				continue;
 			}
-			else if(Math.abs(verticalDef[i]) <= 0.5) //2 degree
+			else if(Math.abs(verticalDef[i]) <= 0.5) // 0.5 degrees
 			{
-				penalty += 0.25 * MAX_PTS_PER_MEASURMENT;
+				penalty += 0.25;
 			}
-			else if(Math.abs(verticalDef[i]) <= 1) //4 degree
+			else if(Math.abs(verticalDef[i]) <= 1) // 1 degree
 			{
-				penalty += 0.50 * MAX_PTS_PER_MEASURMENT;
+				penalty += 0.50;
 			}
-			else if(Math.abs(verticalDef[i]) <= 1.5) //6 degree
+			else if(Math.abs(verticalDef[i]) <= 1.5) // 1.5 degrees
 			{
-				penalty += 0.75 * MAX_PTS_PER_MEASURMENT;
+				penalty += 0.75;
 			}
 			else if(Math.abs(verticalDef[i]) > 1.5)
 			{
-				penalty += MAX_PTS_PER_MEASURMENT;
+				penalty += 1; // Above 1.5 degrees 
 			}
 		}
 		return penalty;
@@ -101,15 +113,15 @@ public class scoreCalcuations {
 			}
 			else if(80 < speed && speed < 100)
 			{
-				penalty += 0.25 * MAX_PTS_PER_MEASURMENT;
+				penalty += 0.25;
 			}
 			else if(75 < speed && speed < 105)
 			{
-				penalty += 0.50 * MAX_PTS_PER_MEASURMENT;
+				penalty += 0.50;
 			}
 			else
 			{
-				penalty += MAX_PTS_PER_MEASURMENT;
+				penalty += 1;
 			}
 		}
 		return penalty;
@@ -124,14 +136,11 @@ public class scoreCalcuations {
 	 */
 	public double scoreILSCalc(double[]horiDef, double[]speed, double[]vertDef)
 	{	
-		double lateralPen = locScorePenalty(horiDef);
-		double speedPen = speedILSCalcPenalty(speed);
-		double glideSlopePen = glideSlopeScorePenalty(vertDef);
-		System.out.println("Speed Calc Penalty: " + speedPen);
-		System.out.println("Lateral Calc Penalty: " + lateralPen);
-		System.out.println("Glide Slope Penalty: " + glideSlopePen);
+		localizerPenalty = localizerScorePenalty(horiDef);
+		glideSlopePenalty = glideSlopeScorePenalty(vertDef);
+		speedPenalty = speedILSCalcPenalty(speed);
 		
-		return lateralPen + speedPen + glideSlopePen;
+		return speedPenalty + localizerPenalty + glideSlopePenalty;
 	}
 	
 	/*
@@ -143,12 +152,33 @@ public class scoreCalcuations {
 	public void scoreCalc(double[]horiDef, double[]speed, double[]vertDef)
 	{
 		totalScore -= scoreILSCalc(horiDef,speed, vertDef);
+		percentageScore = totalScore / highestScore;
 	}
 	
-	public double getHighestScore() {
+	public int getDataPoints()
+	{
+		return dataPoints;
+	}
+	public int getHighestScore() {
 		return highestScore;
 	}
 	public double getTotalScore() {
 		return totalScore;
+	}
+	public double getPercentageScore()
+	{
+		return percentageScore;
+	}
+	public double getSpeedPenalty()
+	{
+		return speedPenalty;
+	}
+	public double getGlideSlopePenalty()
+	{
+		return glideSlopePenalty;
+	}
+	public double getLocalizerPenalty()
+	{
+		return localizerPenalty;
 	}
 }
