@@ -24,6 +24,11 @@ import weka.core.converters.CSVLoader;
 
 public class modifier {
 
+	/**
+	 * converts CSV file to an ARFF file
+	 * 
+	 * @param outputCSVPath		path of the CSV file
+	 */
 	public static void csvToARFF(String outputCSVPath)
 	{
 		String outputARFFPath = outputCSVPath.replace(".csv", ".arff");
@@ -63,6 +68,15 @@ public class modifier {
 
 		}
 	}
+	
+	/**
+	 * Merges all the result files into one CSV file
+	 * 
+	 * @param FXD			the path of the fixation file
+	 * @param EVD			the path of the event file
+	 * @param GZD			the path of the gaze file
+	 * @param outputFile	the path of the output location
+	 */
 	public static void mergingResultFiles(String FXD, String EVD, String GZD, String outputFile) throws IOException
 	{
 
@@ -114,11 +128,11 @@ public class modifier {
 
 
 
-
-	/*
-	 * create baseline file
-	 * grabs the first two minutes of the file and averages it
+	/**
+	 * create baseline file by grabbing the first two minutes of the file and averaging it
 	 * 
+	 * @param filePath
+	 * @param outputFolder
 	 */
 	public static void createBaselineFile(String filePath, String outputFolder) throws IOException, CsvValidationException
 	{
@@ -153,7 +167,8 @@ public class modifier {
 		gaze.processGaze(outputFolder + "/baselineModifiedFile.csv", outputFolder + "/baseline.csv");
 		csvToARFF(outputFolder + "/baseline.csv");
 	}
-	/*
+	
+	/**
 	 * UI for users to select the file they want to use
 	 * 
 	 * @param	dialogTitle		title of the window
@@ -183,7 +198,7 @@ public class modifier {
 	}
 
 
-	/*
+	/**
 	 * UI for users to select the folder they would want to use to place files in
 	 * 
 	 * @param	dialogTitle		title of the window
@@ -210,7 +225,7 @@ public class modifier {
 		return "";
 	}
 	
-	/*
+	/**
 	 * Modifies input data files by cleansing the data and calculating the saccade velocity as an additional column
 	 * 
 	 * @param	inputFiles	Array of size 2 containing the path to the all_gaze and fixation data files
@@ -403,7 +418,7 @@ public class modifier {
 	}
 
 
-	/*
+	/**
 	 * create multiple folders within the chosen location
 	 * 
 	 * @param	outLocation	where the folders will reside

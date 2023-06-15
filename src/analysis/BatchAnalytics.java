@@ -33,9 +33,9 @@ public class BatchAnalytics {
 	private static final String GZD_SUFFIX = "all_gaze.csv";
 	private static final String FXD_SUFFIX = "fixations.csv";
 
-	/*
+	/**
 	 * UI for batch processing
-	 * @return JPanel	panel where the UI elements are contained
+	 * @return JPanel	return panel where the UI elements are contained
 	 */
 	public static JPanel batchAnalyticsPage() throws IOException
 	{
@@ -148,7 +148,7 @@ public class BatchAnalytics {
 		return panel;
 	}
 	
-	/*
+	/**
 	 * Ensures that each participant has a gaze and fixation file and that the naming convention is correct
 	 * @param	files	an array of file paths
 	 * @param	partInfo	a hashmap with the key being the participants name and value being the parent folder of the two files

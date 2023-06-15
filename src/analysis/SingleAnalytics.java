@@ -53,7 +53,7 @@ public class SingleAnalytics {
 	private static BufferedImage myPicture;
 	private static JLabel image;
 	
-	/*
+	/**
 	 * sets up the picture
 	 */
 	public static void setUp() throws IOException
@@ -62,8 +62,9 @@ public class SingleAnalytics {
 		 image = new JLabel(new ImageIcon(myPicture));
 	}
 	
-	/*
+	/**
 	 * Acquires all the path required to run an analysis
+	 * 
 	 * @return	JPanel	returns the UI for this page
 	 */
 	public static JPanel acquirePathsPage() throws IOException
@@ -215,8 +216,9 @@ public class SingleAnalytics {
 	}
 	
 	
-	/*
+	/**
 	 * Runs an analysis on the two files and all generated files will be in the ouputPath folder
+	 * 
 	 * @param	gzdPath		file path of the gaze file
 	 * @param	fxdPath		file path of the fixation file
 	 * @param	outputPath	folder path of the output location
@@ -276,7 +278,7 @@ public class SingleAnalytics {
 	}
 	
 
-	/*
+	/**
 	 * UI where the user will select which the type of gaze analytics that they will want to output
 	 * UI where the user will input the information needed for the program to output the desired files
 	 * 
@@ -373,8 +375,9 @@ public class SingleAnalytics {
 		return panel;
 	}
 
-	/*
+	/**
 	 * UI for both continuous and cumulative window
+	 * 
 	 * @param	c					layout type
 	 * @param	outputFolder		the path where the generated files will reside
 	 * @param	dir					sets the directory 
@@ -430,8 +433,9 @@ public class SingleAnalytics {
 		});
 	}
 	
-	/*
+	/**
 	 * UI for overlapping window
+	 * 
 	 * @param	c					layout type
 	 * @param	outputFolder		the path where the generated files will reside
 	 * @param	dir					sets the directory 
@@ -476,8 +480,9 @@ public class SingleAnalytics {
 		});
 	}
 	
-	/*
+	/**
 	 * UI for event window
+	 * 
 	 * @param	c					layout type
 	 * @param	outputFolder		the path where the generated files will reside
 	 * @param	dir					sets the directory 
@@ -552,16 +557,18 @@ public class SingleAnalytics {
 
 	}
 	
-	/*
+	/**
 	 * get the participant's name
+	 * 
 	 * @return	String	name
 	 */
 	public static String getpName() {
 		return pName;
 	}
 
-	/*
+	/**
 	 * sets the participant's name
+	 * 
 	 * @param	pName	participant's name
 	 */
 	public static void setpName(String pName) {

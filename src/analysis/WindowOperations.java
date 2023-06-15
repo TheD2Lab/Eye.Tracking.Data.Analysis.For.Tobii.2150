@@ -15,6 +15,14 @@ import com.opencsv.exceptions.CsvValidationException;
  */
 public class WindowOperations {
 
+	/**
+	 * Creates CSV files by dividing the data into nonoverlapping, fixed-size windows
+	 *  
+	 * @param inputFile		path of the input file that contains the data 
+	 * @param outputFolder 	path of the output folder where the windowed data will be stored
+	 * @param windowSize 	value that specifies the size of the window to be used in the operation
+	 * @throws CsvValidationException
+	 */
 	public static void continuousWindow(String inputFile, String outputFolder, int windowSize) throws CsvValidationException
 	{
 		int endTime = windowSize;
@@ -35,6 +43,15 @@ public class WindowOperations {
 
 	}
 	
+	/**
+	 * Creates CSV files by utilizing a windowing method that grows until it covers the full extent of the gaze data, the user can analyze visual attention patterns. 
+	 * The degree of window growth can be adjusted to the user's requirement. 
+	 * 
+	 * @param inputFile		path of the input file that contains the data 
+	 * @param outputFolder 	path of the output folder where the windowed data will be stored
+	 * @param windowSize 	value that specifies the size of the window to be used in the operation
+	 * @throws CsvValidationException
+	 */
 	public static void cumulativeWindow(String inputFile, String outputFolder, int windowSize) throws CsvValidationException
 	{
 		int endTime = windowSize;
@@ -54,6 +71,16 @@ public class WindowOperations {
 		}
 	}
 	
+	/**
+	 * Creates CSV files by dividing the data into overlapping, fixed-size windows. 
+	 * The user has the ability to customize the degree of overlap and the size of the windows according to their preferences. 
+	 * 
+	 * @param inputFile		path of the input file that contains the data 
+	 * @param outputFolder 	path of the output folder where the windowed data will be stored
+	 * @param windowSize 	value that specifies the size of the window to be used in the operation
+	 * @param overlap		value the specifies the size of the overlap 
+	 * @throws CsvValidationException
+	 */
 	public static void overlappingWindow(String inputFile, String outputFolder, int windowSize, int overlap) throws CsvValidationException
 	{
 		int endTime = windowSize;
@@ -74,6 +101,18 @@ public class WindowOperations {
 		}
 	}
 	
+	/**
+	 * Creates CSV files Analyzes the gaze data by dividing the data based on the events selected. 
+	 * Currently, the events are defined by comparing values in the selected file with the values in the baseline files.
+	 * 
+	 * @param inputFilePath			path of the input file that contains the data
+	 * @param outputFolderPath		path of the output folder where the windowed data will be stored
+	 * @param baselineFilePath 		path of the baseline file
+	 * @param baselineHeaderIndex	the index of the selected value in the baseline file 
+	 * @param inputHeaderIndex		the index of the selected value in the selected file 
+	 * @param maxDur				the max duration an event can continue
+	 * @throws IOException
+	 */
 	public static void eventWindow(String inputFilePath, String outputFolderPath, String baselineFilePath, int baselineHeaderIndex, int inputHeaderIndex, int maxDur) throws IOException
 	{
 		int index = 0;
@@ -190,6 +229,16 @@ public class WindowOperations {
 
 	}
 	
+	/**
+	 * creates a CSV file containing all of the data points within the given start and end times based on the input file
+	 * 
+	 * @param inputFile		the CSV file containing the data points that will be copied
+	 * @param fileName		the name of the input CSV file
+	 * @param outputFolder	the path of the output location
+	 * @param start			the start time
+	 * @param end			the end time
+	 * @return	boolean		true if the program was able to successfully execute it, false otherwise
+	 */
 	private static boolean snapshot(String inputFile, String fileName, String outputFolder, int start, int end) throws IOException, CsvValidationException
 	{
 		String outputFile = outputFolder + fileName;
