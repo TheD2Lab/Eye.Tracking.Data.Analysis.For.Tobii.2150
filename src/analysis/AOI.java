@@ -96,11 +96,11 @@ public class AOI {
         	// Fixation columns
         	headers.add("Fixation Count");
         	headers.add("Total Duration");
-        	headers.add("Mean Duration");
-        	headers.add("Median Duration");
-        	headers.add("StDev of Durations");
-        	headers.add("Min Duration");
-        	headers.add("Max Duration");
+        	headers.add("mean fixation duration (ms)");
+        	headers.add("median fixation duration (ms)");
+        	headers.add("StDev of fixation durations (ms)");
+        	headers.add("Min. fixation duration (ms)");
+        	headers.add(" Max. fixation duration (ms)");
         	
         	// Saccade columns
         	headers.add("total number of saccades");
@@ -242,14 +242,14 @@ public class AOI {
             outputCSVWriter.close();
             csvReader.close();
             System.out.println("done writing AOI data to" + outputFile);
-            systemLogger.writeToSystemLog(Level.INFO, gazeAnalytics.class.getName(), "done writing AOI data to " + outputFile );
+            systemLogger.writeToSystemLog(Level.INFO, WindowOperations.class.getName(), "done writing AOI data to " + outputFile );
 		}
 		catch(FileNotFoundException e) {
-			 systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Unable to open file " + inputFile + "\n" + e.toString());
+			 systemLogger.writeToSystemLog(Level.WARNING, WindowOperations.class.getName(), "Unable to open file " + inputFile + "\n" + e.toString());
 			System.out.println("Unable to open file '" + inputFile + "'");
 	    }
 		catch(IOException e) {
-			 systemLogger.writeToSystemLog(Level.WARNING, gazeAnalytics.class.getName(), "Error reading file " + inputFile + "\n" + e.toString());
+			 systemLogger.writeToSystemLog(Level.WARNING, WindowOperations.class.getName(), "Error reading file " + inputFile + "\n" + e.toString());
 
 	        System.out.println("Error reading file '" + inputFile + "'");
 	    }

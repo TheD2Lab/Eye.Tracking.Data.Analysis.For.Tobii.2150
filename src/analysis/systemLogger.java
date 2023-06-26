@@ -13,8 +13,9 @@ import java.util.Date;
 public class systemLogger {
 	private static String logFilePath = "";
 	
-	/*
+	/**
 	 * Creates a text file named SystemLog.txt and puts the file in the given folder path
+	 * 
 	 * @param	folderPath	path of where the text file belongs
 	 */
 	public static void createSystemLog(String folderPath)
@@ -47,9 +48,9 @@ public class systemLogger {
 		
 	}
 	
-	/*
-	 * Writes a descriptive statement to the system log outlining the time, the level of importance
-	 * what class the method was called, and the given message
+	/**
+	 * Writes a descriptive statement to the system log outlining the time, the level of importance what class the method was called, and the given message
+	 * 
 	 * @param	level			a set of standard logging level 
 	 * @param	sourceClass		what class called the method
 	 * @param	message			the message to be written

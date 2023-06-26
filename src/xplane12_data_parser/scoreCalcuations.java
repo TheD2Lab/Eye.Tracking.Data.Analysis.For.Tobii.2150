@@ -111,13 +111,14 @@ public class scoreCalcuations {
 			{
 				continue;
 			}
+			else if(85 < speed && speed < 95)
+			{
+				penalty += 0.33 * MAX_PTS_PER_MEASURMENT;
+			}
 			else if(80 < speed && speed < 100)
 			{
-				penalty += 0.25;
-			}
-			else if(75 < speed && speed < 105)
-			{
-				penalty += 0.50;
+				penalty += 0.66 * MAX_PTS_PER_MEASURMENT;
+
 			}
 			else
 			{
